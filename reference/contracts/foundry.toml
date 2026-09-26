@@ -1,0 +1,13 @@
+[profile.default]
+solc = "0.8.24"
+via_ir = true
+optimizer = true
+optimizer_runs = 3000
+ffi = false
+src = "src"
+test = "test"
+out = "out"
+# ../protocol is needed because the tests deploy the real AlmaAnchorRegistry from the protocol package
+allow_paths = ["./node_modules", "../protocol"]
+extra_output_files = ["abi", "evm.bytecode"]
+fs_permissions = [{ access = "read", path = "./" }]
