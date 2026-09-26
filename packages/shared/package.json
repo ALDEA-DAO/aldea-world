@@ -7,13 +7,16 @@
   "description": "Shared TypeScript for ALDEA World: catalogs, ALMA helpers, EIP-712 types, manifest schema, ABIs and deployments.",
   "exports": {
     ".": "./src/index.ts",
+    "./abis": "./src/abis/index.ts",
+    "./deployments": "./src/deployments/index.ts",
     "./*": "./src/*.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "abis": "tsx scripts/export-abis.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "merge-world": "tsx scripts/merge-world.ts"
   },
   "dependencies": {
     "canonicalize": "^5.1.0",
