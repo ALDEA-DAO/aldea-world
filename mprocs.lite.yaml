@@ -1,0 +1,39 @@
+# pnpm dev:lite — the same stack without Docker: anvil from Foundry and embedded PGlite servers (one per database).
+# Data is in memory and resets on every start. Requires Foundry, pnpm and Bun.
+procs:
+  anvil:
+    shell: anvil --block-time 2 --base-fee 0 --silent
+  pglite:
+    shell: bun scripts/pglite.ts --port 5433 & bun scripts/pglite.ts --port 5434 & bun scripts/pglite.ts --port 5435 & wait
+    cwd: packages/effectstream-node
+  deploy:
+    shell: scripts/dev-deploy.sh
+    autorestart: false
+  mud-indexer:
+    shell: scripts/wait-for-deploy.sh && scripts/wait-for.sh 5435 && eval "$(scripts/dev-env.sh)" && pnpm exec postgres-indexer
+    env:
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5435/postgres
+      RPC_HTTP_URL: http://127.0.0.1:8545
+  mud-indexer-api:
+    shell: scripts/wait-for-deploy.sh && sleep 3 && pnpm exec postgres-frontend
+    env:
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5435/postgres
+      PORT: "3001"
+  alma-resolver:
+    shell: scripts/wait-for.sh 5434 && pnpm --filter @aldea/alma-resolver db:migrate && pnpm --filter @aldea/alma-resolver dev
+    env:
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5434/postgres
+      BASE_RPC_URL: http://127.0.0.1:8545
+      PORT: "8787"
+  effectstream:
+    shell: scripts/wait-for-deploy.sh && scripts/wait-for.sh 5433 && pnpm --filter @aldea/effectstream-node dev
+    env:
+      DB_PORT: "5433"
+      PGLITE: "true"
+      CHAIN_ID: "31337"
+  relay-worker:
+    shell: pnpm --filter @aldea/relay-worker dev
+    env:
+      PORT: "8788"
+  client:
+    shell: pnpm --filter client dev
