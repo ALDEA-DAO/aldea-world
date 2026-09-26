@@ -98,7 +98,11 @@ importers:
 
   packages/effectstream-node: {}
 
-  packages/protocol: {}
+  packages/protocol:
+    devDependencies:
+      forge-std:
+        specifier: github:foundry-rs/forge-std#ba4733c33497dd0c0983dcc033d7645576cc46e5
+        version: https://codeload.github.com/foundry-rs/forge-std/tar.gz/ba4733c33497dd0c0983dcc033d7645576cc46e5
 
   packages/relay-worker: {}
 
