@@ -11,6 +11,17 @@
   },
   "scripts": {
     "build": "tsc --noEmit",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "abis": "tsx scripts/export-abis.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "canonicalize": "^5.1.0",
+    "viem": "^2.56.9",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15",
+    "vitest": "^5.0.2"
   }
 }
