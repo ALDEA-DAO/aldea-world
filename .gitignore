@@ -1,8 +1,31 @@
 node_modules
+dist
+coverage
+*.tsbuildinfo
+
+# env files: only .env.example is committed
+.env
+.env.*
+!.env.example
+
+# foundry
+out/
+cache/
+broadcast/
 
 # mud artifacts
 .mud
+worlds.json
+**/src/codegen/
 # sqlite indexer data
 *.db
 *.db-journal
+
+# local tooling
+.DS_Store
+.idea
+playwright-report
+test-results
+
+# docs bundle (the extracted docs are committed)
 docs/*.zip

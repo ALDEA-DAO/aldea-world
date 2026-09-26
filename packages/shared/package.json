@@ -1,0 +1,16 @@
+{
+  "name": "@aldea/shared",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Shared TypeScript for ALDEA World: catalogs, ALMA helpers, EIP-712 types, manifest schema, ABIs and deployments.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  }
+}

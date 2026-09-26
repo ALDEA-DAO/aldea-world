@@ -1,0 +1,13 @@
+{
+  "name": "@aldea/cli",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "aldea: the ALDEA World fork kit CLI.",
+  "bin": { "aldea": "./src/index.ts" },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  }
+}

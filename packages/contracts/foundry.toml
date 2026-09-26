@@ -12,16 +12,19 @@ out = "out"
 allow_paths = [
   # pnpm symlinks to the project root's node_modules
   "../../node_modules",
-  # template uses linked mud packages from within the mud monorepo
-  "../../../../packages",
-  # projects created from this template and using linked mud packages
-  "../../../mud/packages",
+  "./node_modules",
 ]
 extra_output_files = ["abi", "evm.bytecode"]
 fs_permissions = [{ access = "read", path = "./" }]
 
-[profile.garnet]
-eth_rpc_url = "https://rpc.garnetchain.com"
+# Public RPCs as defaults; the deploy scripts override them with BASE_SEPOLIA_RPC_URL / BASE_RPC_URL
+# (a dedicated provider is recommended: the public endpoints are rate limited).
+[profile.base-sepolia]
+eth_rpc_url = "https://sepolia.base.org"
 
-[profile.redstone]
-eth_rpc_url = "https://rpc.redstonechain.com"
+[profile.base]
+eth_rpc_url = "https://mainnet.base.org"
+
+[lint]
+# forge lint floods the build output with notes about MUD-generated code
+lint_on_build = false

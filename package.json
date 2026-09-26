@@ -1,31 +1,27 @@
 {
-  "name": "mud-template-react-ecs",
+  "name": "aldea-world",
   "private": true,
+  "license": "MIT",
+  "packageManager": "pnpm@9.15.9",
+  "type": "module",
   "scripts": {
-    "build": "pnpm recursive run build",
+    "build": "pnpm -r build",
     "dev": "mprocs",
-    "dev:client": "pnpm --filter 'client' run dev",
-    "dev:contracts": "pnpm --filter 'contracts' dev",
+    "dev:client": "pnpm --filter client dev",
+    "dev:contracts": "pnpm --filter contracts dev",
     "foundry:up": "curl -L https://foundry.paradigm.xyz | bash && bash $HOME/.foundry/bin/foundryup",
-    "mud:up": "pnpm mud set-version --tag main && pnpm install",
-    "prepare": "(forge --version || pnpm foundry:up)",
-    "test": "pnpm recursive run test"
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test"
   },
   "devDependencies": {
-    "@latticexyz/cli": "2.2.14",
-    "@latticexyz/common": "2.2.14",
-    "@latticexyz/explorer": "2.2.14",
-    "@latticexyz/store-indexer": "2.2.14",
-    "@types/debug": "4.1.7",
-    "@typescript-eslint/eslint-plugin": "7.1.1",
-    "@typescript-eslint/parser": "7.1.1",
-    "eslint": "8.57.0",
-    "mprocs": "^0.7.1",
-    "shx": "^0.3.4",
-    "typescript": "5.4.2"
+    "@types/node": "^22.0.0",
+    "mprocs": "^0.7.3",
+    "typescript": "^5.9.0"
   },
   "engines": {
-    "node": "^18",
-    "pnpm": "^8 || ^9"
+    "node": ">=22 <23",
+    "pnpm": "^9"
   }
 }

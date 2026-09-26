@@ -1,0 +1,12 @@
+{
+  "name": "@aldea/protocol",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "description": "ALDEA protocol contracts on Base (pure Foundry): AlmaAnchorRegistry, AtlasRegistry and AldeaCouncilExecutor.",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "deploy:local": "forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast"
+  }
+}

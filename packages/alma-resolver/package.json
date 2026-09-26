@@ -1,0 +1,15 @@
+{
+  "name": "@aldea/alma-resolver",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "ALMA Resolver: ALMA documents, Sign in with ALMA sessions and Founder attestations (Hono + Drizzle).",
+
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts"
+  }
+}

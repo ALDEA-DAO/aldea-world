@@ -1,0 +1,15 @@
+{
+  "name": "@aldea/relay-worker",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Relay worker (the Midwife): executes Effectstream outbox write intents on Base.",
+
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts"
+  }
+}
