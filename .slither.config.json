@@ -1,0 +1,7 @@
+{
+  "filter_paths": "node_modules|codegen|test|script|lib",
+  "exclude_informational": true,
+  "exclude_low": false,
+  "exclude_optimization": true,
+  "fail_on": "high"
+}

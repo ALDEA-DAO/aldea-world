@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # anvil's default account 0 (public development key): `mud test` deploys the World on its own anvil with it
+  PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+
+jobs:
+  lint-typecheck:
+    name: Lint and typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: pnpm }
+      - uses: oven-sh/setup-bun@v2
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm -r typecheck
+
+  contracts:
+    name: Contracts (mud test + forge test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: pnpm }
+      - uses: foundry-rs/foundry-toolchain@v1
+        with: { version: stable }
+      - run: pnpm install --frozen-lockfile
+      - name: forge test (protocol)
+        working-directory: packages/protocol
+        run: forge test -vv
+      - name: mud test (World)
+        working-directory: packages/contracts
+        run: pnpm build && pnpm test
+      - name: Generated ABIs are up to date
+        run: |
+          pnpm --filter @aldea/shared abis
+          git diff --exit-code packages/shared/src/abis/generated
+
+  unit:
+    name: Unit tests (vitest / bun test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: pnpm }
+      - uses: oven-sh/setup-bun@v2
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @aldea/shared test
+      - run: pnpm --filter @aldea/alma-resolver test
+      - run: pnpm --filter @aldea/effectstream-node test
+
+  slither:
+    name: Slither (fails on high)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: pnpm }
+      - uses: foundry-rs/foundry-toolchain@v1
+        with: { version: stable }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install slither-analyzer
+      - run: pnpm install --frozen-lockfile
+      - name: Protocol contracts
+        working-directory: packages/protocol
+        run: slither . --config-file ../../.slither.config.json
+      - name: World systems
+        working-directory: packages/contracts
+        run: pnpm build && slither . --config-file ../../.slither.config.json
+
+  gitleaks:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Scan history
+        env:
+          GITLEAKS_VERSION: 8.30.1
+        run: |
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" | tar xz gitleaks
+          ./gitleaks detect --redact --no-banner --config .gitleaks.toml

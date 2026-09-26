@@ -1,0 +1,40 @@
+# CodeRabbit reviews every phase PR (docs/product-roadmap.md § Build Philosophy 6).
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: en-US
+reviews:
+  profile: assertive
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  auto_review:
+    enabled: true
+    drafts: false
+  path_filters:
+    - "!**/codegen/**"
+    - "!**/src/abis/generated/**"
+    - "!pnpm-lock.yaml"
+    - "!reference/**"
+  path_instructions:
+    - path: "packages/contracts/src/**/*.sol"
+      instructions: >-
+        MUD systems in the aldea namespace: always _msgSender(), never msg.sender; systems are stateless (only
+        constants and tables); custom errors are prefixed with the system name; shared structs live in src/types.
+        Check access control, the pause guard (FR-047) and the one-character-per-owner/soul invariants.
+    - path: "packages/protocol/src/**/*.sol"
+      instructions: >-
+        Protocol contracts that hold roles for every fork (AlmaAnchorRegistry, AtlasRegistry, AldeaCouncilExecutor).
+        Focus on access control, role handover to the Safe, input validation and event completeness.
+    - path: "packages/effectstream-node/src/**/*.ts"
+      instructions: >-
+        STFs must be deterministic (no Date, Math.random or I/O; writes only through World.resolve) and must never
+        issue SQL that can fail on chain data: a failed query halts the node (see SPIKE.md).
+    - path: "packages/alma-resolver/src/**/*.ts"
+      instructions: >-
+        Errors are application/problem+json with stable codes and no stack traces; validate every body with zod; no
+        PII is stored.
+    - path: "packages/client/src/**/*.{ts,tsx}"
+      instructions: >-
+        Accessibility first (keyboard, focus, aria-live, reduced motion, never color alone); copy comes from the
+        locale files; use the design tokens, not raw colors.
+chat:
+  auto_reply: true

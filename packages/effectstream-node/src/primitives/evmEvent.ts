@@ -45,6 +45,8 @@ export class AldeaEvmEventPrimitive extends Primitive<ConfigSyncProtocolType.EVM
     this.grammar = config.grammar;
   }
 
+  // The Primitive contract requires a generator even when there is nothing to yield
+  // eslint-disable-next-line require-yield
   override *getPayload(
     _: EffectstreamBlockNumber,
     data: FlattenSyncProtocolIOFor<ConfigSyncProtocolType.EVM_RPC_PARALLEL>,

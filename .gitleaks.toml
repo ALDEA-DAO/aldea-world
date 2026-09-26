@@ -1,0 +1,15 @@
+# gitleaks configuration: default rules plus allowlists for well-known development keys.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Anvil's public development accounts (no real funds) and woldr's committed demo .env"
+regexes = [
+  # anvil / hardhat default mnemonic accounts 0-3
+  '''ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80''',
+  '''59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d''',
+  '''5de4111afa1a4b94908f83536e1b8e8fd9289fb6d5d5ddbc4ad4e04b83da365a''',
+  '''7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6''',
+]
+# woldr's initial commit shipped packages/contracts/.env with the anvil key (removed in TASK-001)
+commits = ["1e911b2495b3f73a4b4b9b960f577ed2263f2865"]
