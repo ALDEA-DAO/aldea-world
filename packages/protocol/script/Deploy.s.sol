@@ -13,7 +13,7 @@ import { AldeaCouncilExecutor, IAtlasGovernable } from "../src/AldeaCouncilExecu
 ///      - RELAYER_ADDRESS (default: deployer): the only account allowed to queue Council results.
 ///      - COUNCIL_DELAY (default: 86400): 86,400 s in production, 600 s in staging.
 ///      - ORG_DOCS_CREATED_AT (default: 2026-09-27T00:00:00Z): createdAt of the org ALMA documents.
-///      Writes the addresses to packages/shared/src/deployments/<chainId>.json.
+///      - DEPLOYMENTS_DIR (default: packages/shared/src/deployments): where <chainId>.json is written.
 contract Deploy is Script {
   string internal constant ALMA_CONTEXT = "https://alma.adasouls.io/ns/v1";
 
@@ -122,7 +122,8 @@ contract Deploy is Script {
     vm.serializeString(root, "orgs", orgsJson);
     string memory json = vm.serializeString(root, "protocol", protocolJson);
 
-    string memory path = string.concat(vm.projectRoot(), "/../shared/src/deployments/", vm.toString(block.chainid), ".json");
+    string memory dir = vm.envOr("DEPLOYMENTS_DIR", string.concat(vm.projectRoot(), "/../shared/src/deployments"));
+    string memory path = string.concat(dir, "/", vm.toString(block.chainid), ".json");
     vm.writeJson(json, path);
     console2.log("Deployment written to", path);
   }

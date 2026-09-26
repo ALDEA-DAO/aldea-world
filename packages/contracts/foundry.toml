@@ -2,7 +2,6 @@
 solc = "0.8.24"
 via_ir = true
 ffi = false
-fuzz_runs = 256
 optimizer = true
 optimizer_runs = 3000
 verbosity = 2
@@ -13,6 +12,8 @@ allow_paths = [
   # pnpm symlinks to the project root's node_modules
   "../../node_modules",
   "./node_modules",
+  # the World tests deploy the real AlmaAnchorRegistry from the protocol package
+  "../protocol",
 ]
 extra_output_files = ["abi", "evm.bytecode"]
 fs_permissions = [{ access = "read", path = "./" }]
@@ -24,6 +25,14 @@ eth_rpc_url = "https://sepolia.base.org"
 
 [profile.base]
 eth_rpc_url = "https://mainnet.base.org"
+
+[fuzz]
+runs = 256
+
+[invariant]
+runs = 64
+depth = 40
+fail_on_revert = false
 
 [lint]
 # forge lint floods the build output with notes about MUD-generated code

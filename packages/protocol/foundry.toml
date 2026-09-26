@@ -10,7 +10,10 @@ out = "out"
 libs = ["node_modules"]
 allow_paths = ["../../node_modules"]
 # Deploy.s.sol writes the addresses to packages/shared/src/deployments/<chainId>.json
-fs_permissions = [{ access = "read-write", path = "../shared/src/deployments" }]
+fs_permissions = [
+  { access = "read-write", path = "../shared/src/deployments" },
+  { access = "read-write", path = "./cache" },
+]
 
 [profile.base-sepolia]
 eth_rpc_url = "https://sepolia.base.org"
