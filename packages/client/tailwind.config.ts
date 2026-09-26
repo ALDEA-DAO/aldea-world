@@ -1,0 +1,68 @@
+import type { Config } from "tailwindcss";
+
+export default {
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  darkMode: ["selector", '[data-theme="dark"]'],
+  theme: {
+    extend: {
+      colors: {
+        background: "var(--color-background)",
+        surface: { DEFAULT: "var(--color-surface)", raised: "var(--color-surface-raised)" },
+        text: "var(--color-text)",
+        muted: "var(--color-text-muted)",
+        border: { DEFAULT: "var(--color-border)", strong: "var(--color-border-strong)" },
+        primary: { DEFAULT: "var(--color-primary)", hover: "var(--color-primary-hover)" },
+        "on-primary": "var(--color-on-primary)",
+        secondary: "var(--color-secondary)",
+        "on-secondary": "var(--color-on-secondary)",
+        accent: "var(--color-accent)",
+        "on-accent": "var(--color-on-accent)",
+        wood: "var(--color-wood)",
+        "on-wood": "var(--color-on-wood)",
+        success: "var(--color-success)",
+        warning: "var(--color-warning)",
+        error: "var(--color-error)",
+        info: "var(--color-info)",
+        focus: "var(--color-focus)",
+        tribe: {
+          amazonians: "var(--tribe-amazonians)",
+          himalayans: "var(--tribe-himalayans)",
+          poseidons: "var(--tribe-poseidons)",
+          raes: "var(--tribe-raes)",
+          tropicals: "var(--tribe-tropicals)",
+        },
+        "on-tribe": "var(--on-tribe)",
+      },
+      fontFamily: {
+        heading: ["Alegreya", "Georgia", "serif"],
+        display: ["Alegreya SC", "Georgia", "serif"],
+        body: ["Alegreya Sans", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+      },
+      fontSize: {
+        xs: ["0.75rem", { lineHeight: "1.45" }],
+        sm: ["0.875rem", { lineHeight: "1.5" }],
+        base: ["1rem", { lineHeight: "1.55" }],
+        lg: ["1.125rem", { lineHeight: "1.55" }],
+        xl: ["1.25rem", { lineHeight: "1.4" }],
+        "2xl": ["1.5rem", { lineHeight: "1.25" }],
+        "3xl": ["1.875rem", { lineHeight: "1.15" }],
+        "4xl": ["2.25rem", { lineHeight: "1.15" }],
+        "5xl": ["3rem", { lineHeight: "1.15" }],
+      },
+      spacing: {
+        "hud-top": "var(--hud-top)",
+        "hud-bottom": "var(--hud-bottom)",
+        panel: "var(--panel-width)",
+      },
+      borderRadius: { sm: "4px", md: "8px", lg: "12px" },
+      boxShadow: { paper: "var(--shadow-paper)", raised: "var(--shadow-raised)" },
+      transitionDuration: { fast: "120ms", base: "200ms", slow: "320ms", scene: "600ms" },
+      transitionTimingFunction: {
+        "out-soft": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+        camera: "cubic-bezier(0.65, 0, 0.35, 1)",
+      },
+      screens: { sm: "640px", md: "768px", lg: "1024px", xl: "1280px", "2xl": "1536px" },
+    },
+  },
+} satisfies Config;
