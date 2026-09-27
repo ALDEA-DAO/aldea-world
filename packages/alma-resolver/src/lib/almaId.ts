@@ -5,9 +5,8 @@ import { ProblemError } from "./problem";
  * Validates ALMA identifiers with the rules AlmaAnchorRegistry enforces on-chain (`alma:main:<human|org|agent>:`
  * + `[a-z0-9-]{1,64}`).
  *
- * TODO(open-question-9): switch to @adasouls/alma-core once it is published. Today it is private (GitHub Packages)
- * and its subject type is `organization` while ALDEA's contracts and PRD use `org` (`alma:main:org:tribu-…`), so
- * its `parseIdentifier` would reject every tribe id. See docs/decisions/0004-alma-core.md.
+ * TODO(TASK-108): switch to @adasouls/alma-core's parseIdentifier once the release that accepts `org` is on npm
+ * (decision closed in docs/decisions/0004-alma-core.md; implemented in AdaSouls/alma).
  */
 export function assertAlmaId(id: string, type?: AlmaSubjectType): string {
   if (!isAlmaId(id, type)) {
