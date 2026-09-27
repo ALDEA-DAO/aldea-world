@@ -7,5 +7,5 @@ export default defineConfig({
   out: "./drizzle",
   schemaFilter: ["alma"],
   migrations: { schema: "alma" },
-  dbCredentials: { url: process.env.DATABASE_URL ?? "postgres://aldea:aldea@localhost:5432/aldea" },
+  dbCredentials: { url: process.env.DATABASE_URL ?? "postgres://aldea:aldea@localhost:5442/aldea" },
 });

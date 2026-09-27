@@ -73,10 +73,17 @@ Other relevant published packages: `@effectstream/batcher-sdk`, `@effectstream/f
 
 ### Other findings that change the PRD
 
-1. **Deterministic main clock.** The NTP main network maps parallel-chain blocks by time. `startTime` must be stable
-   across restarts or the block-height ↔ time mapping changes. `src/config.ts` recovers it from
-   `effectstream.sync_protocol_pagination` on restart (the pattern the official templates use) and only uses
-   `EFFECTSTREAM_GENESIS_MS` / `Date.now()` on a fresh database.
+1. **Immutable config.** On the first run Effectstream stores the NTP `startTime` and each chain's
+   `startBlockHeight` in `effectstream.sync_protocol_config_snapshot`, and aborts startup if they ever change.
+   `src/config.ts` reuses the saved `startTime` and only uses `EFFECTSTREAM_GENESIS_MS` / `Date.now()` on a fresh
+   database. Locally, anvil restarts from block 0, so the local Postgres is in memory (`tmpfs`) and every
+   `pnpm dev` starts clean.
+6. **pg_ivm.** The engine requires the `pg_ivm` extension (PGlite bundles it) and aborts without it unless
+   `ALLOW_NO_PG_IVM=true` (plain views, slower). The official `postgres:16` image lacks it, so local `pnpm dev` opts
+   in; **production Postgres (Neon or Fly) must provide pg_ivm** — check before choosing the provider.
+7. **Silent startup failures.** Both aborts above leave the process alive without logging the cause (the runtime
+   keeps the error internally; a `try/catch` around `start()` does not see it). `src/index.ts` has a startup
+   watchdog: if `/health` is not up within `STARTUP_TIMEOUT_MS` (60 s) it prints what to check and exits 1.
 2. **An SQL error inside an STF kills the node silently.** The runtime catches STF exceptions but does not roll back to
    a savepoint, so the block transaction stays aborted (`25P02 current transaction is aborted`) and the node stops
    processing without logging the cause. We hit it with a malformed query. **Rule for every STF: never issue SQL that

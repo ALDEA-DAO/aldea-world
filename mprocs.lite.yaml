@@ -1,4 +1,4 @@
-# pnpm dev:lite — the same stack without Docker: anvil from Foundry and embedded PGlite servers (one per database).
+# pnpm dev:lite — the same stack without containers: anvil from Foundry and embedded PGlite servers (one per database).
 # Data is in memory and resets on every start. Requires Foundry, pnpm and Bun.
 procs:
   anvil:

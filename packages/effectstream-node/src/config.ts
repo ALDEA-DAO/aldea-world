@@ -10,18 +10,17 @@ const systems = env.systems();
 const MAIN_SYNC_PROTOCOL = "mainNtp";
 
 /**
- * The NTP main clock maps Base blocks by time, so its start must not move between restarts. On an existing database
- * it is recovered from the first pagination page (the pattern of the official templates); on a fresh one it comes
- * from EFFECTSTREAM_GENESIS_MS or the current time.
+ * The NTP main clock maps Base blocks by time, and Effectstream stores `startTime` (and each chain's
+ * `startBlockHeight`) as immutable config on the first run: any later change makes startup abort. On an existing
+ * database we reuse the saved value; on a fresh one it comes from EFFECTSTREAM_GENESIS_MS or the current time.
  */
 async function mainClockStart(): Promise<number> {
   try {
     const { rows } = await getConnection().query(
-      `SELECT page, page_number FROM effectstream.sync_protocol_pagination WHERE protocol_name = $1 ORDER BY page_number ASC LIMIT 1`,
+      `SELECT immutable_config->>'startTime' AS start_time FROM effectstream.sync_protocol_config_snapshot WHERE protocol_name = $1`,
       [MAIN_SYNC_PROTOCOL],
     );
-    const first = rows[0];
-    if (first) return Number(first.page.root) - Number(first.page_number) * 1000;
+    if (rows[0]?.start_time) return Number(rows[0].start_time);
   } catch {
     // fresh database: the effectstream schema does not exist yet
   }
