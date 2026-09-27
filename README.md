@@ -1,9 +1,12 @@
 # ALDEA World
 
+**Born with a soul. Fork the world.**
+
 **The multichain autonomous world where every character is born with a soul — and the open template for any
 community or brand to launch its own.**
 
-Players sign in with a passkey (no wallet, no gas), pick one of 11 classes at the Town Center and are born into one of
+Players sign in with **Sign in with ALMA** — a passkey, an email code or a wallet they already have; no passwords,
+no wallet to install and no gas — pick one of 11 classes at the Town Center and are born into one of
 5 tribes through a fair on-chain draw. At that moment their human **ALMA** (a portable identity) is anchored on Base
 and joins their tribe's ALMA organization. The **Atlas** registry lists every world, version, fork and client, and
 [aldea.world](https://aldea.world) serves exactly the version the community ratified as official.
@@ -35,7 +38,11 @@ flowchart LR
   `AtlasRegistry` records worlds, versions and clients; `AldeaCouncilExecutor` applies the community's Genesis Charter.
 - **Effectstream** folds Base (and later Cardano) events into a deterministic read model, serves the read API and
   pushes real-time events over MQTT.
-- **ALMA Resolver** stores ALMA documents and issues *Sign in with ALMA* sessions.
+- **ALMA Auth** (inside the ALMA Resolver) is the OpenID Connect provider behind *Sign in with ALMA*: the soul is the
+  user, and passkeys, email, social accounts and wallets on every chain are keys linked to it. Turnkey holds the keys of
+  players without a wallet; a Coinbase Smart Wallet on Base owns each character. See
+  [ADR 0006](docs/decisions/0006-alma-auth-and-wallets.md).
+- **ALMA Resolver** stores ALMA documents and links, and signs Founder attestations.
 - **Relay worker** executes the read model's write intents (for example, completing births).
 
 The full technical specification is in [`docs/prd.md`](docs/prd.md).

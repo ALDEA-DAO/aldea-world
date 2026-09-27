@@ -22,7 +22,7 @@ applyTheme(getThemePreference());
 const root = document.getElementById("root");
 if (!root) throw new Error("Missing #root element");
 
-// Providers grow in Phase 1: PrivyProvider → SmartWalletsProvider → MUDProvider → router.
+// Providers grow in Phase 1: AlmaAuthProvider (OIDC + Turnkey) → SmartAccountProvider → MUDProvider → router.
 createRoot(root).render(
   <StrictMode>
     <ToastProvider>
