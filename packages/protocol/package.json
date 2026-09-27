@@ -13,5 +13,10 @@
   },
   "devDependencies": {
     "forge-std": "github:foundry-rs/forge-std#ba4733c33497dd0c0983dcc033d7645576cc46e5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALDEA-DAO/aldea-world.git",
+    "directory": "packages/protocol"
   }
 }

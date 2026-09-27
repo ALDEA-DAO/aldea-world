@@ -33,5 +33,10 @@
     "solhint": "^3.3.7",
     "solhint-config-mud": "2.2.23",
     "solhint-plugin-mud": "2.2.23"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALDEA-DAO/aldea-world.git",
+    "directory": "packages/contracts"
   }
 }

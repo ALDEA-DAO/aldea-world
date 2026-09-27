@@ -1,0 +1,10 @@
+# Security updates only during the MVP (PRD § Security Considerations > Supply chain).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 0
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }

@@ -39,5 +39,13 @@
     "neverBuiltDependencies": [
       "better-sqlite3"
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALDEA-DAO/aldea-world.git"
+  },
+  "homepage": "https://aldea.world",
+  "bugs": {
+    "url": "https://github.com/ALDEA-DAO/aldea-world/issues"
   }
 }

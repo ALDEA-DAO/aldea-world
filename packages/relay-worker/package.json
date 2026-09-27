@@ -13,5 +13,10 @@
   },
   "devDependencies": {
     "tsx": "^4.23.15"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALDEA-DAO/aldea-world.git",
+    "directory": "packages/relay-worker"
   }
 }

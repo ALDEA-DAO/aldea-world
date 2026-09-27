@@ -5,9 +5,16 @@
   "license": "MIT",
   "type": "module",
   "description": "aldea: the ALDEA World fork kit CLI.",
-  "bin": { "aldea": "./src/index.ts" },
+  "bin": {
+    "aldea": "./src/index.ts"
+  },
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALDEA-DAO/aldea-world.git",
+    "directory": "packages/cli"
   }
 }
