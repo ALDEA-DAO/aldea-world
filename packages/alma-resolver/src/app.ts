@@ -4,6 +4,7 @@ import { requestId } from "hono/request-id";
 import { captureError } from "./lib/sentry";
 import { logger } from "./lib/logger";
 import { problemResponse, toProblem } from "./lib/problem";
+import { createAaRoutes, type AaRoutesDeps } from "./routes/aa";
 
 export interface AppDeps {
   /** Resolves when the database answers `SELECT 1`. */
@@ -11,6 +12,8 @@ export interface AppDeps {
   /** Latest Base block, or throws when the RPC is unavailable. */
   baseHead: () => Promise<bigint>;
   corsOrigins: string[];
+  /** Bundler and paymaster proxy; absent when no CDP endpoint is configured (local development). */
+  aa?: AaRoutesDeps;
 }
 
 const withTimeout = <T>(p: Promise<T>, ms: number) =>
@@ -36,6 +39,8 @@ export function createApp(deps: AppDeps) {
       dbOk ? 200 : 503,
     );
   });
+
+  if (deps.aa) app.route("/v1/aa", createAaRoutes(deps.aa));
 
   app.notFound((c) => problemResponse(c, { status: 404, code: "not_found", title: "Not found" }));
   app.onError((err, c) => {
