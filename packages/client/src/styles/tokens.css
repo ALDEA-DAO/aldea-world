@@ -1,5 +1,5 @@
 /*
- * ALDEA World design tokens (docs/prd.md § Design System). Values are validated for WCAG AA contrast.
+ * ALDEA World design tokens. Values are validated for WCAG AA contrast.
  * Light is the default; dark applies with [data-theme="dark"] or, when the user has not chosen a theme,
  * with the system preference. The @media block duplicates the [data-theme="dark"] values on purpose.
  */

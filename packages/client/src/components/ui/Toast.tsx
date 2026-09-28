@@ -20,7 +20,7 @@ const ToastContext = createContext<ToastApi | null>(null);
 const icons = { info: Info, success: CheckCircle2, warning: AlertTriangle, error: XCircle } as const;
 const iconColor = { info: "text-info", success: "text-success", warning: "text-warning", error: "text-error" } as const;
 
-/** Toasts at the bottom center, 4 s (errors stay until dismissed), announced politely (PRD § Design System > Toast). */
+/** Toasts at the bottom center, 4 s (errors stay until dismissed), announced politely. */
 export function ToastProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [toasts, setToasts] = useState<ToastItem[]>([]);

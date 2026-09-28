@@ -10,7 +10,7 @@ const links = [
   { to: "/ui", key: "nav.designKit" },
 ] as const;
 
-/** Temporary shell until the HUD (TASK-037): top bar with the main routes. */
+/** Temporary shell until the in-world HUD: top bar with the main routes. */
 export function Layout() {
   const { t } = useTranslation();
   return (

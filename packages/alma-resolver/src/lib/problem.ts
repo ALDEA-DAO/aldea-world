@@ -4,7 +4,7 @@ import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { ZodError } from "zod";
 
 /**
- * RFC 9457 problem details (docs/prd.md § API Design Philosophy): `application/problem+json` with
+ * RFC 9457 problem details: `application/problem+json` with
  * `{ type, title, status, detail, code }`, where `code` is a stable snake_case string. Never includes stack traces.
  */
 export interface Problem {

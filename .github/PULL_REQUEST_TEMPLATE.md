@@ -1,6 +1,6 @@
 ## What and why
 
-<!-- What does this change and why? Link the issue or roadmap task (e.g. TASK-017). -->
+<!-- What does this change and why? Link the issue it solves. -->
 
 ## How it was tested
 
@@ -10,5 +10,5 @@
 
 - [ ] Tests added or updated for the change
 - [ ] No secrets, keys or `.env` files committed
-- [ ] Docs (PRD, README, ADR or runbook) updated when behavior or architecture changed
+- [ ] Docs (README, package READMEs or code comments) updated when behavior or architecture changed
 - [ ] Accessibility checked for UI changes (keyboard, focus, reduced motion)

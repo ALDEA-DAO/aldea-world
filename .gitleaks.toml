@@ -11,5 +11,5 @@ regexes = [
   '''5de4111afa1a4b94908f83536e1b8e8fd9289fb6d5d5ddbc4ad4e04b83da365a''',
   '''7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6''',
 ]
-# woldr's initial commit shipped packages/contracts/.env with the anvil key (removed in TASK-001)
+# woldr's initial commit shipped packages/contracts/.env with the anvil key (removed when the monorepo was created)
 commits = ["1e911b2495b3f73a4b4b9b960f577ed2263f2865"]

@@ -1,6 +1,6 @@
 import { defineConfig } from "drizzle-kit";
 
-// drizzle/0000_init.sql is written by hand from the PRD; use `drizzle-kit check` or `generate` for later migrations.
+// drizzle/0000_init.sql is written by hand; use `drizzle-kit check` or `generate` for later migrations.
 export default defineConfig({
   dialect: "postgresql",
   schema: "./src/db/schema.ts",

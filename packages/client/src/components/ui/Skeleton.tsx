@@ -11,7 +11,7 @@ const shapes = {
   card: "h-[200px] w-[160px] rounded-lg",
 } as const;
 
-/** Loading placeholder with a 1.2 s shimmer, disabled with prefers-reduced-motion (PRD § Design System > Skeleton). */
+/** Loading placeholder with a 1.2 s shimmer, disabled with prefers-reduced-motion. */
 export function Skeleton({ variant = "line", className }: SkeletonProps) {
   return (
     <div

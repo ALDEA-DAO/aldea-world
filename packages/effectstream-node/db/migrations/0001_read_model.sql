@@ -1,4 +1,4 @@
--- Effectstream read model (docs/prd.md § Data Model 3.5 and § Indexes).
+-- Effectstream read model: births, visits, souls, Founders, the Atlas, activity, $ALDEA holdings, the Council and the relay outbox.
 -- Written only by the STFs, deterministically; relay_attempts is the only exception (relay worker).
 
 CREATE TABLE births (

@@ -13,7 +13,7 @@ export interface PanelProps {
   className?: string;
 }
 
-/** Parchment panel for building interiors (PRD § Design System > Panel). */
+/** Parchment panel for building interiors */
 export function Panel({ title, children, onClose, variant = "side", className }: PanelProps) {
   const { t } = useTranslation();
   const titleId = useId();

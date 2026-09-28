@@ -14,7 +14,7 @@ export interface TabsProps {
   label: string;
 }
 
-/** ARIA tabs pattern with arrow-key, Home and End navigation (PRD § Design System > Tabs). */
+/** ARIA tabs pattern with arrow-key, Home and End navigation. */
 export function Tabs({ items, value, onChange, label }: TabsProps) {
   const baseId = useId();
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);

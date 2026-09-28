@@ -6,7 +6,7 @@ import { genEvent, registerEvents } from "@effectstream/event-client";
  * (a subscriber that then calls the REST API sees the matching rows).
  *
  * Effectstream builds the MQTT topic as `app/<signatureHash>/blockHeight/<n>/<indexedField>/<value>…`, so the
- * PRD's logical topics map onto indexed fields: `aldea/v1/births/{characterId}` is BirthUpdated filtered by
+ * logical topics map onto indexed fields: `aldea/v1/births/{characterId}` is BirthUpdated filtered by
  * characterId. Clients subscribe with @effectstream/event-client's EventManager (see SPIKE.md).
  */
 export const AldeaEvents = registerEvents({

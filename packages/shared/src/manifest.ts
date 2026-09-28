@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const hex32 = z.string().regex(/^0x[0-9a-fA-F]{64}$/, "expected a 0x-prefixed bytes32");
 
-/** Client manifest served at /.well-known/aldea-world.json (PRD § Data Model 3.7). */
+/** Client manifest served at /.well-known/aldea-world.json by every client registered in the Atlas. */
 export const clientManifestSchema = z.object({
   schema: z.literal("aldea-world-client/v1"),
   worldId: hex32,

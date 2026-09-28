@@ -1,4 +1,4 @@
-# CodeRabbit reviews every phase PR (docs/product-roadmap.md § Build Philosophy 6).
+# CodeRabbit reviews every pull request.
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: en-US
 reviews:

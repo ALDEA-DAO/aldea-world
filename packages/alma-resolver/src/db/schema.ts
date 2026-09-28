@@ -16,7 +16,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 /**
- * Drizzle mirror of drizzle/0000_init.sql (docs/prd.md § Data Model 3.4 and § Indexes). The SQL file is the source of
+ * Drizzle mirror of drizzle/0000_init.sql. The SQL file is the source of
  * truth for migrations; keep both in sync. CHECK constraints live in the SQL only.
  */
 const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => "bytea" });

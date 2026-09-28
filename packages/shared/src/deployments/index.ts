@@ -32,7 +32,7 @@ export const deploymentSchema = z.object({
 export type Deployment = z.infer<typeof deploymentSchema>;
 
 // Committed deployments (staging and production) are registered here once they exist:
-// 84532.json in TASK-032 and 8453.json at the mainnet deploy.
+// 84532.json with the staging deploy and 8453.json with the mainnet deploy.
 const committed: Record<number, unknown> = {};
 
 /**

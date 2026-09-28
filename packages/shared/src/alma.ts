@@ -1,7 +1,7 @@
 import canonicalize from "canonicalize";
 import { bytesToHex, getAddress, keccak256, toBytes, type Address, type Hex } from "viem";
 
-/** ALMA document types (PRD § Data Model 3.6). */
+/** ALMA document types. */
 
 export type AlmaSubjectType = "human" | "org" | "agent";
 

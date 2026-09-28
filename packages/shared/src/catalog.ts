@@ -1,7 +1,7 @@
 import { keccak256, toBytes, type Hex } from "viem";
 
 /**
- * Canonical catalogs (PRD § Data Model 3.2). Array order is the on-chain enum order in
+ * Canonical catalogs. Array order is the on-chain enum order in
  * packages/contracts/mud.config.ts: never reorder, only append.
  */
 
@@ -76,7 +76,7 @@ export const tribes: readonly TribeInfo[] = [
   { index: 4, enum: "Tropicals", slug: "tropicales", name: { es: "Tropicales", en: "Tropicals" }, biome: { es: "Trópico y coral", en: "Tropics and coral" }, icon: "coral", almaOrgId: "alma:main:org:tribu-tropicales", colorToken: "--tribe-tropicals" },
 ];
 
-/** The world's own ALMA organizations (PRD § 3.2). */
+/** The world's own ALMA organizations. */
 export const WORLD_ORGS = {
   aldeaWorld: "alma:main:org:aldea-world",
   aldeaDao: "alma:main:org:aldea-dao",
@@ -146,7 +146,7 @@ export const buildings: readonly BuildingInfo[] = [
   },
 ];
 
-// TODO(founder): set the Genesis Charter opening date (PRD § Open Questions 4); the Council panel reads it.
+// TODO(founder): set the Genesis Charter opening date ; the Council panel reads it.
 export const COUNCIL_OPENS_AT: string | null = null;
 
 export const classByIndex = (i: number): CharacterClassInfo | undefined => classes[i];

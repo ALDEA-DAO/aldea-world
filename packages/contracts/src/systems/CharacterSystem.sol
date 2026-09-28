@@ -84,7 +84,7 @@ contract CharacterSystem is System {
       return;
     }
 
-    // By design (FR-009, PRD § Out of Scope "VRF for the draw"): nobody knows blockhash(targetBlock) when the birth is
+    // By design (no VRF for a cosmetic draw): nobody knows blockhash(targetBlock) when the birth is
     // requested, which is enough for a cosmetic assignment. Uniformity is tested in Invariants.t.sol.
     // slither-disable-next-line weak-prng
     Tribe tribe = Tribe(uint8(uint256(keccak256(abi.encode(seed, characterId, c.almaIdHash))) % TRIBE_COUNT));

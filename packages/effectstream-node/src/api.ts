@@ -2,7 +2,7 @@ import type { StartConfigApiRouter } from "@effectstream/node-sdk/runtime";
 
 const BIRTH_STATUS = new Set(["gestating", "born"]);
 
-/** Custom read API (docs/prd.md § 4.6), next to the node's default endpoints. */
+/** Custom read API, next to the node's default endpoints (/health, /block-heights). */
 export const apiRouter: StartConfigApiRouter = async (server, dbConn) => {
   server.get<{ Params: { characterId: string } }>("/api/v1/births/:characterId", async (request, reply) => {
     const id = Number(request.params.characterId);

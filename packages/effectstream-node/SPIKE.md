@@ -1,4 +1,4 @@
-# Effectstream spike (TASK-008 and TASK-009)
+# Effectstream spike
 
 - **Date:** 2026-09-27
 - **Effectstream:** 0.200.6 (npm), source at `effectstream/effectstream@817d64f`
@@ -21,14 +21,14 @@ Historic events are backfilled from `START_BLOCK` on a fresh database, and a liv
 
 Plan B (a `viem.watchContractEvent` watcher posting to EffectstreamL2) is **not needed**.
 
-## TASK-008 findings
+## Findings: packages, primitives and sync
 
 ### Packages
 
 All packages are published under `@effectstream/*` at the same version (0.200.6). The umbrella
 **`@effectstream/node-sdk`** re-exports everything a node needs through subpaths, so it is the only dependency:
 
-| Subpath | Replaces the PRD's guess | Used for |
+| Subpath | Instead of | Used for |
 |---|---|---|
 | `@effectstream/node-sdk/config` | `@effectstream/config` | `ConfigBuilder`, `ConfigNetworkType`, `ConfigSyncProtocolType`, `getEvmEvent`, `withEffectstreamStaticConfig` |
 | `@effectstream/node-sdk/sm` | `@effectstream/sm` | `Stm`, `Primitive` (base class for custom primitives) |
@@ -71,7 +71,7 @@ Other relevant published packages: `@effectstream/batcher-sdk`, `@effectstream/f
   `packages/shared/scripts/merge-world.ts` reads the addresses from the World's `world:Systems` table and writes them
   to `packages/shared/src/deployments/<chainId>.json`; the node reads them from there (or `SYSTEM_ADDRESSES_JSON`).
 
-### Other findings that change the PRD
+### Other findings
 
 1. **Immutable config.** On the first run Effectstream stores the NTP `startTime` and each chain's
    `startBlockHeight` in `effectstream.sync_protocol_config_snapshot`, and aborts startup if they ever change.
@@ -99,7 +99,7 @@ Other relevant published packages: `@effectstream/batcher-sdk`, `@effectstream/f
    placeholders so we do not need pgtyped codegen against a live database (pgtyped locations are inclusive; covered by
    `test/sql.test.ts`).
 
-## TASK-009 findings
+## Findings: MQTT, batcher and dynamic primitives
 
 ### MQTT from the STF: **native, no gateway needed**
 
@@ -116,7 +116,7 @@ Other relevant published packages: `@effectstream/batcher-sdk`, `@effectstream/f
   ```
 
 - **Topic format is fixed by Effectstream:** `app/<eventSignatureHash>/blockHeight/<n>/<indexedField>/<value>…`. The
-  PRD's literal topics (`aldea/v1/births/{characterId}`) cannot be used as-is; they become events with indexed fields
+  originally planned literal topics (`aldea/v1/births/{characterId}`) cannot be used as-is; they become events with indexed fields
   (`BirthUpdated` filtered by `characterId`). Clients subscribe through `EventManager.Instance.subscribe({ topic,
   filter })`. Messages are not retained: widgets read the current value from REST on connect and then follow MQTT.
 - The `aedes` + `mqtt.js` gateway from § 4.6 is **not needed**.
@@ -145,7 +145,7 @@ Only a naming helper exists (`generateDynamicPrimitiveName`); there is no API to
 
 ```bash
 anvil --block-time 2
-# deploy protocol + World and export addresses (TASK-011 wraps this in scripts/dev-deploy.sh)
+# deploy protocol + World and export addresses (scripts/dev-deploy.sh wraps this)
 bun node_modules/@effectstream/node-sdk/../db/scripts/start-pglite.ts --port 5433   # or a real Postgres
 cd packages/effectstream-node && CHAIN_ID=31337 START_BLOCK=<world block> DB_PORT=5433 bun src/index.ts
 bun scripts/mqtt-probe.ts                                                           # in another terminal

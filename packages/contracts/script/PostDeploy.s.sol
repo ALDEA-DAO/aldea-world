@@ -9,7 +9,7 @@ import { ROOT_NAMESPACE_ID } from "@latticexyz/world/src/constants.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { BuildingKind, Tribe } from "../src/codegen/common.sol";
 
-/// @notice Seeds Config, the 5 tribes and the 6 buildings (PRD § 4.1 PostDeploy and § 3.2), then hands the
+/// @notice Seeds Config, the 5 tribes and the 6 buildings (see packages/shared/src/catalog.ts), then hands the
 ///         `aldea` and root namespaces to the Safe.
 /// @dev `mud deploy` and `mud test` run this script automatically. Environment:
 ///      - PRIVATE_KEY (required)

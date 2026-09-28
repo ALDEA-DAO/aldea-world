@@ -12,7 +12,7 @@ import {
 } from "./screens/screens";
 
 /**
- * Hash routes (PRD § UI/UX Requirements): IPFS gateways do not rewrite paths, so the same build works on
+ * Hash routes: IPFS gateways do not rewrite paths, so the same build works on
  * aldea.world, any gateway and a fork's domain. Screens are placeholders until their phase lands.
  */
 export const router = createHashRouter([

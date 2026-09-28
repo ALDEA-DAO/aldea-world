@@ -8,7 +8,7 @@ import { Skeleton } from "../../components/ui/Skeleton";
 import { Tabs } from "../../components/ui/Tabs";
 import { useToast } from "../../components/ui/Toast";
 
-/** Test page for the base components (TASK-013 verification): #/ui */
+/** Test page for the base components: #/ui */
 export function DesignKitScreen() {
   const { t, i18n } = useTranslation();
   const toast = useToast();

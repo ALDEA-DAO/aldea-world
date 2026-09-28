@@ -13,7 +13,7 @@ export interface DialogProps {
 
 /**
  * Modal dialog on top of the native <dialog>: showModal() gives the focus trap, Esc to close and the inert
- * background; the previously focused element gets focus back on close (PRD § Design System > Dialog).
+ * background; the previously focused element gets focus back on close.
  */
 export function Dialog({ open, onClose, title, children, size = "sm" }: DialogProps) {
   const { t } = useTranslation();

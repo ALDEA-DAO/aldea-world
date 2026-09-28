@@ -27,8 +27,9 @@ worlds.json
 playwright-report
 test-results
 
-# docs bundle (the extracted docs are committed)
-docs/*.zip
+# internal product docs (vision, PRD, roadmap, go-to-market, decisions) are kept locally, not published
+/docs/
+/vision.json
 
 # local anvil deployments change on every run
 packages/shared/src/deployments/31337.json

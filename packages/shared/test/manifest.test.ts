@@ -14,7 +14,7 @@ describe("clientManifestSchema", () => {
     locale: ["es", "en"],
   };
 
-  it("accepts the PRD example shape", () => {
+  it("accepts a complete manifest", () => {
     expect(clientManifestSchema.parse(manifest)).toEqual(manifest);
   });
 

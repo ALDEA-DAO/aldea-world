@@ -1,5 +1,5 @@
 /**
- * Spike probe (TASK-009): subscribes to every app event on the node's MQTT broker and prints what arrives.
+ * Spike probe: subscribes to every app event on the node's MQTT broker and prints what arrives.
  *   bun scripts/mqtt-probe.ts [mqtt://127.0.0.1:8883]
  */
 import mqtt from "mqtt";

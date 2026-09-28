@@ -24,7 +24,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   ref?: Ref<HTMLButtonElement>;
 }
 
-/** PRD § Design System > Component Specifications > Button. */
+/** Primary (ember), secondary (wood), ghost and danger buttons in three sizes, with a 44 px touch target. */
 export function Button({ variant = "primary", size = "md", className, disabled, type = "button", ...props }: ButtonProps) {
   return (
     <button

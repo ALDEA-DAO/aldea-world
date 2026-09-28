@@ -5,8 +5,8 @@ looks like.
 
 ## Before you start
 
-- Read the [README](README.md) and, for anything non-trivial, the relevant sections of [`docs/prd.md`](docs/prd.md).
-  The PRD is the specification; the [roadmap](docs/product-roadmap.md) says what is being built now.
+- Read the [README](README.md) and the code comments of the package you want to change; they explain the design
+  decisions behind it.
 - For bugs, open an issue with steps to reproduce. For features or design changes, open an issue to discuss first:
   some decisions belong to the ALDEA DAO community (see [GOVERNANCE.md](GOVERNANCE.md)).
 - Security issues: do **not** open a public issue — follow [SECURITY.md](SECURITY.md).

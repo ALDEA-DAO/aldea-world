@@ -36,7 +36,7 @@ const base = defineChain({
 });
 
 /**
- * Networks and primitives (docs/prd.md § 4.6). Phase 0 syncs CharacterBirthRequested; the remaining World,
+ * Networks and primitives. Phase 0 syncs CharacterBirthRequested; the remaining World,
  * protocol and Cardano primitives are added with their STFs in later phases.
  */
 export const config = new ConfigBuilder()

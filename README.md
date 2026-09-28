@@ -16,7 +16,7 @@ ALDEA World is owned and governed by [ALDEA DAO](https://aldea-dao.org). It is b
 brand can use for its own world.
 
 > **Status:** pre-alpha. Phase 0 (foundation) is complete: contracts, local stack, services skeletons and CI.
-> See the [roadmap](docs/product-roadmap.md).
+> Next: Sign in with ALMA and the first birth on Base Sepolia (Phase 1).
 
 ## How it fits together
 
@@ -40,19 +40,19 @@ flowchart LR
   pushes real-time events over MQTT.
 - **ALMA Auth** (inside the ALMA Resolver) is the OpenID Connect provider behind *Sign in with ALMA*: the soul is the
   user, and passkeys, email, social accounts and wallets on every chain are keys linked to it. Turnkey holds the keys of
-  players without a wallet; a Coinbase Smart Wallet on Base owns each character. See
-  [ADR 0006](docs/decisions/0006-alma-auth-and-wallets.md).
+  players without a wallet; a Coinbase Smart Wallet on Base owns each character.
 - **ALMA Resolver** stores ALMA documents and links, and signs Founder attestations.
 - **Relay worker** executes the read model's write intents (for example, completing births).
 
-The full technical specification is in [`docs/prd.md`](docs/prd.md).
+Each package documents its own design in code comments; the Effectstream integration notes are in
+[`packages/effectstream-node/SPIKE.md`](packages/effectstream-node/SPIKE.md).
 
 ## Repository layout
 
 | Path | What it is |
 |---|---|
 | `packages/contracts` | MUD World (`aldea` namespace): Character, Movement, Founder and Admin systems |
-| `packages/protocol` | Protocol contracts (Foundry): ALMA registry, Atlas, Council executor — moving to `AdaSouls/protocol`, see [ADR 0005](docs/decisions/0005-repository-split.md) |
+| `packages/protocol` | Protocol contracts (Foundry): ALMA registry, Atlas, Council executor — the shared registries move to `AdaSouls/protocol` (the world stays with ALDEA DAO; the reusable rails live under AdaSouls) |
 | `packages/shared` | Shared TypeScript: catalogs, ALMA helpers, EIP-712 types, ABIs, deployments |
 | `packages/client` | Web client (Vite, React, Tailwind, Phaser) |
 | `packages/alma-resolver` | ALMA Resolver (Hono, Drizzle, Postgres) |
@@ -60,7 +60,6 @@ The full technical specification is in [`docs/prd.md`](docs/prd.md).
 | `packages/relay-worker` | Relay worker ("the Midwife") |
 | `packages/cli` | `aldea` fork kit CLI — moving to `AdaSouls/fork-kit` |
 | `infra/`, `scripts/` | Local orchestration and deployment scripts |
-| `docs/` | Vision, PRD, roadmap, go-to-market, decisions (ADRs) and runbooks |
 | `reference/` | The verified reference contracts the packages were migrated from |
 
 ## Getting started
@@ -103,7 +102,7 @@ CI runs the same checks plus Slither and gitleaks on every pull request.
 ## Forking ALDEA World
 
 ALDEA World is designed to be forked: register your organization and world in the Atlas, deploy your own World and
-publish your client. The fork kit guide arrives with Phase 3 (`docs/fork-kit.md`). Code is MIT; the ALDEA name, lore
+publish your client. A step-by-step fork guide arrives with the fork kit CLI. Code is MIT; the ALDEA name, lore
 and art are not part of the code license — **you fork the world, not the brand** (see [Licensing](#licensing)).
 
 ## Governance and trust

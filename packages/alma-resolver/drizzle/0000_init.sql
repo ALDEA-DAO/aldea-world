@@ -1,4 +1,4 @@
--- ALMA Resolver schema (docs/prd.md § Data Model 3.4 and § Indexes), verbatim.
+-- ALMA Resolver schema: souls, controllers, bindings, relationships, sessions, Cardano links, Founder attestations and waitlists.
 CREATE SCHEMA IF NOT EXISTS alma;
 --> statement-breakpoint
 CREATE TABLE alma.souls (

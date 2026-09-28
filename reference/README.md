@@ -1,13 +1,13 @@
 # ALDEA World — reference contracts and tests
 
-This folder holds the Solidity from `docs/prd.md` § API Specification, extracted exactly as it appears there, plus the tests that verify it. It exists so that Phase 0 starts from code that is known to compile and pass, not from a spec alone. TASK-004 to TASK-007 in `docs/product-roadmap.md` migrate it into `packages/contracts` and `packages/protocol`.
+This folder holds the original specification of the contracts, plus the tests that verify it. The contracts were migrated from here into `packages/contracts` and `packages/protocol`, starting from code known to compile and pass.
 
 | Folder | Becomes | What it contains |
 |---|---|---|
-| `contracts/` | `packages/contracts` | The MUD World: `mud.config.ts` (PRD § Data Model > 3.1), the four systems (`CharacterSystem`, `MovementSystem`, `FounderSystem`, `AdminSystem`), the `FounderAttestation` type and the `IAlmaAnchorRegistry` interface (PRD § 4.1). |
-| `protocol/` | `packages/protocol` | Pure Foundry, no MUD: `AlmaAnchorRegistry`, `AtlasRegistry` and `AldeaCouncilExecutor` (PRD § 4.2–4.4). |
+| `contracts/` | `packages/contracts` | The MUD World: `mud.config.ts`, the four systems (`CharacterSystem`, `MovementSystem`, `FounderSystem`, `AdminSystem`), the `FounderAttestation` type and the `IAlmaAnchorRegistry` interface (PRD § 4.1). |
+| `protocol/` | `packages/protocol` | Pure Foundry, no MUD: `AlmaAnchorRegistry`, `AtlasRegistry` and `AldeaCouncilExecutor`. |
 
-If the PRD and this folder ever disagree, fix the PRD first and re-extract; the two must stay identical.
+This folder is a historical snapshot: the packages are now the source of truth.
 
 ## Verified results
 
@@ -65,7 +65,7 @@ The World tests deploy the real `AlmaAnchorRegistry` from `../protocol/src` thro
 
 ## Conventions these files already follow
 
-These are the traps we hit while verifying; the PRD's integration patterns require them too.
+These are the traps we hit while verifying; every change to the contracts must keep them.
 
 - **Custom errors carry the system name as a prefix** (`CharacterSystem_WorldPaused`, `MovementSystem_NotBorn`, …). MUD's worldgen copies every system error into `IWorld`, so two systems declaring `WorldPaused` would not compile.
 - **Shared structs live in `src/types/`**, outside `src/systems/`, so worldgen can import them into `IWorld`.
