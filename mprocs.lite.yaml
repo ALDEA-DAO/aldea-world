@@ -20,7 +20,7 @@ procs:
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5435/postgres
       PORT: "3001"
   alma-resolver:
-    shell: scripts/wait-for.sh 5434 && pnpm --filter @aldea/alma-resolver db:migrate && pnpm --filter @aldea/alma-resolver dev
+    shell: scripts/wait-for.sh 5434 && pnpm --filter @aldea/alma-resolver db:migrate && pnpm --filter @aldea/alma-resolver db:clients && pnpm --filter @aldea/alma-resolver dev
     env:
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5434/postgres
       BASE_RPC_URL: http://127.0.0.1:8545

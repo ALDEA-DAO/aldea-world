@@ -9,6 +9,7 @@ import {
   numeric,
   pgSchema,
   primaryKey,
+  smallint,
   text,
   timestamp,
   unique,
@@ -16,7 +17,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 /**
- * Drizzle mirror of drizzle/0000_init.sql. The SQL file is the source of
+ * Drizzle mirror of drizzle/*.sql. The SQL files are the source of
  * truth for migrations; keep both in sync. CHECK constraints live in the SQL only.
  */
 const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => "bytea" });
@@ -41,21 +42,6 @@ export const souls = alma.table(
     updatedAt: tz("updated_at").notNull().defaultNow(),
   },
   (t) => [index("souls_status_idx").on(t.status)],
-);
-
-export const controllers = alma.table(
-  "controllers",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    almaId: text("alma_id").notNull().references(() => souls.almaId, { onDelete: "cascade" }),
-    kind: text("kind", { enum: ["evm", "cardano", "lightning"] }).notNull(),
-    value: text("value").notNull(),
-    isPrimary: boolean("is_primary").notNull().default(false),
-    visibility: text("visibility", { enum: ["public", "private"] }).notNull().default("private"),
-    addedAt: tz("added_at").notNull().defaultNow(),
-    revokedAt: tz("revoked_at"),
-  },
-  (t) => [unique().on(t.kind, t.value), index("controllers_alma_idx").on(t.almaId).where(sql`revoked_at IS NULL`)],
 );
 
 export const bindings = alma.table(
@@ -108,23 +94,6 @@ export const authNonces = alma.table(
   (t) => [index("auth_nonces_expires_idx").on(t.expiresAt)],
 );
 
-export const sessions = alma.table(
-  "sessions",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    controller: text("controller").notNull(),
-    almaId: text("alma_id").references(() => souls.almaId),
-    refreshHash: bytea("refresh_hash").notNull(),
-    createdAt: tz("created_at").notNull().defaultNow(),
-    expiresAt: tz("expires_at").notNull(),
-    rotatedFrom: uuid("rotated_from"),
-    revokedAt: tz("revoked_at"),
-    userAgent: text("user_agent"),
-    ipHash: bytea("ip_hash"),
-  },
-  (t) => [index("sessions_controller_idx").on(t.controller).where(sql`revoked_at IS NULL`)],
-);
-
 export const cardanoLinkChallenges = alma.table("cardano_link_challenges", {
   id: uuid("id").primaryKey().defaultRandom(),
   almaId: text("alma_id").notNull().references(() => souls.almaId),
@@ -155,3 +124,98 @@ export const waitlist = alma.table(
   },
   (t) => [primaryKey({ columns: [t.almaId, t.building] })],
 );
+
+// ALMA Auth (drizzle/0001_alma_auth.sql)
+
+export const linkKinds = ["passkey", "email", "google", "apple", "evm", "cardano", "midnight", "bitcoin", "lightning"] as const;
+export const linkRoles = ["login", "controller", "holdings"] as const;
+
+export const links = alma.table(
+  "links",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    almaId: text("alma_id").notNull().references(() => souls.almaId, { onDelete: "cascade" }),
+    kind: text("kind", { enum: linkKinds }).notNull(),
+    value: text("value").notNull(),
+    roles: text("roles", { enum: linkRoles }).array().notNull(),
+    proof: jsonb("proof").notNull(),
+    visibility: text("visibility", { enum: ["public", "private"] }).notNull().default("private"),
+    label: text("label"),
+    lastUsedAt: tz("last_used_at"),
+    addedAt: tz("added_at").notNull().defaultNow(),
+    revokedAt: tz("revoked_at"),
+  },
+  (t) => [unique().on(t.kind, t.value), index("links_alma_idx").on(t.almaId).where(sql`revoked_at IS NULL`)],
+);
+
+export const passkeyCredentials = alma.table("passkey_credentials", {
+  credentialId: text("credential_id").primaryKey(),
+  linkId: uuid("link_id").notNull().references(() => links.id, { onDelete: "cascade" }),
+  publicKey: bytea("public_key").notNull(),
+  signCount: bigint("sign_count", { mode: "number" }).notNull().default(0),
+  transports: text("transports").array(),
+  backedUp: boolean("backed_up").notNull().default(false),
+  createdAt: tz("created_at").notNull().defaultNow(),
+});
+
+export const emailCodes = alma.table(
+  "email_codes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    emailHmac: bytea("email_hmac").notNull(),
+    codeHash: bytea("code_hash").notNull(),
+    attempts: smallint("attempts").notNull().default(0),
+    expiresAt: tz("expires_at").notNull(),
+    usedAt: tz("used_at"),
+    createdAt: tz("created_at").notNull().defaultNow(),
+  },
+  (t) => [index("email_codes_hmac_idx").on(t.emailHmac, t.createdAt.desc())],
+);
+
+export const oidcClients = alma.table("oidc_clients", {
+  clientId: text("client_id").primaryKey(),
+  name: text("name").notNull(),
+  redirectUris: text("redirect_uris").array().notNull(),
+  postLogoutRedirectUris: text("post_logout_redirect_uris").array().notNull().default(sql`'{}'`),
+  subjectType: text("subject_type", { enum: ["public", "pairwise"] }).notNull().default("public"),
+  sectorIdentifier: text("sector_identifier"),
+  ownerAlmaId: text("owner_alma_id").references(() => souls.almaId),
+  createdAt: tz("created_at").notNull().defaultNow(),
+});
+
+export const oidcPayloads = alma.table(
+  "oidc_payloads",
+  {
+    id: text("id").notNull(),
+    kind: text("kind").notNull(),
+    payload: jsonb("payload").notNull().$type<Record<string, unknown>>(),
+    grantId: text("grant_id"),
+    uid: text("uid"),
+    expiresAt: tz("expires_at"),
+    consumedAt: tz("consumed_at"),
+  },
+  (t) => [
+    primaryKey({ columns: [t.id, t.kind] }),
+    index("oidc_payloads_grant").on(t.grantId),
+    index("oidc_payloads_uid").on(t.uid),
+    index("oidc_payloads_expires").on(t.expiresAt),
+  ],
+);
+
+export const soulMerges = alma.table("soul_merges", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  fromAlmaId: text("from_alma_id").notNull().references(() => souls.almaId),
+  intoAlmaId: text("into_alma_id").notNull().references(() => souls.almaId),
+  proofs: jsonb("proofs").notNull(),
+  createdAt: tz("created_at").notNull().defaultNow(),
+});
+
+export const custody = alma.table("custody", {
+  almaId: text("alma_id").primaryKey().references(() => souls.almaId, { onDelete: "cascade" }),
+  provider: text("provider", { enum: ["turnkey"] }).notNull().default("turnkey"),
+  subOrganizationId: text("sub_organization_id").notNull().unique(),
+  walletId: text("wallet_id").notNull(),
+  ownerAddress: text("owner_address").notNull(),
+  smartAccountAddress: text("smart_account_address").notNull().unique(),
+  createdAt: tz("created_at").notNull().defaultNow(),
+});
