@@ -10,7 +10,7 @@ import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOw
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { Config, ConfigData, TribeInfo, Building, BuildingData } from "../src/codegen/index.sol";
 import { BuildingKind, Tribe } from "../src/codegen/common.sol";
-import { AlmaAnchorRegistry } from "@aldea/protocol/AlmaAnchorRegistry.sol";
+import { AlmaAnchorRegistry } from "@adasouls/protocol/AlmaAnchorRegistry.sol";
 import { PostDeploy } from "../script/PostDeploy.s.sol";
 
 contract PostDeployTest is MudTest {

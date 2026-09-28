@@ -6,7 +6,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { Character } from "../src/codegen/index.sol";
 import { CharacterClass, BuildingKind } from "../src/codegen/common.sol";
-import { AlmaAnchorRegistry } from "@aldea/protocol/AlmaAnchorRegistry.sol";
+import { AlmaAnchorRegistry } from "@adasouls/protocol/AlmaAnchorRegistry.sol";
 
 contract GasTest is MudTest {
   function test_gas() public {

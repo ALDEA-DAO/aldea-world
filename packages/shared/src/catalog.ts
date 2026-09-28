@@ -83,7 +83,7 @@ export const WORLD_ORGS = {
   adasouls: "alma:main:org:adasouls",
 } as const;
 
-/** Orgs anchored on-chain by packages/protocol/script/Deploy.s.sol, in the same order. */
+/** Orgs anchored on-chain by packages/council/script/Deploy.s.sol, in the same order. */
 export const ANCHORED_ORG_IDS = [...tribes.map((t) => t.almaOrgId), WORLD_ORGS.aldeaWorld] as const;
 
 export interface BuildingInfo {

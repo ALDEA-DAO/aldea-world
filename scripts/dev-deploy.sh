@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Deploys everything to the local anvil, in order:
-#   1. protocol contracts (AlmaAnchorRegistry, AtlasRegistry, AldeaCouncilExecutor) → deployments/31337.json
+#   1. packages/council: the shared rails (AlmaAnchorRegistry, AtlasRegistry), the orgs and AldeaCouncilExecutor
+#      → deployments/31337.json
 #   2. the MUD World with ALMA_REGISTRY_ADDRESS (PostDeploy seeds Config, tribes and buildings)
 #   3. World and system addresses merged into packages/shared/src/deployments/31337.json
 # Services wait for the "world" key in that file (scripts/wait-for-deploy.sh).
@@ -16,8 +17,8 @@ DEPLOYMENT="$ROOT/packages/shared/src/deployments/31337.json"
 "$ROOT/scripts/wait-for.sh" "$RPC_URL"
 rm -f "$DEPLOYMENT"
 
-echo "▸ protocol"
-(cd "$ROOT/packages/protocol" && forge script script/Deploy.s.sol --rpc-url "$RPC_URL" --broadcast --silent)
+echo "▸ rails and council"
+(cd "$ROOT/packages/council" && forge script script/Deploy.s.sol --rpc-url "$RPC_URL" --broadcast --silent)
 
 ALMA_REGISTRY_ADDRESS="$(node -e "console.log(require('$DEPLOYMENT').protocol.almaAnchorRegistry)")"
 export ALMA_REGISTRY_ADDRESS

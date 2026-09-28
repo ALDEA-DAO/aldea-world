@@ -25,6 +25,7 @@
     "@openzeppelin/contracts": "5.6.1"
   },
   "devDependencies": {
+    "@adasouls/protocol": "0.1.0",
     "@types/node": "^22.0.0",
     "forge-std": "github:foundry-rs/forge-std#ba4733c33497dd0c0983dcc033d7645576cc46e5",
     "prettier": "3.2.5",

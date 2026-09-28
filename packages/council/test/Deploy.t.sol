@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 import "forge-std/Test.sol";
 import { Deploy } from "../script/Deploy.s.sol";
-import { AlmaAnchorRegistry } from "../src/AlmaAnchorRegistry.sol";
+import { AlmaAnchorRegistry } from "@adasouls/protocol/AlmaAnchorRegistry.sol";
 
 contract DeployTest is Test {
   uint256 constant DEPLOYER_PK = 0xD3B10E;

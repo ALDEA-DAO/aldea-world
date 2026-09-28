@@ -50,4 +50,19 @@ describe("problem+json errors", () => {
     expect(assertAlmaId("alma:main:org:tribu-raes", "org")).toBe("alma:main:org:tribu-raes");
     expect(() => assertAlmaId("alma:main:organization:tribu-raes")).toThrow(ProblemError);
   });
+
+  it("rejects identifiers alma-core accepts but the registry cannot anchor", () => {
+    expect(assertAlmaId("alma:main:human:0123456789abcdef0123456789abcdef", "human")).toBe(
+      "alma:main:human:0123456789abcdef0123456789abcdef",
+    );
+    for (const id of [
+      "alma:preview:org:tribu-raes", // another network
+      "alma:main:org:Tribu_Raes", // alma-core allows uppercase and underscores
+      `alma:main:org:${"a".repeat(65)}`, // over 64 characters
+      "alma:main:org", // malformed
+    ]) {
+      expect(() => assertAlmaId(id)).toThrow(ProblemError);
+    }
+    expect(() => assertAlmaId("alma:main:org:tribu-raes", "human")).toThrow(ProblemError);
+  });
 });

@@ -41,8 +41,8 @@ jobs:
       - uses: foundry-rs/foundry-toolchain@v1
         with: { version: stable }
       - run: pnpm install --frozen-lockfile
-      - name: forge test (protocol)
-        working-directory: packages/protocol
+      - name: forge test (council)
+        working-directory: packages/council
         run: forge test -vv
       - name: mud test (World)
         working-directory: packages/contracts
@@ -80,8 +80,8 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install slither-analyzer
       - run: pnpm install --frozen-lockfile
-      - name: Protocol contracts
-        working-directory: packages/protocol
+      - name: Council executor
+        working-directory: packages/council
         run: slither . --config-file ../../.slither.config.json
       - name: World systems
         working-directory: packages/contracts

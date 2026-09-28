@@ -4,7 +4,7 @@ const address = z.string().regex(/^0x[0-9a-fA-F]{40}$/) as unknown as z.ZodType<
 const hex32 = z.string().regex(/^0x[0-9a-fA-F]{64}$/) as unknown as z.ZodType<`0x${string}`>;
 
 /**
- * Addresses per chain. packages/protocol/script/Deploy.s.sol writes the protocol part and scripts/dev-deploy.sh
+ * Addresses per chain. packages/council/script/Deploy.s.sol writes the protocol part and scripts/dev-deploy.sh
  * (or the staging/production deploy workflows) merge the MUD World part.
  */
 export const deploymentSchema = z.object({
