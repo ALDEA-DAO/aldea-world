@@ -12,4 +12,4 @@ regexes = [
   '''7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6''',
 ]
 # woldr's initial commit shipped packages/contracts/.env with the anvil key (removed when the monorepo was created)
-commits = ["1e911b2495b3f73a4b4b9b960f577ed2263f2865"]
+commits = ["bed5f8dc704f584fcae9c0505270fb891afda725"]
