@@ -5,6 +5,7 @@ import { captureError } from "./lib/sentry";
 import { logger } from "./lib/logger";
 import { problemResponse, toProblem } from "./lib/problem";
 import { createAaRoutes, type AaRoutesDeps } from "./routes/aa";
+import { createInteractionRoutes, type InteractionRoutesDeps } from "./routes/interaction";
 
 export interface AppDeps {
   /** Resolves when the database answers `SELECT 1`. */
@@ -14,6 +15,8 @@ export interface AppDeps {
   corsOrigins: string[];
   /** Bundler and paymaster proxy; absent when no CDP endpoint is configured (local development). */
   aa?: AaRoutesDeps;
+  /** ALMA Auth's login pages; absent in tests that only exercise the API. */
+  interaction?: InteractionRoutesDeps;
 }
 
 const withTimeout = <T>(p: Promise<T>, ms: number) =>
@@ -41,6 +44,7 @@ export function createApp(deps: AppDeps) {
   });
 
   if (deps.aa) app.route("/v1/aa", createAaRoutes(deps.aa));
+  if (deps.interaction) app.route("/interaction", createInteractionRoutes(deps.interaction));
 
   app.notFound((c) => problemResponse(c, { status: 404, code: "not_found", title: "Not found" }));
   app.onError((err, c) => {

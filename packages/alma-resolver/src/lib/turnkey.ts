@@ -1,5 +1,6 @@
 import { DEFAULT_ETHEREUM_ACCOUNTS, Turnkey, type TurnkeyApiClient } from "@turnkey/sdk-server";
-import { getAddress, type Address } from "viem";
+import { getAddress, type Address, type PublicClient } from "viem";
+import { toCoinbaseSmartAccount } from "viem/account-abstraction";
 import { assertAlmaId } from "./almaId";
 
 /**
@@ -77,6 +78,18 @@ export function soulSubOrganizationParams({ almaId, issuer, audience }: SoulCust
     disableEmailAuth: true,
     disableOtpEmailAuth: true,
     disableSmsAuth: true,
+  };
+}
+
+/**
+ * Custody for a new soul: its Turnkey sub-organization plus the counterfactual address of its Coinbase Smart Wallet
+ * (read from the factory on Base, so the soul has its controller before the wallet is deployed).
+ */
+export function turnkeyCustodyProvisioner({ turnkey, base, issuer, audience }: { turnkey: TurnkeyApiClient; base: PublicClient; issuer: string; audience: string }) {
+  return async (almaId: string) => {
+    const custody = await createSoulCustody(turnkey, soulSubOrganizationParams({ almaId, issuer, audience }));
+    const account = await toCoinbaseSmartAccount({ client: base, owners: [custody.ownerAddress], version: "1.1" });
+    return { ...custody, smartAccountAddress: account.address };
   };
 }
 

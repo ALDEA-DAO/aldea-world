@@ -5,11 +5,13 @@ import { createPublicClient, getAddress, http } from "viem";
 import { createApp } from "./app";
 import { bearerToken, createAccessTokenVerifier } from "./auth/accessToken";
 import { loadSigningKeys, publicJwks } from "./auth/keys";
+import { logSender, resendSender } from "./auth/methods/email";
 import { createAlmaAuth } from "./auth/provider";
 import { createDb } from "./db/client";
 import { logger } from "./lib/logger";
 import { initSentry } from "./lib/sentry";
 import { createSponsorshipPolicy } from "./lib/sponsorship";
+import { createTurnkeyClient, turnkeyConfigFromEnv, turnkeyCustodyProvisioner } from "./lib/turnkey";
 import { createResolverServer } from "./server";
 
 initSentry();
@@ -45,6 +47,39 @@ const auth = createAlmaAuth({
   proxy: production,
 });
 const verifyAccessToken = createAccessTokenVerifier({ issuer, audience: apiResource, jwks: publicJwks(signingKeys) });
+const chainId = Number(env.BASE_CHAIN_ID ?? 31337);
+const issuerUrl = new URL(issuer);
+
+// Custody: every new soul gets a Turnkey sub-organization and a Coinbase Smart Wallet (not locally: anvil has neither
+// Turnkey's reach to a localhost issuer nor the smart-wallet factory).
+const turnkeyConfig = turnkeyConfigFromEnv();
+const soul = {
+  db,
+  chainId,
+  provisionCustody: turnkeyConfig
+    ? turnkeyCustodyProvisioner({
+        turnkey: createTurnkeyClient(turnkeyConfig),
+        base,
+        issuer,
+        // Turnkey logs the soul in with ID tokens issued to this world's OIDC client
+        audience: env.TURNKEY_OIDC_AUDIENCE ?? "aldea-world",
+      })
+    : undefined,
+};
+
+// Login methods on the hosted pages
+const resendKey = env.RESEND_API_KEY;
+if (!resendKey && production) throw new Error("RESEND_API_KEY is required in production");
+const interaction = {
+  auth,
+  soul,
+  passkey: { rpID: env.WEBAUTHN_RP_ID ?? issuerUrl.hostname, origin: issuerUrl.origin },
+  wallet: { domain: issuerUrl.host, origin: issuerUrl.origin, chainId, client: base },
+  email: {
+    hmacKey: secret("EMAIL_HMAC_KEY"),
+    sender: resendKey ? resendSender({ apiKey: resendKey, from: env.RESEND_FROM ?? "ALMA <login@adasouls.io>" }) : logSender,
+  },
+};
 
 // Sponsored gas needs the CDP endpoint and the addresses of the contracts it may pay for.
 const { CDP_PAYMASTER_URL, WORLD_ADDRESS, ALMA_REGISTRY_ADDRESS } = env;
@@ -52,7 +87,7 @@ const aa =
   CDP_PAYMASTER_URL && WORLD_ADDRESS && ALMA_REGISTRY_ADDRESS
     ? {
         bundlerUrl: CDP_PAYMASTER_URL,
-        chainId: Number(env.BASE_CHAIN_ID ?? 84532),
+        chainId,
         checkSponsorship: createSponsorshipPolicy({ world: getAddress(WORLD_ADDRESS), almaRegistry: getAddress(ALMA_REGISTRY_ADDRESS) }),
         authenticate: async (c: Context) => {
           const token = bearerToken(c);
@@ -68,6 +103,7 @@ const app = createApp({
   baseHead: () => base.getBlockNumber(),
   corsOrigins: (env.CORS_ORIGINS ?? "http://localhost:3000").split(",").map((o) => o.trim()),
   aa,
+  interaction,
 });
 
 createResolverServer(app, auth).listen(port, () => logger.info({ port, issuer }, "alma-resolver listening"));
