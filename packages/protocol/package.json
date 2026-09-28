@@ -1,0 +1,22 @@
+{
+  "name": "@aldea/protocol",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "description": "ALDEA protocol contracts on Base (pure Foundry): AlmaAnchorRegistry, AtlasRegistry and AldeaCouncilExecutor.",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "deploy:local": "forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast",
+    "deploy:base-sepolia": "forge script script/Deploy.s.sol --rpc-url ${BASE_SEPOLIA_RPC_URL:-https://sepolia.base.org} --broadcast --verify",
+    "deploy:base": "forge script script/Deploy.s.sol --rpc-url ${BASE_RPC_URL:-https://mainnet.base.org} --broadcast --verify"
+  },
+  "devDependencies": {
+    "forge-std": "github:foundry-rs/forge-std#ba4733c33497dd0c0983dcc033d7645576cc46e5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALDEA-DAO/aldea-world.git",
+    "directory": "packages/protocol"
+  }
+}

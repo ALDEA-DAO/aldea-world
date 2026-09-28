@@ -1,0 +1,34 @@
+{
+  "name": "@aldea/effectstream-node",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Effectstream node: multichain read model, STFs, read API and MQTT for ALDEA World (Bun).",
+  "scripts": {
+    "build": "bun scripts/typecheck.ts",
+    "typecheck": "bun scripts/typecheck.ts",
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "test": "bun test",
+    "db:local": "bun scripts/pglite.ts --port 5433"
+  },
+  "dependencies": {
+    "@aldea/shared": "workspace:^",
+    "@effectstream/event-client": "0.200.6",
+    "@effectstream/node-sdk": "0.200.6",
+    "@pgtyped/runtime": "^2.4.2",
+    "@sinclair/typebox": "^0.34.41",
+    "effection": "^3.6.1",
+    "viem": "^2.56.9"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "mqtt": "^5.16.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALDEA-DAO/aldea-world.git",
+    "directory": "packages/effectstream-node"
+  }
+}

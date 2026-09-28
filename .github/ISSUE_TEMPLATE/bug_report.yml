@@ -1,0 +1,18 @@
+name: Bug report
+description: Something does not work as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes: { label: What happened, description: "And what you expected instead." }
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes: { label: Steps to reproduce }
+    validations: { required: true }
+  - type: input
+    id: where
+    attributes: { label: Where, description: "aldea.world, staging, local; browser; transaction hash if relevant." }
+  - type: markdown
+    attributes:
+      value: "Security issue? Please do not file it here — see SECURITY.md."

@@ -1,0 +1,39 @@
+# Local infrastructure for `pnpm dev` (mprocs.yaml): Postgres 16 and anvil.
+# Works with Podman (`podman compose`) or Docker (`docker compose`); scripts/compose.sh picks whichever is installed.
+# Images use fully qualified names because Podman does not resolve short names by default.
+# Services (resolver, Effectstream, relay, indexer, client) run on the host through mprocs.
+name: aldea-world
+
+services:
+  postgres:
+    image: docker.io/library/postgres:16
+    environment:
+      POSTGRES_USER: aldea
+      POSTGRES_PASSWORD: aldea
+      POSTGRES_DB: aldea
+    ports:
+      # 5442 on the host so it can coexist with other local Postgres instances (override with ALDEA_PG_PORT)
+      - "${ALDEA_PG_PORT:-5442}:5432"
+    # In memory: anvil starts from block 0 on every run, so every database must start empty too (Effectstream and
+    # the MUD indexer store the start block as immutable config and refuse to run against a different chain).
+    tmpfs:
+      - /var/lib/postgresql/data
+    volumes:
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aldea -d aldea"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  anvil:
+    image: ghcr.io/foundry-rs/foundry:stable
+    entrypoint: ["anvil", "--host", "0.0.0.0", "--block-time", "2", "--base-fee", "0"]
+    ports:
+      - "8545:8545"
+    healthcheck:
+      test: ["CMD", "cast", "block-number", "--rpc-url", "http://127.0.0.1:8545"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+

@@ -1,13 +1,43 @@
+# pnpm dev — full local stack. Requires Podman (or Docker), Foundry, pnpm and Bun.
+# Infra runs in containers (scripts/compose.sh); services run on the host and wait for the deployment.
+# Health: scripts/dev-health.sh
 procs:
+  infra:
+    shell: scripts/compose.sh up
+  deploy:
+    shell: scripts/dev-deploy.sh
+    autorestart: false
+  mud-indexer:
+    shell: scripts/wait-for-deploy.sh && eval "$(scripts/dev-env.sh)" && pnpm exec postgres-indexer
+    env:
+      DATABASE_URL: postgres://aldea:aldea@127.0.0.1:5442/mud_indexer
+      RPC_HTTP_URL: http://127.0.0.1:8545
+  mud-indexer-api:
+    shell: scripts/wait-for-deploy.sh && sleep 3 && pnpm exec postgres-frontend
+    env:
+      DATABASE_URL: postgres://aldea:aldea@127.0.0.1:5442/mud_indexer
+      PORT: "3001"
+  alma-resolver:
+    shell: scripts/wait-for.sh 5442 && pnpm --filter @aldea/alma-resolver db:migrate && pnpm --filter @aldea/alma-resolver dev
+    env:
+      DATABASE_URL: postgres://aldea:aldea@127.0.0.1:5442/aldea
+      BASE_RPC_URL: http://127.0.0.1:8545
+      PORT: "8787"
+  effectstream:
+    shell: scripts/wait-for-deploy.sh && pnpm --filter @aldea/effectstream-node dev
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: "5442"
+      DB_USER: aldea
+      DB_PW: aldea
+      DB_NAME: effectstream
+      PGLITE: "false"
+      # The postgres:16 image has no pg_ivm; production Postgres must provide it (see SPIKE.md)
+      ALLOW_NO_PG_IVM: "true"
+      CHAIN_ID: "31337"
+  relay-worker:
+    shell: pnpm --filter @aldea/relay-worker dev
+    env:
+      PORT: "8788"
   client:
-    cwd: packages/client
-    shell: pnpm run dev
-  contracts:
-    cwd: packages/contracts
-    shell: pnpm mud dev-contracts --rpc http://127.0.0.1:8545
-  anvil:
-    cwd: packages/contracts
-    shell: anvil --base-fee 0 --block-time 2
-  explorer:
-    cwd: packages/contracts
-    shell: pnpm explorer
+    shell: pnpm --filter client dev

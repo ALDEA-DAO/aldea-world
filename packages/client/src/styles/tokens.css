@@ -1,0 +1,157 @@
+/*
+ * ALDEA World design tokens. Values are validated for WCAG AA contrast.
+ * Light is the default; dark applies with [data-theme="dark"] or, when the user has not chosen a theme,
+ * with the system preference. The @media block duplicates the [data-theme="dark"] values on purpose.
+ */
+:root {
+  color-scheme: light;
+  --color-background: #F4EAD5;
+  --color-surface: #FBF5E8;
+  --color-surface-raised: #EADBBE;
+  --color-text: #2B1D12;
+  --color-text-muted: #6B5641;
+  --color-border: #CDB68F;
+  --color-border-strong: #8C7355;
+  --color-primary: #A84B24;
+  --color-primary-hover: #8C3E1D;
+  --color-on-primary: #FFF8EE;
+  --color-secondary: #35624F;
+  --color-on-secondary: #FFF8EE;
+  --color-accent: #C9962E;
+  --color-on-accent: #2B1D12;
+  --color-wood: #5E3C21;
+  --color-on-wood: #F4EAD5;
+  --color-success: #2F6B2C;
+  --color-warning: #8A5A12;
+  --color-error: #9E3526;
+  --color-info: #285A80;
+  --color-focus: #1F5FA8;
+  --color-backdrop: rgb(26 20 15 / 0.6);
+
+  --tribe-amazonians: #256A3F;
+  --tribe-himalayans: #4F5F96;
+  --tribe-poseidons: #1A6580;
+  --tribe-raes: #845209;
+  --tribe-tropicals: #A23548;
+  --on-tribe: #FFFFFF;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-background: #1A140F;
+    --color-surface: #241B14;
+    --color-surface-raised: #2F241A;
+    --color-text: #F3E7D2;
+    --color-text-muted: #BFAE95;
+    --color-border: #4A3A2B;
+    --color-border-strong: #8A7560;
+    --color-primary: #E07A45;
+    --color-primary-hover: #EA8F60;
+    --color-on-primary: #1A140F;
+    --color-secondary: #7FB39A;
+    --color-on-secondary: #1A140F;
+    --color-accent: #E0B34F;
+    --color-on-accent: #1A140F;
+    --color-wood: #6B4A2C;
+    --color-on-wood: #F3E7D2;
+    --color-success: #7CC47A;
+    --color-warning: #E3A64A;
+    --color-error: #EE7B6A;
+    --color-info: #7DB3DE;
+    --color-focus: #8EC5FF;
+    --color-backdrop: rgb(0 0 0 / 0.6);
+
+    --tribe-amazonians: #6CC08A;
+    --tribe-himalayans: #A3B0E0;
+    --tribe-poseidons: #6FC0DB;
+    --tribe-raes: #F0B65A;
+    --tribe-tropicals: #F08A9C;
+    --on-tribe: #1A140F;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-background: #1A140F;
+  --color-surface: #241B14;
+  --color-surface-raised: #2F241A;
+  --color-text: #F3E7D2;
+  --color-text-muted: #BFAE95;
+  --color-border: #4A3A2B;
+  --color-border-strong: #8A7560;
+  --color-primary: #E07A45;
+  --color-primary-hover: #EA8F60;
+  --color-on-primary: #1A140F;
+  --color-secondary: #7FB39A;
+  --color-on-secondary: #1A140F;
+  --color-accent: #E0B34F;
+  --color-on-accent: #1A140F;
+  --color-wood: #6B4A2C;
+  --color-on-wood: #F3E7D2;
+  --color-success: #7CC47A;
+  --color-warning: #E3A64A;
+  --color-error: #EE7B6A;
+  --color-info: #7DB3DE;
+  --color-focus: #8EC5FF;
+  --color-backdrop: rgb(0 0 0 / 0.6);
+
+  --tribe-amazonians: #6CC08A;
+  --tribe-himalayans: #A3B0E0;
+  --tribe-poseidons: #6FC0DB;
+  --tribe-raes: #F0B65A;
+  --tribe-tropicals: #F08A9C;
+  --on-tribe: #1A140F;
+}
+
+/* Typography */
+:root {
+  --font-heading: "Alegreya", Georgia, serif;
+  --font-display: "Alegreya SC", Georgia, serif;
+  --font-body: "Alegreya Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --text-xs: 0.75rem;    /* 12px — technical metadata */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px — narrative panel */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px — panel titles */
+  --text-3xl: 1.875rem;  /* 30px — building titles */
+  --text-4xl: 2.25rem;   /* 36px — tribe reveal */
+  --text-5xl: 3rem;      /* 48px — home headline */
+  --leading-tight: 1.15;
+  --leading-heading: 1.25;
+  --leading-body: 1.55;
+  --leading-mono: 1.45;
+}
+
+/* Spacing, radii, shadows, motion and layout */
+:root {
+  --space-0: 0;
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+  --space-24: 6rem;    /* 96px */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-paper: 0 1px 0 rgb(43 29 18 / 0.08), 0 6px 16px rgb(43 29 18 / 0.12);
+  --shadow-raised: 0 10px 30px rgb(43 29 18 / 0.22);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --duration-scene: 600ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --hud-top: 56px;
+  --hud-bottom: 72px;
+  --panel-width: 400px;
+}
+@media (max-width: 767px) { :root { --hud-bottom: 64px; } }

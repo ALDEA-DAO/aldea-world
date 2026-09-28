@@ -1,0 +1,68 @@
+{
+  "app": {
+    "name": "ALDEA World",
+    "tagline": "El mundo autónomo donde cada personaje nace con alma."
+  },
+  "common": {
+    "close": "Cerrar",
+    "dismiss": "Descartar",
+    "comingSoon": "Esta pantalla llega en una próxima fase.",
+    "backHome": "Volver a la aldea"
+  },
+  "nav": {
+    "village": "Aldea",
+    "list": "Modo lista",
+    "portal": "Portal de los Mundos",
+    "settings": "Ajustes",
+    "about": "Acerca de",
+    "terms": "Términos",
+    "privacy": "Privacidad",
+    "designKit": "Kit de diseño"
+  },
+  "screens": {
+    "village": "La aldea",
+    "building": "Edificio",
+    "list": "Modo lista",
+    "portal": "Portal de los Mundos",
+    "world": "Detalle del mundo",
+    "soul": "Alma",
+    "settings": "Ajustes",
+    "about": "Acerca de ALDEA World",
+    "terms": "Términos",
+    "privacy": "Privacidad",
+    "notFound": "Este camino no lleva a ninguna parte"
+  },
+  "settings": {
+    "theme": "Tema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeSystem": "Según el sistema",
+    "language": "Idioma"
+  },
+  "kit": {
+    "title": "Kit de diseño",
+    "intro": "Componentes base de ALDEA World sobre los tokens del sistema de diseño.",
+    "buttons": "Botones",
+    "primary": "Nacer en ALDEA",
+    "secondary": "Anotarme",
+    "ghost": "Ver en la cadena",
+    "danger": "Cerrar sesión",
+    "disabled": "Deshabilitado",
+    "panelTitle": "Centro Urbano",
+    "panelBody": "Aquí nacen las almas de la aldea. Elige tu clase y el fuego decidirá tu tribu.",
+    "openDialog": "Abrir diálogo",
+    "dialogTitle": "¿Cómo se sortea?",
+    "dialogBody": "Tu tribu sale del hash de un bloque futuro de Base: nadie, ni siquiera el equipo, la conoce cuando pides nacer.",
+    "showToast": "Mostrar aviso",
+    "showError": "Mostrar error",
+    "toastMessage": "Tu alma quedó registrada.",
+    "toastError": "Las brasas no respondieron. Inténtalo de nuevo.",
+    "tabs": "Pestañas",
+    "tabCensus": "Censo",
+    "tabBirth": "Nacer",
+    "tabCensusBody": "Población total, gestando, 11 clases y 5 tribus.",
+    "tabBirthBody": "Elige una de las 11 clases.",
+    "skeletons": "Cargando",
+    "tribes": "Tribus"
+  }
+}

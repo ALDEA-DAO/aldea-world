@@ -1,20 +1,12 @@
 /*
- * The supported chains.
- * By default, there are only two chains here:
+ * Chains ALDEA World runs on:
+ * - mudFoundry: local anvil (base fee 0), started by `pnpm dev`.
+ * - baseSepolia (84532): staging.
+ * - base (8453): production.
  *
- * - mudFoundry, the chain running on anvil that pnpm dev
- *   starts by default. It is similar to the viem anvil chain
- *   (see https://viem.sh/docs/clients/test.html), but with the
- *   basefee set to zero to avoid transaction fees.
- * - Redstone, our production blockchain (https://redstone.xyz/)
- * - Garnet, our test blockchain (https://garnetchain.com/))
- *
+ * Redstone and Garnet were shut down in May 2026 and are no longer supported.
  */
+import { type MUDChain, mudFoundry } from "@latticexyz/common/chains";
+import { base, baseSepolia } from "viem/chains";
 
-import { MUDChain, mudFoundry, redstone, garnet } from "@latticexyz/common/chains";
-
-/*
- * See https://mud.dev/guides/hello-world/add-chain-client
- * for instructions on how to add networks.
- */
-export const supportedChains: MUDChain[] = [mudFoundry, redstone, garnet];
+export const supportedChains: MUDChain[] = [mudFoundry, baseSepolia, base];

@@ -1,0 +1,68 @@
+{
+  "app": {
+    "name": "ALDEA World",
+    "tagline": "The autonomous world where every character is born with a soul."
+  },
+  "common": {
+    "close": "Close",
+    "dismiss": "Dismiss",
+    "comingSoon": "This screen arrives in an upcoming phase.",
+    "backHome": "Back to the village"
+  },
+  "nav": {
+    "village": "Village",
+    "list": "List mode",
+    "portal": "Portal of Worlds",
+    "settings": "Settings",
+    "about": "About",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "designKit": "Design kit"
+  },
+  "screens": {
+    "village": "The village",
+    "building": "Building",
+    "list": "List mode",
+    "portal": "Portal of Worlds",
+    "world": "World detail",
+    "soul": "Soul",
+    "settings": "Settings",
+    "about": "About ALDEA World",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "notFound": "This path leads nowhere"
+  },
+  "settings": {
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "Follow the system",
+    "language": "Language"
+  },
+  "kit": {
+    "title": "Design kit",
+    "intro": "ALDEA World base components on top of the design system tokens.",
+    "buttons": "Buttons",
+    "primary": "Be born in ALDEA",
+    "secondary": "Sign me up",
+    "ghost": "View on-chain",
+    "danger": "Sign out",
+    "disabled": "Disabled",
+    "panelTitle": "Town Center",
+    "panelBody": "This is where the village's souls are born. Choose your class and the fire will decide your tribe.",
+    "openDialog": "Open dialog",
+    "dialogTitle": "How is my tribe drawn?",
+    "dialogBody": "Your tribe comes from the hash of a future Base block: nobody, not even the team, knows it when you ask to be born.",
+    "showToast": "Show notice",
+    "showError": "Show error",
+    "toastMessage": "Your soul has been registered.",
+    "toastError": "The embers did not answer. Try again.",
+    "tabs": "Tabs",
+    "tabCensus": "Census",
+    "tabBirth": "Be born",
+    "tabCensusBody": "Total population, gestating, 11 classes and 5 tribes.",
+    "tabBirthBody": "Choose one of the 11 classes.",
+    "skeletons": "Loading",
+    "tribes": "Tribes"
+  }
+}

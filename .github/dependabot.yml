@@ -1,0 +1,10 @@
+# Security updates only during the MVP (exact versions and a committed lockfile otherwise).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 0
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }
