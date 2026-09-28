@@ -13,7 +13,7 @@ import { BuildingKind, Tribe } from "../src/codegen/common.sol";
 ///         `aldea` and root namespaces to the Safe.
 /// @dev `mud deploy` and `mud test` run this script automatically. Environment:
 ///      - PRIVATE_KEY (required)
-///      - ALMA_REGISTRY_ADDRESS: AlmaAnchorRegistry from packages/protocol. When empty, Config is not seeded
+///      - ALMA_REGISTRY_ADDRESS: AlmaAnchorRegistry (the adasouls protocol package). When empty, Config is not seeded
 ///        (this is the case under `mud test`, whose tests configure their own registry).
 ///      - FOUNDER_ATTESTOR_ADDRESS (default: deployer)
 ///      - GENESIS_ENDS_AT (default: 0 = no Genesis Week)

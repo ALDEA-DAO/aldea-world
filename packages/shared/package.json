@@ -24,6 +24,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@adasouls/protocol": "0.1.0",
     "tsx": "^4.23.15",
     "vitest": "^5.0.2"
   },

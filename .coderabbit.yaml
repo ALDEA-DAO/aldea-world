@@ -20,10 +20,10 @@ reviews:
         MUD systems in the aldea namespace: always _msgSender(), never msg.sender; systems are stateless (only
         constants and tables); custom errors are prefixed with the system name; shared structs live in src/types.
         Check access control, the pause guard (FR-047) and the one-character-per-owner/soul invariants.
-    - path: "packages/protocol/src/**/*.sol"
+    - path: "packages/council/**/*.sol"
       instructions: >-
-        Protocol contracts that hold roles for every fork (AlmaAnchorRegistry, AtlasRegistry, AldeaCouncilExecutor).
-        Focus on access control, role handover to the Safe, input validation and event completeness.
+        AldeaCouncilExecutor and ALDEA's deploy script (the registries come from @adasouls/protocol). Focus on the
+        timelock, the guardian veto, access control, role handover to the Safe and event completeness.
     - path: "packages/effectstream-node/src/**/*.ts"
       instructions: >-
         STFs must be deterministic (no Date, Math.random or I/O; writes only through World.resolve) and must never

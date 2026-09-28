@@ -1,4 +1,2 @@
 forge-std/=node_modules/forge-std/src/
-@latticexyz/=node_modules/@latticexyz/
-@openzeppelin/=node_modules/@openzeppelin/
 @adasouls/protocol/=node_modules/@adasouls/protocol/src/

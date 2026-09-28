@@ -15,7 +15,8 @@ be credited.
 
 ## Scope
 
-- Contracts: `packages/contracts` (MUD World) and `packages/protocol` (ALMA registry, Atlas, Council executor).
+- Contracts: `packages/contracts` (MUD World) and `packages/council` (Council executor and deploy script). The ALMA
+  registry and the Atlas are reported to [`AdaSouls/protocol`](https://github.com/AdaSouls/protocol).
 - Services: ALMA Resolver, Effectstream node, relay worker.
 - The web client and the publishing pipeline for aldea.world (official version by CID).
 

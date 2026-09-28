@@ -2,11 +2,13 @@
 pragma solidity ^0.8.24;
 
 import { Script, console2 } from "forge-std/Script.sol";
-import { AlmaAnchorRegistry } from "../src/AlmaAnchorRegistry.sol";
-import { AtlasRegistry, IAlmaAnchors } from "../src/AtlasRegistry.sol";
+import { AlmaAnchorRegistry } from "@adasouls/protocol/AlmaAnchorRegistry.sol";
+import { AtlasRegistry, IAlmaAnchors } from "@adasouls/protocol/AtlasRegistry.sol";
 import { AldeaCouncilExecutor, IAtlasGovernable } from "../src/AldeaCouncilExecutor.sol";
 
-/// @notice Deploys the protocol contracts, anchors the world's ALMA organizations and hands every role to the Safe.
+/// @notice Deploys ALDEA World's contracts outside the MUD World: the shared rails of the adasouls protocol package
+///         (AlmaAnchorRegistry and AtlasRegistry), the world's ALMA organizations and the Council executor, and hands
+///         every role to the Safe.
 /// @dev Environment:
 ///      - PRIVATE_KEY (required): deployer only, never the Safe's key.
 ///      - ALDEA_SAFE_ADDRESS (default: deployer): controller of the orgs, issuer, admin, curator and guardian.

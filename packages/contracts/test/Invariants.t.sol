@@ -7,7 +7,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { Census, Character, CharacterData, CharacterOf, SoulCharacter } from "../src/codegen/index.sol";
 import { CharacterClass, BirthStatus } from "../src/codegen/common.sol";
-import { AlmaAnchorRegistry } from "@aldea/protocol/AlmaAnchorRegistry.sol";
+import { AlmaAnchorRegistry } from "@adasouls/protocol/AlmaAnchorRegistry.sol";
 
 /// Drives random births, completions and block advances against the World.
 contract BirthHandler is Test {

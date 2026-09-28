@@ -7,7 +7,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { Config, Census, Character, CharacterData, CharacterOf, SoulCharacter, Location, Founder } from "../src/codegen/index.sol";
 import { CharacterClass, Tribe, BirthStatus, BuildingKind } from "../src/codegen/common.sol";
-import { AlmaAnchorRegistry } from "@aldea/protocol/AlmaAnchorRegistry.sol";
+import { AlmaAnchorRegistry } from "@adasouls/protocol/AlmaAnchorRegistry.sol";
 import { FounderAttestation } from "../src/types/FounderAttestation.sol";
 import { CharacterSystem } from "../src/systems/CharacterSystem.sol";
 import { MovementSystem } from "../src/systems/MovementSystem.sol";

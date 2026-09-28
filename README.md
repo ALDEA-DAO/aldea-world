@@ -36,6 +36,8 @@ flowchart LR
 
 - **On-chain (Base):** the MUD World holds the game state; `AlmaAnchorRegistry` anchors souls and organizations;
   `AtlasRegistry` records worlds, versions and clients; `AldeaCouncilExecutor` applies the community's Genesis Charter.
+  The two registries are rails shared by every world and live in
+  [`AdaSouls/protocol`](https://github.com/AdaSouls/protocol) (`@adasouls/protocol` on npm).
 - **Effectstream** folds Base (and later Cardano) events into a deterministic read model, serves the read API and
   pushes real-time events over MQTT.
 - **ALMA Auth** (inside the ALMA Resolver) is the OpenID Connect provider behind *Sign in with ALMA*: the soul is the
@@ -52,7 +54,7 @@ Each package documents its own design in code comments; the Effectstream integra
 | Path | What it is |
 |---|---|
 | `packages/contracts` | MUD World (`aldea` namespace): Character, Movement, Founder and Admin systems |
-| `packages/protocol` | Protocol contracts (Foundry): ALMA registry, Atlas, Council executor — the shared registries move to `AdaSouls/protocol` (the world stays with ALDEA DAO; the reusable rails live under AdaSouls) |
+| `packages/council` | `AldeaCouncilExecutor` and ALDEA's deploy script (Foundry): the rails from `@adasouls/protocol`, the world's ALMA organizations and the Council |
 | `packages/shared` | Shared TypeScript: catalogs, ALMA helpers, EIP-712 types, ABIs, deployments |
 | `packages/client` | Web client (Vite, React, Tailwind, Phaser) |
 | `packages/alma-resolver` | ALMA Resolver (Hono, Drizzle, Postgres) |
@@ -93,7 +95,7 @@ addresses to `packages/shared/src/deployments/31337.json`. The client runs on <h
 ```bash
 pnpm lint && pnpm -r typecheck
 pnpm --filter contracts test          # mud test: World tests, invariants, fuzzing, tribe-draw uniformity
-(cd packages/protocol && forge test)  # protocol contracts and deploy script
+(cd packages/council && forge test)   # Council executor and deploy script
 pnpm --filter @aldea/shared test      # also: @aldea/alma-resolver, @aldea/effectstream-node
 ```
 
