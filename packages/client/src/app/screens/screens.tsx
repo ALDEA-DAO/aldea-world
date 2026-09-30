@@ -1,5 +1,5 @@
 import { buildingByRoute } from "@aldea/shared/catalog";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Placeholder } from "./Placeholder";
 import { isSignedIn } from "../../features/auth/AlmaAuthProvider";
@@ -14,6 +14,9 @@ export function VillageScreen() {
     <Placeholder title={t("screens.village")}>
       <p className="mt-2 text-lg">{t("app.tagline")}</p>
       <CensusLine />
+      <Link to="/b/centro-urbano" className="mt-6 inline-flex h-12 items-center rounded-md bg-primary px-5 font-medium text-on-primary bevel">
+        {t("village.beBorn")}
+      </Link>
     </Placeholder>
   );
 }

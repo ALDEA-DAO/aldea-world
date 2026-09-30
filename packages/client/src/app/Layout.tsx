@@ -6,6 +6,7 @@ import { useWorldPaused } from "../mud/store";
 
 const links = [
   { to: "/", key: "nav.village", end: true },
+  { to: "/b/centro-urbano", key: "nav.townCenter" },
   { to: "/lista", key: "nav.list" },
   { to: "/portal", key: "nav.portal" },
   { to: "/ajustes", key: "nav.settings" },

@@ -17,7 +17,8 @@
     "about": "Acerca de",
     "terms": "Términos",
     "privacy": "Privacidad",
-    "designKit": "Kit de diseño"
+    "designKit": "Kit de diseño",
+    "townCenter": "Centro Urbano"
   },
   "screens": {
     "village": "La aldea",
@@ -162,5 +163,8 @@
     "alreadyAnchored": "Tu alma ya estaba anclada; sigue adelante.",
     "network": "Tu pedido no salió. Reintentar.",
     "unknown": "Algo no salió. Prueba de nuevo."
+  },
+  "village": {
+    "beBorn": "Nacer en ALDEA"
   }
 }
