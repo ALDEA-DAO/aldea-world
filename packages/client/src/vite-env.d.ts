@@ -10,6 +10,8 @@ interface ImportMetaEnv {
   readonly VITE_EFFECTSTREAM_API_URL?: string;
   readonly VITE_EFFECTSTREAM_MQTT_URL?: string;
   readonly VITE_MUD_INDEXER_URL?: string;
+  /** Seconds after the birth's target block before the client completes it itself (default 20). */
+  readonly VITE_BIRTH_FALLBACK_SECONDS?: string;
   readonly VITE_BUILD_GIT_COMMIT?: string;
   readonly VITE_BUILD_SEMVER?: string;
 }

@@ -26,6 +26,9 @@ export function createSystemCalls(network: Network, account: PlayerAccount) {
         { to: world, data: encodeFunctionData({ abi: worldAbi, functionName: "aldea__requestBirth", args: [characterClass, almaIdHash] }) },
       ]),
 
+    /** Draws the tribe once the target block exists. Permissionless: the Midwife usually does it first. */
+    completeBirth: (characterId: number) => send([{ to: world, data: encodeFunctionData({ abi: worldAbi, functionName: "aldea__completeBirth", args: [characterId] }) }]),
+
     /** Admin only (the namespace owner): pauses or resumes births, entries and Founder claims. */
     setPaused: (paused: boolean) => send([{ to: world, data: encodeFunctionData({ abi: worldAbi, functionName: "aldea__setPaused", args: [paused] }) }]),
   };

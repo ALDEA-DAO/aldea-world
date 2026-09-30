@@ -40,6 +40,8 @@ export function MudProvider({ children }: { children: ReactNode }) {
 export const useMud = () => useContext(MudContext);
 
 type State = ReturnType<Network["useStore"]["getState"]>;
+export type WorldState = State;
+export type WorldTables = Network["tables"];
 
 /** Reads from the synced World; undefined until the first sync. `select` must return stable values (records, primitives). */
 export function useWorld<T>(select: (state: State, tables: Network["tables"]) => T): T | undefined {
@@ -47,6 +49,17 @@ export function useWorld<T>(select: (state: State, tables: Network["tables"]) =>
   const subscribe = useCallback((notify: () => void) => network?.useStore.subscribe(notify) ?? (() => {}), [network]);
   const snapshot = useCallback(() => (network ? select(network.useStore.getState(), network.tables) : undefined), [network, select]);
   return useSyncExternalStore(subscribe, snapshot);
+}
+
+/** The chain's latest block while `enabled` (e.g. while a birth waits for its target block). */
+export function useBlockNumber(enabled: boolean): bigint | undefined {
+  const { network } = useMud();
+  const [block, setBlock] = useState<bigint>();
+  useEffect(() => {
+    if (!enabled || !network) return;
+    return network.publicClient.watchBlockNumber({ emitOnBegin: true, onBlockNumber: setBlock });
+  }, [enabled, network]);
+  return enabled ? block : undefined;
 }
 
 // The Census record is written by the first birth: once the sync is live, no record means nobody was born yet

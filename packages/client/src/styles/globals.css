@@ -53,3 +53,43 @@
 @utility bevel {
   box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.18);
 }
+
+/* Birth ritual: a circle of embers while the soul arrives, then the tribe's reveal (1.2 s). Never a spinner. */
+.embers {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+.embers span {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffd27a, var(--color-accent) 60%, transparent 70%);
+  transform: rotate(calc(var(--i) * 45deg)) translateY(-48px);
+  animation: ember 1.6s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.2s);
+}
+@keyframes ember {
+  0%, 100% { opacity: 0.35; scale: 0.7; }
+  50% { opacity: 1; scale: 1.15; }
+}
+.tribe-reveal {
+  animation: reveal 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes reveal {
+  0% { opacity: 0; scale: 0.6; filter: blur(6px); }
+  60% { opacity: 1; scale: 1.06; filter: blur(0); }
+  100% { opacity: 1; scale: 1; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .embers span { animation: none; opacity: 0.8; scale: 1; }
+  /* beats the global 0.01 ms rule above: the reveal still fades in, without scale or blur */
+  .tribe-reveal { animation: fade-in 200ms ease-out both !important; }
+}

@@ -121,5 +121,46 @@
   },
   "world": {
     "paused": "The village is paused: births and building entries are on hold for now."
+  },
+  "townCenter": {
+    "title": "Town Center",
+    "beBorn": "Be born",
+    "yourCharacter": "Your character",
+    "census": "Census",
+    "chooseClass": "Choose your class",
+    "pickAClass": "Pick a class to be born",
+    "beBornAs": "Be born as {{name}}",
+    "beBornAction": "be born in the village",
+    "beFirst": "Be the first soul in the village.",
+    "maintenance": "The village is under maintenance.",
+    "pathCut": "The path to the Town Center is cut off. Let's try again.",
+    "bornOn": "Born on {{date}}",
+    "byTribe": "By tribe",
+    "byClass": "By class"
+  },
+  "birth": {
+    "title": "Your birth",
+    "arriving": "Your soul is arriving…",
+    "choosing": "The embers are choosing their color…",
+    "completing": "Lighting the fire ourselves…",
+    "rekindled": "The embers rekindled, a few more seconds.",
+    "failed": "We couldn't complete your birth. Your request is safe; try again.",
+    "retry": "Try again",
+    "howDrawn": "How is my tribe drawn?",
+    "howDrawnText": "Your tribe comes from the hash of a Base block that does not exist yet when you ask to be born. Nobody, not even the team, can know it in advance.",
+    "bornInto": "You were born into the tribe",
+    "named": "Your soul now has a name.",
+    "viewSoul": "View your soul",
+    "explore": "Explore the village"
+  },
+  "errors": {
+    "worldPaused": "The village is under maintenance. Try again in a few minutes.",
+    "alreadyHasCharacter": "Your soul already has a character: one person, one character.",
+    "notSoulController": "This account does not control your soul. Sign in again and retry.",
+    "genesisFoundersOnly": "During Genesis Week only Founders are born. If you hold $ALDEA, link your wallet.",
+    "birthNotReady": "The embers are not ready yet; a few more seconds.",
+    "alreadyAnchored": "Your soul was already anchored; carry on.",
+    "network": "Your request didn't go through. Retry.",
+    "unknown": "Something went wrong. Try again."
   }
 }

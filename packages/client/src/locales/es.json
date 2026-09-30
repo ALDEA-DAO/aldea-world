@@ -121,5 +121,46 @@
   },
   "world": {
     "paused": "La aldea está en pausa: por ahora no se puede nacer ni entrar a los edificios."
+  },
+  "townCenter": {
+    "title": "Centro Urbano",
+    "beBorn": "Nacer",
+    "yourCharacter": "Tu personaje",
+    "census": "Censo",
+    "chooseClass": "Elige tu clase",
+    "pickAClass": "Elige una clase para nacer",
+    "beBornAs": "Nacer como {{name}}",
+    "beBornAction": "nacer en la aldea",
+    "beFirst": "Sé la primera alma de la aldea.",
+    "maintenance": "La aldea está en mantenimiento.",
+    "pathCut": "El camino al Centro Urbano está cortado. Probemos de nuevo.",
+    "bornOn": "Nació el {{date}}",
+    "byTribe": "Por tribu",
+    "byClass": "Por clase"
+  },
+  "birth": {
+    "title": "Tu nacimiento",
+    "arriving": "Tu alma está llegando…",
+    "choosing": "Las brasas eligen su color…",
+    "completing": "Encendiendo el fuego nosotros mismos…",
+    "rekindled": "Las brasas se reavivaron, unos segundos más.",
+    "failed": "No pudimos completar tu nacimiento. Tu pedido está a salvo; reintenta.",
+    "retry": "Reintentar",
+    "howDrawn": "¿Cómo se sortea?",
+    "howDrawnText": "Tu tribu sale del hash de un bloque de Base que todavía no existe cuando pides nacer. Nadie, ni siquiera el equipo, puede saberla de antemano.",
+    "bornInto": "Naciste en la tribu",
+    "named": "Tu alma ya tiene nombre.",
+    "viewSoul": "Ver tu alma",
+    "explore": "Recorrer la aldea"
+  },
+  "errors": {
+    "worldPaused": "La aldea está en mantenimiento. Prueba en unos minutos.",
+    "alreadyHasCharacter": "Tu alma ya tiene un personaje: una persona, un personaje.",
+    "notSoulController": "Esta cuenta no controla tu alma. Vuelve a entrar e inténtalo otra vez.",
+    "genesisFoundersOnly": "Durante la Semana Génesis solo nacen los Fundadores. Si tienes $ALDEA, vincula tu wallet.",
+    "birthNotReady": "Las brasas todavía no están listas; unos segundos más.",
+    "alreadyAnchored": "Tu alma ya estaba anclada; sigue adelante.",
+    "network": "Tu pedido no salió. Reintentar.",
+    "unknown": "Algo no salió. Prueba de nuevo."
   }
 }

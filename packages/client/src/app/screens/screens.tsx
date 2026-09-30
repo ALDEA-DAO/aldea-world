@@ -6,6 +6,7 @@ import { isSignedIn } from "../../features/auth/AlmaAuthProvider";
 import { useAlmaSession } from "../../features/auth/useAlmaSession";
 import { YourKeys } from "../../features/soul/YourKeys";
 import { useCensus } from "../../mud/store";
+import { TownCenter } from "../../features/buildings/TownCenter";
 
 export function VillageScreen() {
   const { t } = useTranslation();
@@ -34,6 +35,7 @@ export function BuildingScreen() {
   const { buildingSlug = "" } = useParams();
   const building = buildingByRoute(buildingSlug);
   if (!building) return <NotFoundScreen />;
+  if (building.kind === "TownCenter") return <TownCenter />;
   return <Placeholder title={building.name[i18n.language === "en" ? "en" : "es"]}>{t("screens.building")}</Placeholder>;
 }
 
