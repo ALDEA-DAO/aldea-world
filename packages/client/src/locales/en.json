@@ -115,5 +115,11 @@
       "invalid_signature": "The signature didn't match.",
       "no_wallet": "We couldn't find a wallet in this browser."
     }
+  },
+  "census": {
+    "summary": "{{born}} souls born · {{gestating}} gestating"
+  },
+  "world": {
+    "paused": "The village is paused: births and building entries are on hold for now."
   }
 }

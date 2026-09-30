@@ -115,5 +115,11 @@
       "invalid_signature": "La firma no coincide.",
       "no_wallet": "No encontramos una wallet en este navegador."
     }
+  },
+  "census": {
+    "summary": "{{born}} almas nacidas · {{gestating}} en gestación"
+  },
+  "world": {
+    "paused": "La aldea está en pausa: por ahora no se puede nacer ni entrar a los edificios."
   }
 }
