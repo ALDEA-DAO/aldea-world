@@ -1,135 +1,33 @@
-import { createHash, randomBytes } from "node:crypto";
-import { createServer, type Server } from "node:http";
-import type { AddressInfo } from "node:net";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { PGlite } from "@electric-sql/pglite";
-import { drizzle } from "drizzle-orm/pglite";
-import { migrate } from "drizzle-orm/pglite/migrator";
+import { randomBytes } from "node:crypto";
+import type { PGlite } from "@electric-sql/pglite";
 import { eq } from "drizzle-orm";
 import { decodeJwt } from "jose";
-import { createPublicClient, http, type Address, type Hex } from "viem";
+import type { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { createApp } from "../src/app";
 import type { AnyDb } from "../src/auth/adapter";
-import { generateSigningKey } from "../src/auth/keys";
-import type { EmailCodeSender } from "../src/auth/methods/email";
-import { createAlmaAuth, type AlmaAuth } from "../src/auth/provider";
 import { loginWithKey, type ProvisionedCustody } from "../src/auth/souls";
-import { upsertOidcClients } from "../src/db/clients";
 import * as schema from "../src/db/schema";
-import { createRequestHandler } from "../src/server";
+import { begin as beginLogin, browser as stackBrowser, CHAIN_ID, finish as finishLogin, REDIRECT, startStack, type Browser, type Stack } from "./helpers/stack";
 import { VirtualAuthenticator } from "./helpers/virtualAuthenticator";
 
-const REDIRECT = "http://localhost:3000/auth/callback";
-const CHAIN_ID = 31337;
-
-let server: Server;
+let stack: Stack;
 let issuer: string;
-let auth: AlmaAuth;
 let db: AnyDb;
 let pg: PGlite;
-const sentCodes: { to: string; code: string }[] = [];
-const custodies: ProvisionedCustody[] = [];
+let sentCodes: Stack["sentCodes"];
+let custodies: ProvisionedCustody[];
 
 beforeAll(async () => {
-  pg = new PGlite();
-  db = drizzle(pg, { schema }) as unknown as AnyDb;
-  await migrate(drizzle(pg), { migrationsFolder: join(dirname(fileURLToPath(import.meta.url)), "../drizzle"), migrationsSchema: "alma" });
-  await upsertOidcClients(db, [{ clientId: "aldea-world", name: "ALDEA World", redirectUris: [REDIRECT] }]);
-
-  server = createServer();
-  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
-  const port = (server.address() as AddressInfo).port;
-  issuer = `http://localhost:${port}`;
-  auth = createAlmaAuth({ issuer, db, signingKeys: { keys: [await generateSigningKey()] }, cookieKeys: ["k"], pairwiseSalt: "s", apiResource: `${issuer}/v1` });
-
-  const sender: EmailCodeSender = { send: async (to, code) => void sentCodes.push({ to, code }) };
-  const provisionCustody = async () => {
-    const n = custodies.length + 1;
-    const c = {
-      subOrganizationId: `sub-${n}`,
-      walletId: `wallet-${n}`,
-      ownerAddress: `0x${n.toString(16).padStart(40, "1")}` as Address,
-      smartAccountAddress: `0x${n.toString(16).padStart(40, "5")}` as Address,
-    };
-    custodies.push(c);
-    return c;
-  };
-  // Plain signatures verify offline; the RPC is only needed for smart-account (ERC-1271/6492) signatures
-  const client = createPublicClient({ transport: http("http://127.0.0.1:1") });
-  const app = createApp({
-    pingDb: async () => {},
-    baseHead: async () => 1n,
-    corsOrigins: [],
-    interaction: {
-      auth,
-      soul: { db, chainId: CHAIN_ID, provisionCustody },
-      passkey: { rpID: "localhost", origin: issuer },
-      wallet: { domain: `localhost:${port}`, origin: issuer, chainId: CHAIN_ID, client },
-      email: { hmacKey: "test-hmac-key", sender },
-    },
-  });
-  server.on("request", createRequestHandler(app, auth));
+  stack = await startStack();
+  ({ issuer, db, pg, sentCodes, custodies } = stack);
 });
+afterAll(() => stack.close());
 
-afterAll(async () => {
-  await new Promise((resolve) => server.close(resolve));
-  await pg.close();
-});
-
-/** A browser that keeps cookies per name (enough for one issuer) and follows nothing by itself. */
-function browser() {
-  const jar = new Map<string, string>();
-  async function request(url: string, init: { method?: string; body?: unknown } = {}) {
-    const res = await fetch(new URL(url, issuer), {
-      method: init.method ?? "GET",
-      redirect: "manual",
-      headers: { cookie: [...jar].map(([k, v]) => `${k}=${v}`).join("; "), ...(init.body ? { "content-type": "application/json" } : {}) },
-      body: init.body ? JSON.stringify(init.body) : undefined,
-    });
-    for (const header of res.headers.getSetCookie()) {
-      const pair = header.split(";")[0]!;
-      const eq = pair.indexOf("=");
-      const value = pair.slice(eq + 1);
-      if (value) jar.set(pair.slice(0, eq), value);
-      else jar.delete(pair.slice(0, eq));
-    }
-    return res;
-  }
-  return { request, post: (path: string, body?: unknown) => request(path, { method: "POST", body: body ?? {} }) };
-}
-
-/** Starts a login at /authorize and returns the interaction's uid and the PKCE verifier. */
-async function begin(b = browser()) {
-  const verifier = randomBytes(32).toString("base64url");
-  const params = new URLSearchParams({
-    client_id: "aldea-world",
-    redirect_uri: REDIRECT,
-    response_type: "code",
-    scope: "openid alma",
-    code_challenge: createHash("sha256").update(verifier).digest("base64url"),
-    code_challenge_method: "S256",
-    nonce: "n",
-  });
-  const res = await b.request(`/authorize?${params}`);
-  const uid = /\/interaction\/([^/?]+)/.exec(res.headers.get("location") ?? "")![1]!;
-  return { b, uid, verifier };
-}
-
-/** Follows the redirect after a login method succeeded and returns the ID token's claims. */
-async function finish(b: ReturnType<typeof browser>, redirectTo: string, verifier: string) {
-  let next = redirectTo;
-  for (let i = 0; i < 5 && !next.startsWith(REDIRECT); i++) next = new URL((await b.request(next)).headers.get("location")!, issuer).href;
-  const code = new URL(next).searchParams.get("code")!;
-  const res = await fetch(`${issuer}/token`, {
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ grant_type: "authorization_code", code, redirect_uri: REDIRECT, client_id: "aldea-world", code_verifier: verifier }),
-  });
-  return decodeJwt(((await res.json()) as { id_token: string }).id_token);
-}
+const browser = () => stackBrowser(stack);
+const begin = (b?: Browser) => beginLogin(stack, b, "openid alma");
+/** Finishes the login and returns the ID token's claims. */
+const finish = async (b: Browser, redirectTo: string, verifier: string) => decodeJwt((await finishLogin(stack, b, redirectTo, verifier)).idToken);
 
 describe("hosted login page", () => {
   it("renders for the interaction's browser with a strict CSP, and not for others", async () => {

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
+import { useAlmaSession } from "../../features/auth/useAlmaSession";
 import { LOCALES, setLocale, type Locale } from "../../lib/i18n";
 import { getThemePreference, setThemePreference, type ThemePreference } from "../../lib/theme";
 
@@ -13,6 +15,7 @@ const themes: { value: ThemePreference; key: string }[] = [
 export function SettingsScreen() {
   const { t, i18n } = useTranslation();
   const [theme, setTheme] = useState(getThemePreference);
+  const { status, almaId } = useAlmaSession();
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
@@ -50,6 +53,13 @@ export function SettingsScreen() {
           ))}
         </div>
       </fieldset>
+      {status === "player" && almaId && (
+        <p className="mt-8">
+          <Link className="underline" to={`/alma/${almaId}`}>
+            {t("settings.yourKeys")}
+          </Link>
+        </p>
+      )}
     </div>
   );
 }

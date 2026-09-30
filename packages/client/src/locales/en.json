@@ -37,7 +37,8 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "themeSystem": "Follow the system",
-    "language": "Language"
+    "language": "Language",
+    "yourKeys": "Your keys"
   },
   "kit": {
     "title": "Design kit",
@@ -72,5 +73,47 @@
     "lookingForSoul": "Looking for your soul…",
     "failed": "We couldn't confirm your identity. Let's try again.",
     "retry": "Retry"
+  },
+  "keys": {
+    "title": "Your keys",
+    "loading": "Looking for your keys…",
+    "addAnother": "Add another way to sign in: if you lose this one, you don't lose your soul.",
+    "remove": "Remove",
+    "confirm": "Confirm with my passkey",
+    "merge": "Merge both souls",
+    "addPasskey": "Add a passkey",
+    "linkWallet": "Link a wallet",
+    "linkOwner": "Link a wallet as an owner of my account",
+    "recoveryEmail": "Recovery email",
+    "code": "Code",
+    "sendCode": "Send code",
+    "verifyEmail": "Link email",
+    "role": {
+      "login": "signs in",
+      "controller": "owns your account on Base",
+      "holdings": "holdings"
+    },
+    "kind": {
+      "passkey": "Passkey",
+      "email": "Email",
+      "google": "Google",
+      "apple": "Apple",
+      "evm": "Wallet (Base)",
+      "cardano": "Cardano wallet",
+      "midnight": "Midnight wallet",
+      "bitcoin": "Bitcoin",
+      "lightning": "Lightning",
+      "smartWallet": "Your account on Base"
+    },
+    "error": {
+      "step_up_required": "For your safety, confirm it's you before adding this key.",
+      "link_belongs_to_other_soul": "This key belongs to another soul. If both are yours, you can merge them.",
+      "last_login_method": "It's your only way to sign in. Add another one before removing it.",
+      "controller_link": "This key owns your account on Base; it can't be removed yet.",
+      "soul_anchored": "The other soul was already born in the village: it can't be merged.",
+      "invalid_code": "That code didn't work.",
+      "invalid_signature": "The signature didn't match.",
+      "no_wallet": "We couldn't find a wallet in this browser."
+    }
   }
 }

@@ -6,6 +6,8 @@ import { logger } from "./lib/logger";
 import { problemResponse, toProblem } from "./lib/problem";
 import { createAaRoutes, type AaRoutesDeps } from "./routes/aa";
 import { createCustodyRoutes, type CustodyRoutesDeps } from "./routes/custody";
+import { createLinkPasskeyRoutes, type LinkPasskeyDeps } from "./routes/linkPasskey";
+import { createMeRoutes, type MeRoutesDeps } from "./routes/me";
 import { createInteractionRoutes, type InteractionRoutesDeps } from "./routes/interaction";
 
 export interface AppDeps {
@@ -20,6 +22,8 @@ export interface AppDeps {
   interaction?: InteractionRoutesDeps;
   /** Turnkey sessions for the browser; absent when custody is not configured (local development). */
   custody?: CustodyRoutesDeps;
+  /** The soul's linked keys (`/v1/me`) and ALMA Auth's "add a passkey" page (`/link`). */
+  links?: { me: MeRoutesDeps; passkey: LinkPasskeyDeps };
 }
 
 const withTimeout = <T>(p: Promise<T>, ms: number) =>
@@ -48,6 +52,10 @@ export function createApp(deps: AppDeps) {
 
   if (deps.aa) app.route("/v1/aa", createAaRoutes(deps.aa));
   if (deps.custody) app.route("/v1/custody", createCustodyRoutes(deps.custody));
+  if (deps.links) {
+    app.route("/v1/me", createMeRoutes(deps.links.me));
+    app.route("/link", createLinkPasskeyRoutes(deps.links.passkey));
+  }
   if (deps.interaction) app.route("/interaction", createInteractionRoutes(deps.interaction));
 
   app.notFound((c) => problemResponse(c, { status: 404, code: "not_found", title: "Not found" }));

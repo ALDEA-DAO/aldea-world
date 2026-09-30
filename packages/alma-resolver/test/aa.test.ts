@@ -41,7 +41,8 @@ describe("sponsorship policy", () => {
   });
 
   it("never sponsors owner changes, admin functions, other targets or ETH", () => {
-    expect(check(op(execute(SENDER, addOwner)))).toMatchObject({ ok: false, reason: expect.stringContaining("not sponsored") });
+    // an owner change is only a candidate: the proxy sponsors it when the soul approved that owner
+    expect(check(op(execute(SENDER, addOwner)))).toMatchObject({ ok: false, ownerAddition: "0x000000000000000000000000000000000000dEaD" });
     expect(check(op(execute(WORLD, setPaused)))).toMatchObject({ ok: false, reason: expect.stringContaining("function") });
     expect(check(op(batch({ target: WORLD, data: requestBirth }, { target: SENDER, data: addOwner }))).ok).toBe(false);
     expect(check(op(execute(WORLD, requestBirth, 1n)))).toMatchObject({ ok: false, reason: "calls with ETH are not sponsored" });
@@ -51,7 +52,7 @@ describe("sponsorship policy", () => {
 });
 
 describe("POST /v1/aa/rpc", () => {
-  const setup = (signedIn = true) => {
+  const setup = (signedIn = true, approveOwnerAddition?: (almaId: string, sender: string, owner: string) => Promise<boolean>) => {
     const almaId = signedIn ? "alma:main:human:0123456789abcdef0123456789abcdef" : undefined;
     const upstream = vi.fn(async (_url: string | URL | Request, init?: RequestInit) =>
       Response.json({ jsonrpc: "2.0", id: JSON.parse(String(init?.body)).id, result: "0xok" }),
@@ -60,7 +61,7 @@ describe("POST /v1/aa/rpc", () => {
       pingDb: async () => {},
       baseHead: async () => 1n,
       corsOrigins: [],
-      aa: { bundlerUrl: "https://cdp.example/secret-key", chainId: CHAIN_ID, checkSponsorship: check, authenticate: async () => almaId, fetch: upstream as typeof fetch },
+      aa: { bundlerUrl: "https://cdp.example/secret-key", chainId: CHAIN_ID, checkSponsorship: check, authenticate: async () => almaId, approveOwnerAddition, fetch: upstream as typeof fetch },
     });
     const rpc = (method: string, params: unknown[]) =>
       app.request("/v1/aa/rpc", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) });
@@ -92,6 +93,23 @@ describe("POST /v1/aa/rpc", () => {
     expect((await rpc("eth_sendUserOperation", [op(execute(WORLD, requestBirth)), entryPoint07Address])).status).toBe(400);
     expect((await rpc("eth_sendRawTransaction", ["0x00"])).status).toBe(400);
     expect(upstream).not.toHaveBeenCalled();
+  });
+
+  it("sponsors adding an owner only when the soul approved that owner for that wallet", async () => {
+    const approvals: string[][] = [];
+    const approve = async (almaId: string, sender: string, owner: string) => {
+      approvals.push([almaId, sender, owner]);
+      return owner === "0x000000000000000000000000000000000000dEaD";
+    };
+    const { rpc, upstream } = setup(true, approve);
+    expect((await rpc("eth_sendUserOperation", [op(execute(SENDER, addOwner)), entryPoint06Address])).status).toBe(200);
+    expect(approvals[0]).toEqual(["alma:main:human:0123456789abcdef0123456789abcdef", SENDER, "0x000000000000000000000000000000000000dEaD"]);
+
+    const other = encodeFunctionData({ abi: wallet, functionName: "addOwnerAddress", args: ["0x000000000000000000000000000000000000bEEF"] });
+    expect((await rpc("eth_sendUserOperation", [op(execute(SENDER, other)), entryPoint06Address])).status).toBe(403);
+    // batching an owner change with anything else is never sponsored
+    expect((await rpc("eth_sendUserOperation", [op(batch({ target: SENDER, data: addOwner }, { target: WORLD, data: requestBirth })), entryPoint06Address])).status).toBe(403);
+    expect(upstream).toHaveBeenCalledTimes(1);
   });
 
   it("is not mounted without a CDP endpoint", async () => {

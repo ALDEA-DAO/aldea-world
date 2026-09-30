@@ -48,10 +48,11 @@ export async function emailStart(config: EmailConfig, deps: SoulDeps, email: str
 
 const wrongCode = () => new ProblemError(401, "invalid_code", "That code did not work", "Check the latest email we sent, or ask for a new code.");
 
-export async function emailVerify(config: EmailConfig, deps: SoulDeps, email: string, code: string) {
+/** Checks and consumes the latest code for this address; returns the link value (`hmac:<hex>`) it proves. */
+export async function consumeEmailCode(config: EmailConfig, db: SoulDeps["db"], email: string, code: string): Promise<string> {
   if (!isEmail(email) || !/^\d{6}$/.test(code)) throw wrongCode();
   const hmac = emailHmac(config.hmacKey, email);
-  const [latest] = await deps.db
+  const [latest] = await db
     .select()
     .from(emailCodes)
     .where(and(eq(emailCodes.emailHmac, hmac), isNull(emailCodes.usedAt), gt(emailCodes.expiresAt, new Date())))
@@ -59,13 +60,16 @@ export async function emailVerify(config: EmailConfig, deps: SoulDeps, email: st
     .limit(1);
   if (!latest || latest.attempts >= MAX_ATTEMPTS) throw wrongCode();
 
-  await deps.db.update(emailCodes).set({ attempts: latest.attempts + 1 }).where(eq(emailCodes.id, latest.id));
+  await db.update(emailCodes).set({ attempts: latest.attempts + 1 }).where(eq(emailCodes.id, latest.id));
   if (!timingSafeEqual(latest.codeHash, codeHash(code))) throw wrongCode();
-  await deps.db.update(emailCodes).set({ usedAt: new Date() }).where(eq(emailCodes.id, latest.id));
+  await db.update(emailCodes).set({ usedAt: new Date() }).where(eq(emailCodes.id, latest.id));
+  return `hmac:${hmac.toString("hex")}`;
+}
 
+export async function emailVerify(config: EmailConfig, deps: SoulDeps, email: string, code: string) {
   return loginWithKey(deps, {
     kind: "email",
-    value: `hmac:${hmac.toString("hex")}`,
+    value: await consumeEmailCode(config, deps.db, email, code),
     proof: { type: "email_otp", verifiedAt: new Date().toISOString() },
     label: "Email",
   });

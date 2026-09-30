@@ -149,9 +149,12 @@ export function createAlmaSession(config: AuthConfig) {
       }
     },
 
-    /** Goes to ALMA Auth. `nonce` binds the ID token to the custody session key. */
-    async signIn({ nonce, returnTo }: { nonce: string; returnTo: string }) {
-      await manager.signinRedirect({ nonce, state: { returnTo } satisfies ReturnState });
+    /**
+     * Goes to ALMA Auth. `nonce` binds the ID token to the custody session key; `reauthenticate` makes ALMA Auth ask
+     * for a key again even with a live session (sensitive changes need a recent sign-in).
+     */
+    async signIn({ nonce, returnTo, reauthenticate }: { nonce: string; returnTo: string; reauthenticate?: boolean }) {
+      await manager.signinRedirect({ nonce, state: { returnTo } satisfies ReturnState, ...(reauthenticate ? { prompt: "login" } : {}) });
     },
 
     /** Revokes the refresh token, signs out of ALMA Auth and tells the other tabs. */

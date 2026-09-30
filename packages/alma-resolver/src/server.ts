@@ -5,10 +5,10 @@ import type { AlmaAuth } from "./auth/provider";
 
 /**
  * One HTTP server for the Resolver's API (Hono) and ALMA Auth (oidc-provider, a Koa app): the API owns `/health`,
- * `/v1/*` and the login pages under `/interaction/*`; every other path (`/authorize`, `/token`, `/jwks`,
- * `/.well-known/openid-configuration`, …) belongs to the OIDC provider.
+ * `/v1/*`, the login pages under `/interaction/*` and the "add a passkey" page under `/link/*`; every other path
+ * (`/authorize`, `/token`, `/jwks`, `/.well-known/openid-configuration`, …) belongs to the OIDC provider.
  */
-const API_PREFIXES = ["/health", "/v1/", "/interaction/"];
+const API_PREFIXES = ["/health", "/v1/", "/interaction/", "/link/"];
 
 export function createRequestHandler(app: Hono, auth?: AlmaAuth) {
   const api = getRequestListener(app.fetch);

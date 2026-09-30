@@ -18,7 +18,8 @@ export interface WalletConfig {
   client: PublicClient;
 }
 
-export async function walletChallenge(config: WalletConfig, challenges: ChallengeStore, uid: string, address: string) {
+/** A Sign-In with Ethereum message for `address`, valid for 5 minutes. */
+export function siweMessage(config: Pick<WalletConfig, "domain" | "origin" | "chainId">, address: string, statement: string) {
   if (!isAddress(address)) throw new ProblemError(400, "invalid_address", "That is not an EVM address");
   const nonce = generateSiweNonce();
   const issuedAt = new Date();
@@ -31,21 +32,32 @@ export async function walletChallenge(config: WalletConfig, challenges: Challeng
     nonce,
     issuedAt,
     expirationTime: new Date(issuedAt.getTime() + 5 * 60 * 1000),
-    statement: "Sign in to ALMA. This does not send a transaction or cost gas.",
+    statement,
   });
-  await challenges.put(uid, "wallet", { message });
   return { message, nonce, expiresAt: new Date(issuedAt.getTime() + 5 * 60 * 1000).toISOString() };
+}
+
+/**
+ * Verifies the signature of a message we issued (compared with the stored copy, so nothing in it can be swapped:
+ * address, chain, nonce, domain). Returns the CAIP-10 account it proves.
+ */
+export async function verifySiwe(config: Pick<WalletConfig, "client" | "chainId">, issued: string | undefined, message: string, signature: Hex) {
+  if (!issued || issued !== message) throw new ProblemError(410, "challenge_expired", "The request expired", "Try again.");
+  const { address, nonce, domain } = parseSiweMessage(message) as { address: Address; nonce: string; domain: string };
+  const valid = await verifySiweMessage(config.client, { message, signature, domain, nonce, address }).catch(() => false);
+  if (!valid) throw new ProblemError(401, "invalid_signature", "The signature did not match");
+  return { address: getAddress(address), value: `eip155:${config.chainId}:${getAddress(address)}` };
+}
+
+export async function walletChallenge(config: WalletConfig, challenges: ChallengeStore, uid: string, address: string) {
+  const challenge = siweMessage(config, address, "Sign in to ALMA. This does not send a transaction or cost gas.");
+  await challenges.put(uid, "wallet", { message: challenge.message });
+  return challenge;
 }
 
 export async function walletVerify(config: WalletConfig, challenges: ChallengeStore, soulDeps: SoulDeps, uid: string, message: string, signature: Hex) {
   const pending = await challenges.take<{ message: string }>(uid, "wallet");
-  // The exact message we issued: nothing in it can be swapped (address, chain, nonce, domain)
-  if (!pending || pending.message !== message) throw new ProblemError(410, "challenge_expired", "The request expired", "Try again.");
-  const { address, nonce } = parseSiweMessage(message) as { address: Address; nonce: string };
-  const valid = await verifySiweMessage(config.client, { message, signature, domain: config.domain, nonce, address }).catch(() => false);
-  if (!valid) throw new ProblemError(401, "invalid_signature", "The signature did not match");
-
-  const value = `eip155:${config.chainId}:${getAddress(address)}`;
+  const { value } = await verifySiwe(config, pending?.message, message, signature);
   return loginWithKey(soulDeps, {
     kind: "evm",
     value,

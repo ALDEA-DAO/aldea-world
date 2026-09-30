@@ -10,6 +10,19 @@ export interface AlmaAccess {
   almaId: string;
   clientId: string;
   scopes: Set<string>;
+  /** How the soul signed in (RFC 8176: `hwk` passkey, `otp` email code, `pop` wallet) and when, in epoch seconds. */
+  amr: string[];
+  authTime?: number;
+}
+
+/** A sign-in (with any method) within the last `maxAgeSeconds`: required to add a way into the soul. */
+export function hasRecentAuth(access: AlmaAccess, maxAgeSeconds = 30 * 60): boolean {
+  return access.authTime !== undefined && Date.now() / 1000 - access.authTime <= maxAgeSeconds;
+}
+
+/** A passkey sign-in within the last `maxAgeSeconds`: required for changes to the soul's smart-wallet owners. */
+export function hasRecentPasskey(access: AlmaAccess, maxAgeSeconds = 10 * 60): boolean {
+  return access.amr.includes("hwk") && hasRecentAuth(access, maxAgeSeconds);
 }
 
 export function createAccessTokenVerifier({ issuer, audience, jwks }: { issuer: string; audience: string; jwks: JSONWebKeySet }) {
@@ -22,6 +35,8 @@ export function createAccessTokenVerifier({ issuer, audience, jwks }: { issuer: 
         almaId: payload.sub,
         clientId: String(payload.client_id ?? ""),
         scopes: new Set(typeof payload.scope === "string" ? payload.scope.split(" ") : []),
+        amr: Array.isArray(payload.amr) ? payload.amr.map(String) : [],
+        authTime: typeof payload.auth_time === "number" ? payload.auth_time : undefined,
       };
     } catch {
       return undefined;

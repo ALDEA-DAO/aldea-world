@@ -17,6 +17,8 @@ export interface AaRoutesDeps {
   checkSponsorship: (op: UserOperationV06) => SponsorshipDecision;
   /** The soul behind the request's access token, or undefined when it is missing or invalid. */
   authenticate: (c: Context) => Promise<string | undefined>;
+  /** Whether this soul may add `owner` to its smart wallet `sender` (a wallet it linked as controller with a passkey). */
+  approveOwnerAddition?: (almaId: string, sender: string, owner: string) => Promise<boolean>;
   fetch?: typeof fetch;
 }
 
@@ -53,7 +55,8 @@ export function createAaRoutes(deps: AaRoutesDeps) {
       }
       if (method.startsWith("pm_") && chainId !== numberToHex(deps.chainId)) return rpcError(c, id, -32602, "Wrong chain", 400);
       const decision = deps.checkSponsorship(op);
-      if (!decision.ok) {
+      const approvedOwner = !decision.ok && decision.ownerAddition && (await deps.approveOwnerAddition?.(almaId, op.sender, decision.ownerAddition));
+      if (!decision.ok && !approvedOwner) {
         logger.warn({ almaId, sender: op.sender, method, reason: decision.reason }, "sponsorship rejected");
         return rpcError(c, id, -32003, `Not sponsored: ${decision.reason}`);
       }

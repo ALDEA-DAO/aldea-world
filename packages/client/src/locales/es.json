@@ -37,7 +37,8 @@
     "themeLight": "Claro",
     "themeDark": "Oscuro",
     "themeSystem": "Según el sistema",
-    "language": "Idioma"
+    "language": "Idioma",
+    "yourKeys": "Tus llaves"
   },
   "kit": {
     "title": "Kit de diseño",
@@ -72,5 +73,47 @@
     "lookingForSoul": "Buscando tu alma…",
     "failed": "No pudimos confirmar tu identidad. Probemos de nuevo.",
     "retry": "Reintentar"
+  },
+  "keys": {
+    "title": "Tus llaves",
+    "loading": "Buscando tus llaves…",
+    "addAnother": "Agrega otra forma de entrar: si pierdes esta, no pierdes tu alma.",
+    "remove": "Quitar",
+    "confirm": "Confirmar con mi passkey",
+    "merge": "Unir las dos almas",
+    "addPasskey": "Agregar una passkey",
+    "linkWallet": "Vincular una wallet",
+    "linkOwner": "Vincular una wallet como dueña de mi cuenta",
+    "recoveryEmail": "Email de recuperación",
+    "code": "Código",
+    "sendCode": "Enviar código",
+    "verifyEmail": "Vincular email",
+    "role": {
+      "login": "para entrar",
+      "controller": "dueña de tu cuenta en Base",
+      "holdings": "tenencias"
+    },
+    "kind": {
+      "passkey": "Passkey",
+      "email": "Email",
+      "google": "Google",
+      "apple": "Apple",
+      "evm": "Wallet (Base)",
+      "cardano": "Wallet de Cardano",
+      "midnight": "Wallet de Midnight",
+      "bitcoin": "Bitcoin",
+      "lightning": "Lightning",
+      "smartWallet": "Tu cuenta en Base"
+    },
+    "error": {
+      "step_up_required": "Por seguridad, confirma que eres tú antes de agregar esta llave.",
+      "link_belongs_to_other_soul": "Esta llave pertenece a otra alma. Si las dos son tuyas, puedes unirlas.",
+      "last_login_method": "Es tu única forma de entrar. Agrega otra antes de quitarla.",
+      "controller_link": "Esta llave es dueña de tu cuenta en Base; todavía no se puede quitar.",
+      "soul_anchored": "La otra alma ya nació en la aldea: no se puede unir.",
+      "invalid_code": "Ese código no funcionó.",
+      "invalid_signature": "La firma no coincide.",
+      "no_wallet": "No encontramos una wallet en este navegador."
+    }
   }
 }

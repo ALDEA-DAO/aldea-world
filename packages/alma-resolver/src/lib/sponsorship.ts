@@ -1,6 +1,6 @@
 import { almaAnchorRegistryAbi, worldAbi } from "@aldea/shared/abis";
 import { SPONSORED_ALMA_REGISTRY_FUNCTIONS, SPONSORED_WORLD_FUNCTIONS } from "@aldea/shared/sponsorship";
-import { decodeFunctionData, getAddress, isAddress, isHex, parseAbi, toFunctionSelector, type Abi, type Address, type Hex } from "viem";
+import { decodeFunctionData, getAddress, isAddress, isAddressEqual, isHex, parseAbi, toFunctionSelector, type Abi, type Address, type Hex } from "viem";
 import { entryPoint06Address } from "viem/account-abstraction";
 
 /**
@@ -14,6 +14,7 @@ const smartWalletAbi = parseAbi([
   "function execute(address target, uint256 value, bytes data)",
   "function executeBatch((address target, uint256 value, bytes data)[] calls)",
 ]);
+const ownersAbi = parseAbi(["function addOwnerAddress(address owner)"]);
 export const COINBASE_SMART_WALLET_FACTORY: Address = "0xba5ed110efdba3d005bfc882d75358acbbb85842";
 
 export interface SponsorshipTargets {
@@ -28,7 +29,11 @@ export interface UserOperationV06 {
   callData: string;
 }
 
-export type SponsorshipDecision = { ok: true } | { ok: false; reason: string };
+/**
+ * `ownerAddition` marks the one self-call that may be sponsored: a single `addOwnerAddress(owner)` on the player's own
+ * wallet. Whether it is (the owner must be a wallet the soul linked with a recent passkey) is for the caller to decide.
+ */
+export type SponsorshipDecision = { ok: true } | { ok: false; reason: string; ownerAddition?: Address };
 
 function selectors(abi: Abi, names: readonly string[]): Set<Hex> {
   return new Set(
@@ -61,6 +66,16 @@ export function createSponsorshipPolicy(targets: SponsorshipTargets) {
       return { ok: false, reason: "callData is not execute or executeBatch" };
     }
     if (calls.length === 0) return { ok: false, reason: "no calls" };
+
+    const [only] = calls;
+    if (calls.length === 1 && only && isAddressEqual(only.target, op.sender as Address) && only.value === 0n) {
+      try {
+        const inner = decodeFunctionData({ abi: ownersAbi, data: only.data });
+        if (inner.functionName === "addOwnerAddress") return { ok: false, reason: "owner changes need approval", ownerAddition: getAddress(inner.args[0]) };
+      } catch {
+        // not an owner change: falls through to the target check below
+      }
+    }
 
     for (const call of calls) {
       const functions = allowed.get(getAddress(call.target));

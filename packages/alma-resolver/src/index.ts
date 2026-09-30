@@ -4,7 +4,9 @@ import type { Context } from "hono";
 import { createPublicClient, getAddress, http } from "viem";
 import { createApp } from "./app";
 import { bearerToken, createAccessTokenVerifier } from "./auth/accessToken";
+import { createChallengeStore } from "./auth/interaction";
 import { loadSigningKeys, publicJwks } from "./auth/keys";
+import { canAddOwner } from "./auth/links";
 import { logSender, resendSender } from "./auth/methods/email";
 import { createAlmaAuth } from "./auth/provider";
 import { createDb } from "./db/client";
@@ -68,6 +70,9 @@ const soul = {
     : undefined,
 };
 
+const corsOrigins = (env.CORS_ORIGINS ?? "http://localhost:3000").split(",").map((o) => o.trim());
+const challenges = createChallengeStore(db);
+
 // Login methods on the hosted pages
 const resendKey = env.RESEND_API_KEY;
 if (!resendKey && production) throw new Error("RESEND_API_KEY is required in production");
@@ -94,6 +99,7 @@ const aa =
           const token = bearerToken(c);
           return token ? (await verifyAccessToken(token))?.almaId : undefined;
         },
+        approveOwnerAddition: (almaId: string, sender: string, owner: string) => canAddOwner(db, chainId, almaId, sender, owner),
       }
     : undefined;
 
@@ -102,9 +108,13 @@ const app = createApp({
     await db.execute(sql`select 1`);
   },
   baseHead: () => base.getBlockNumber(),
-  corsOrigins: (env.CORS_ORIGINS ?? "http://localhost:3000").split(",").map((o) => o.trim()),
+  corsOrigins,
   aa,
   interaction,
+  links: {
+    me: { db, challenges, verifyAccessToken, wallet: interaction.wallet, email: interaction.email, worldOrigins: corsOrigins, issuer },
+    passkey: { db, challenges, passkey: interaction.passkey },
+  },
   custody: turnkey ? { soul, turnkey, verifyAccessToken, issuer, jwks: publicJwks(signingKeys) } : undefined,
 });
 

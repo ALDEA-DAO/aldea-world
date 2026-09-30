@@ -30,7 +30,8 @@ export interface AlmaSessionValue {
   /** The last sign-in failed (not cancelled): offer to retry. */
   signInFailed: boolean;
   accessToken: () => string | undefined;
-  signIn: () => Promise<void>;
+  /** Signs in; `reauthenticate` asks for a key again even with a live session (before sensitive changes). */
+  signIn: (options?: { reauthenticate?: boolean }) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -98,10 +99,10 @@ export function AlmaAuthProvider({ children }: { children: ReactNode }) {
       });
   }, [almaId, user, config, session]);
 
-  const signIn = useCallback(async () => {
+  const signIn = useCallback(async (options?: { reauthenticate?: boolean }) => {
     setSignInFailed(false);
     const nonce = await (await custody()).newCustodyNonce(config);
-    await session.signIn({ nonce, returnTo: location.hash || "#/" });
+    await session.signIn({ nonce, returnTo: location.hash || "#/", reauthenticate: options?.reauthenticate });
   }, [config, session]);
 
   const signOut = useCallback(async () => {

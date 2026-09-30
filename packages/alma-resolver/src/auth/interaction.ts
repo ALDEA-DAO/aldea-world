@@ -29,6 +29,10 @@ export function createChallengeStore(db: AnyDb) {
     async put(uid: string, kind: string, value: Record<string, unknown>) {
       await store.upsert(`${uid}:${kind}`, value, CHALLENGE_TTL);
     },
+    /** Reads a challenge without consuming it. */
+    async peek<T extends Record<string, unknown>>(uid: string, kind: string): Promise<T | undefined> {
+      return (await store.find(`${uid}:${kind}`)) as T | undefined;
+    },
     /** Returns the challenge once: it is deleted on read. */
     async take<T extends Record<string, unknown>>(uid: string, kind: string): Promise<T | undefined> {
       const id = `${uid}:${kind}`;

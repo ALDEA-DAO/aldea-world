@@ -2,6 +2,8 @@ import { buildingByRoute } from "@aldea/shared/catalog";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Placeholder } from "./Placeholder";
+import { useAlmaSession } from "../../features/auth/useAlmaSession";
+import { YourKeys } from "../../features/soul/YourKeys";
 
 export function VillageScreen() {
   const { t } = useTranslation();
@@ -33,9 +35,11 @@ export function WorldScreen() {
 export function SoulScreen() {
   const { t } = useTranslation();
   const { almaId } = useParams();
+  const session = useAlmaSession();
   return (
     <Placeholder title={t("screens.soul")}>
       <p className="mt-2 font-mono text-xs break-all">{almaId}</p>
+      {session.status === "player" && session.almaId === almaId && <YourKeys />}
     </Placeholder>
   );
 }

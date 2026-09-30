@@ -83,6 +83,11 @@ export function createAlmaAuth(options: AlmaAuthOptions) {
     clientBasedCORS: (_ctx, origin, client) => client.redirectUris?.some((uri) => URL.parse(uri)?.origin === origin) ?? false,
     ttl: ALMA_AUTH_TTL,
     rotateRefreshToken: true,
+    // How and when the soul last proved a key: sensitive calls (adding a smart-wallet owner) need a recent passkey
+    extraTokenClaims: async (ctx) => {
+      const source = ctx.oidc.entities.AuthorizationCode ?? ctx.oidc.entities.RefreshToken;
+      return source ? { amr: source.amr, auth_time: source.authTime } : undefined;
+    },
     // OIDC only honours offline_access with prompt=consent (a consent screen on every login). Worlds are first-party
     // browser apps, so they always get a rotating refresh token, bound to the ALMA Auth session: logging out ends it.
     issueRefreshToken: async (_ctx, client) => client.grantTypeAllowed("refresh_token"),
