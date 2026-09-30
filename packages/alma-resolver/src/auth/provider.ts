@@ -79,6 +79,8 @@ export function createAlmaAuth(options: AlmaAuthOptions) {
     },
     enabledJWA: { idTokenSigningAlgValues: ["ES256"] },
     pkce: { required: () => true },
+    // Browsers may call the token and revocation endpoints only from the origins a client redirects to
+    clientBasedCORS: (_ctx, origin, client) => client.redirectUris?.some((uri) => URL.parse(uri)?.origin === origin) ?? false,
     ttl: ALMA_AUTH_TTL,
     rotateRefreshToken: true,
     // OIDC only honours offline_access with prompt=consent (a consent screen on every login). Worlds are first-party
@@ -87,8 +89,19 @@ export function createAlmaAuth(options: AlmaAuthOptions) {
     conformIdTokenClaims: false,
     features: {
       devInteractions: { enabled: false },
-      revocation: { enabled: true },
-      rpInitiatedLogout: { enabled: true },
+      // A client may only revoke its own tokens
+      revocation: { enabled: true, allowedPolicy: async (_ctx, client, token) => token.clientId === client.clientId },
+      rpInitiatedLogout: {
+        enabled: true,
+        // Worlds call logout only when the player pressed "Sign out": finish it without a second confirmation
+        logoutSource: async (ctx, form) => {
+          ctx.body = `<!doctype html><html><head><meta charset="utf-8"><title>ALMA</title></head><body>${form}<script>
+            const f = document.getElementById("op.logoutForm");
+            f.insertAdjacentHTML("beforeend", '<input type="hidden" name="logout" value="yes">');
+            f.submit();
+          </script></body></html>`;
+        },
+      },
       userinfo: { enabled: true },
       resourceIndicators: {
         enabled: true,

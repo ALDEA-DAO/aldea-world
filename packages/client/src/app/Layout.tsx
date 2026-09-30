@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
+import { AuthReturnState, SignInWithAlma } from "../features/auth/SignInWithAlma";
 
 const links = [
   { to: "/", key: "nav.village", end: true },
@@ -31,7 +32,9 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
+        <SignInWithAlma />
       </header>
+      <AuthReturnState />
       <main className="flex-1">
         <Outlet />
       </main>

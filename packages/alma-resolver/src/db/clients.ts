@@ -3,7 +3,7 @@
  * own list in ALMA_AUTH_CLIENTS (JSON array); without it, the local `aldea-world` client for the Vite dev server.
  *
  *   pnpm --filter @aldea/alma-resolver db:clients
- *   ALMA_AUTH_CLIENTS='[{"clientId":"aldea-world","name":"ALDEA World","redirectUris":["https://staging.aldea.world/auth/callback"]}]' pnpm …
+ *   ALMA_AUTH_CLIENTS='[{"clientId":"aldea-world","name":"ALDEA World","redirectUris":["https://staging.aldea.world/"]}]' pnpm …
  */
 import { z } from "zod";
 import type { AnyDb } from "../auth/adapter";
@@ -24,7 +24,7 @@ const LOCAL_CLIENTS: OidcClientInput[] = [
   {
     clientId: "aldea-world",
     name: "ALDEA World",
-    redirectUris: ["http://localhost:3000/auth/callback"],
+    redirectUris: ["http://localhost:3000/"],
     postLogoutRedirectUris: ["http://localhost:3000/"],
   },
 ];

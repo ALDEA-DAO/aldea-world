@@ -64,5 +64,13 @@
     "tabBirthBody": "Elige una de las 11 clases.",
     "skeletons": "Cargando",
     "tribes": "Tribus"
+  },
+  "auth": {
+    "signIn": "Entrar",
+    "signOut": "Salir",
+    "signInTo": "Inicia sesión para {{action}}",
+    "lookingForSoul": "Buscando tu alma…",
+    "failed": "No pudimos confirmar tu identidad. Probemos de nuevo.",
+    "retry": "Reintentar"
   }
 }

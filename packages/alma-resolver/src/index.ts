@@ -53,12 +53,13 @@ const issuerUrl = new URL(issuer);
 // Custody: every new soul gets a Turnkey sub-organization and a Coinbase Smart Wallet (not locally: anvil has neither
 // Turnkey's reach to a localhost issuer nor the smart-wallet factory).
 const turnkeyConfig = turnkeyConfigFromEnv();
+const turnkey = turnkeyConfig ? createTurnkeyClient(turnkeyConfig) : undefined;
 const soul = {
   db,
   chainId,
-  provisionCustody: turnkeyConfig
+  provisionCustody: turnkey
     ? turnkeyCustodyProvisioner({
-        turnkey: createTurnkeyClient(turnkeyConfig),
+        turnkey,
         base,
         issuer,
         // Turnkey logs the soul in with ID tokens issued to this world's OIDC client
@@ -104,6 +105,7 @@ const app = createApp({
   corsOrigins: (env.CORS_ORIGINS ?? "http://localhost:3000").split(",").map((o) => o.trim()),
   aa,
   interaction,
+  custody: turnkey ? { soul, turnkey, verifyAccessToken, issuer, jwks: publicJwks(signingKeys) } : undefined,
 });
 
 createResolverServer(app, auth).listen(port, () => logger.info({ port, issuer }, "alma-resolver listening"));
