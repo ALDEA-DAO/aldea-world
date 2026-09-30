@@ -98,24 +98,42 @@ export async function ensureCustody(deps: SoulDeps, almaId: string): Promise<Pro
   const provisioned = await deps.provisionCustody?.(almaId);
   if (!provisioned) return undefined;
 
-  const [soul] = await deps.db.select({ doc: souls.doc }).from(souls).where(eq(souls.almaId, almaId)).limit(1);
-  if (!soul) throw new Error(`soul ${almaId} not found`);
-  const previous = soul.doc as AlmaCoreDoc;
-  const doc = coreDoc(almaId, previous.createdAt, deps.chainId, provisioned.smartAccountAddress);
   await deps.db.transaction(async (tx) => {
     await tx.insert(custody).values({ almaId, ...provisioned });
-    await tx.insert(links).values({
-      almaId,
-      kind: "evm",
-      value: `eip155:${deps.chainId}:${provisioned.smartAccountAddress}`,
-      roles: ["controller"],
-      proof: { type: "custody", provider: "turnkey", subOrganizationId: provisioned.subOrganizationId, owner: provisioned.ownerAddress, verifiedAt: new Date().toISOString() },
+    await setController(tx, deps.chainId, almaId, provisioned.smartAccountAddress, {
       label: "Coinbase Smart Wallet",
+      proof: { type: "custody", provider: "turnkey", subOrganizationId: provisioned.subOrganizationId, owner: provisioned.ownerAddress, verifiedAt: new Date().toISOString() },
     });
-    await tx
-      .update(souls)
-      .set({ doc, docHash: Buffer.from(hexToBytes(docHash(doc))), updatedAt: sql`now()` })
-      .where(eq(souls.almaId, almaId));
   });
   return provisioned;
+}
+
+/**
+ * Local development only (no custody provider): the browser's development key becomes the soul's controller. A soul
+ * keeps the first controller it gets.
+ */
+export async function ensureDevelopmentController(deps: SoulDeps, almaId: string, controller: Address) {
+  const [existing] = await deps.db
+    .select({ value: links.value })
+    .from(links)
+    .where(and(eq(links.almaId, almaId), eq(links.kind, "evm"), isNull(links.revokedAt), arrayContains(links.roles, ["controller"])))
+    .limit(1);
+  const value = `eip155:${deps.chainId}:${getAddress(controller)}`;
+  if (existing) {
+    if (existing.value !== value) throw new ProblemError(409, "controller_mismatch", "This soul already has another controller");
+    return;
+  }
+  await deps.db.transaction((tx) => setController(tx, deps.chainId, almaId, getAddress(controller), { label: "Development key", proof: { type: "development", verifiedAt: new Date().toISOString() } }));
+}
+
+/** Links the soul's controller and writes it into the ALMA document (whose hash is what gets anchored). */
+async function setController(db: AnyDb, chainId: number, almaId: string, controller: Address, link: { label: string; proof: Record<string, unknown> }) {
+  const [soul] = await db.select({ doc: souls.doc }).from(souls).where(eq(souls.almaId, almaId)).limit(1);
+  if (!soul) throw new Error(`soul ${almaId} not found`);
+  const doc = coreDoc(almaId, (soul.doc as AlmaCoreDoc).createdAt, chainId, controller);
+  await db.insert(links).values({ almaId, kind: "evm", value: `eip155:${chainId}:${controller}`, roles: ["controller"], ...link });
+  await db
+    .update(souls)
+    .set({ doc, docHash: Buffer.from(hexToBytes(docHash(doc))), updatedAt: sql`now()` })
+    .where(eq(souls.almaId, almaId));
 }

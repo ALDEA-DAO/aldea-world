@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlmaApiError, createAlmaApi } from "../../lib/almaApi";
 import { authConfig } from "./config";
+import { isSignedIn } from "./AlmaAuthProvider";
 import { useAlmaSession } from "./useAlmaSession";
 
 /** The signed-in soul's linked keys, and the actions to add, remove and merge them. */
@@ -33,7 +34,7 @@ export function useLinks() {
   }, [almaApi]);
 
   useEffect(() => {
-    if (status !== "player") return;
+    if (!isSignedIn(status)) return;
     let current = true;
     almaApi<{ items: AlmaLink[] }>("/v1/me/links")
       .then(({ items }) => current && setLinks(items))

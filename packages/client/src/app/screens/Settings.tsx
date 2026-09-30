@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
+import { isSignedIn } from "../../features/auth/AlmaAuthProvider";
 import { useAlmaSession } from "../../features/auth/useAlmaSession";
 import { LOCALES, setLocale, type Locale } from "../../lib/i18n";
 import { getThemePreference, setThemePreference, type ThemePreference } from "../../lib/theme";
@@ -53,7 +54,7 @@ export function SettingsScreen() {
           ))}
         </div>
       </fieldset>
-      {status === "player" && almaId && (
+      {isSignedIn(status) && almaId && (
         <p className="mt-8">
           <Link className="underline" to={`/alma/${almaId}`}>
             {t("settings.yourKeys")}

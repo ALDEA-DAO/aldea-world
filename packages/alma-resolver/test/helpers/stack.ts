@@ -18,6 +18,7 @@ import { createAlmaAuth, type AlmaAuth } from "../../src/auth/provider";
 import type { ProvisionedCustody } from "../../src/auth/souls";
 import { upsertOidcClients } from "../../src/db/clients";
 import * as schema from "../../src/db/schema";
+import { NO_ACTIVITY } from "../../src/routes/souls";
 import { createRequestHandler } from "../../src/server";
 import type { VirtualAuthenticator } from "./virtualAuthenticator";
 
@@ -40,7 +41,8 @@ export interface Stack {
   close: () => Promise<void>;
 }
 
-export async function startStack(): Promise<Stack> {
+/** `custody: false` runs like local development: no custody provider, the client names a development key. */
+export async function startStack({ custody = true }: { custody?: boolean } = {}): Promise<Stack> {
   const pg = new PGlite();
   const db = drizzle(pg, { schema }) as unknown as AnyDb;
   await migrate(drizzle(pg), { migrationsFolder: join(dirname(fileURLToPath(import.meta.url)), "../../drizzle"), migrationsSchema: "alma" });
@@ -72,7 +74,7 @@ export async function startStack(): Promise<Stack> {
   // Plain signatures verify offline; the RPC is only needed for smart-account (ERC-1271/6492) signatures
   const client = createPublicClient({ transport: http("http://127.0.0.1:1") });
   const challenges = createChallengeStore(db);
-  const soul = { db, chainId: CHAIN_ID, provisionCustody };
+  const soul = { db, chainId: CHAIN_ID, provisionCustody: custody ? provisionCustody : undefined };
   const passkey = { rpID: "localhost", origin: issuer };
   const email = { hmacKey: "test-hmac-key", sender };
   const wallet = { domain: `localhost:${port}`, origin: issuer, chainId: CHAIN_ID, client };
@@ -81,6 +83,7 @@ export async function startStack(): Promise<Stack> {
     baseHead: async () => 1n,
     corsOrigins: [WORLD],
     interaction: { auth, soul, passkey, wallet, email },
+    souls: { soul, verifyAccessToken, activity: async () => NO_ACTIVITY, allowDevelopmentController: !custody },
     links: {
       me: { db, challenges, verifyAccessToken, wallet, email, worldOrigins: [WORLD], issuer },
       passkey: { db, challenges, passkey },

@@ -2,6 +2,7 @@ import { buildingByRoute } from "@aldea/shared/catalog";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Placeholder } from "./Placeholder";
+import { isSignedIn } from "../../features/auth/AlmaAuthProvider";
 import { useAlmaSession } from "../../features/auth/useAlmaSession";
 import { YourKeys } from "../../features/soul/YourKeys";
 
@@ -39,7 +40,7 @@ export function SoulScreen() {
   return (
     <Placeholder title={t("screens.soul")}>
       <p className="mt-2 font-mono text-xs break-all">{almaId}</p>
-      {session.status === "player" && session.almaId === almaId && <YourKeys />}
+      {isSignedIn(session.status) && session.almaId === almaId && <YourKeys />}
     </Placeholder>
   );
 }

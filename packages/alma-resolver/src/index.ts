@@ -13,6 +13,7 @@ import { createDb } from "./db/client";
 import { logger } from "./lib/logger";
 import { initSentry } from "./lib/sentry";
 import { createSponsorshipPolicy } from "./lib/sponsorship";
+import { NO_ACTIVITY } from "./routes/souls";
 import { createTurnkeyClient, turnkeyConfigFromEnv, turnkeyCustodyProvisioner } from "./lib/turnkey";
 import { createResolverServer } from "./server";
 
@@ -111,6 +112,13 @@ const app = createApp({
   corsOrigins,
   aa,
   interaction,
+  souls: {
+    soul,
+    verifyAccessToken,
+    // The read model (Effectstream) fills in characters, tribes and Founders once it indexes births
+    activity: async () => NO_ACTIVITY,
+    allowDevelopmentController: !turnkey && !production,
+  },
   links: {
     me: { db, challenges, verifyAccessToken, wallet: interaction.wallet, email: interaction.email, worldOrigins: corsOrigins, issuer },
     passkey: { db, challenges, passkey: interaction.passkey },

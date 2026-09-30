@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../components/ui/Button";
+import { isSignedIn } from "./AlmaAuthProvider";
 import { useAlmaSession } from "./useAlmaSession";
 
 /**
@@ -10,7 +11,7 @@ import { useAlmaSession } from "./useAlmaSession";
 export function RequireSession({ action, children }: { action: string; children: ReactNode }) {
   const { t } = useTranslation();
   const { status, signIn } = useAlmaSession();
-  if (status === "player") return <>{children}</>;
+  if (isSignedIn(status)) return <>{children}</>;
   return (
     <Button variant="secondary" disabled={status === "loading"} onClick={() => void signIn()}>
       {t("auth.signInTo", { action })}

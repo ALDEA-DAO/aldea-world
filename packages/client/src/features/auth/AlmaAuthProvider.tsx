@@ -1,6 +1,7 @@
 import { createContext, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { User } from "oidc-client-ts";
 import { authConfig } from "./config";
+import { createAlmaApi } from "../../lib/almaApi";
 import { createAlmaSession } from "./session";
 import type { PlayerAccount } from "./smartAccount";
 
@@ -12,9 +13,12 @@ const smartAccount = () => import("./smartAccount");
  * Sign in with ALMA for the whole app. Every screen works as a guest; only writing actions need a session.
  *
  * - `guest`: no session.
- * - `player`: signed in with a soul (prepared until it is anchored on-chain when the player is born).
+ * - `player`: signed in with a soul that is still `prepared` (not yet anchored on-chain).
+ * - `soul`: signed in with a soul anchored on-chain (the player was born).
  */
-export type SessionStatus = "loading" | "guest" | "player";
+export type SessionStatus = "loading" | "guest" | "player" | "soul";
+
+export const isSignedIn = (status: SessionStatus) => status === "player" || status === "soul";
 
 export interface AlmaSessionValue {
   status: SessionStatus;
@@ -33,6 +37,8 @@ export interface AlmaSessionValue {
   /** Signs in; `reauthenticate` asks for a key again even with a live session (before sensitive changes). */
   signIn: (options?: { reauthenticate?: boolean }) => Promise<void>;
   signOut: () => Promise<void>;
+  /** Re-reads the soul from the Resolver (after its birth anchors it). */
+  refreshSoul: () => Promise<void>;
 }
 
 export const AlmaSessionContext = createContext<AlmaSessionValue | undefined>(undefined);
@@ -46,6 +52,9 @@ export function AlmaAuthProvider({ children }: { children: ReactNode }) {
   const [accountError, setAccountError] = useState<string>();
   const [returning, setReturning] = useState(() => session.isCallback());
   const [signInFailed, setSignInFailed] = useState(false);
+  // The soul known to be anchored on-chain (per soul, so switching souls never carries it over)
+  const [anchoredSoul, setAnchoredSoul] = useState<string>();
+  const almaApi = useMemo(() => createAlmaApi({ apiUrl: config.apiUrl, accessToken: session.accessToken }), [config, session]);
   const accountFor = useRef<string | undefined>(undefined);
 
   useEffect(() => {
@@ -75,6 +84,23 @@ export function AlmaAuthProvider({ children }: { children: ReactNode }) {
   }, [session]);
 
   const almaId = user?.profile.sub;
+
+  const refreshSoul = useCallback(async () => {
+    const soul = await almaApi<{ id: string; status: string }>("/v1/souls/me");
+    if (soul.status === "anchored" || soul.status === "active") setAnchoredSoul(soul.id);
+  }, [almaApi]);
+
+  // Whether the soul was born (anchored) decides between `player` and `soul`
+  useEffect(() => {
+    if (!almaId) return;
+    let current = true;
+    almaApi<{ id: string; status: string }>("/v1/souls/me")
+      .then((soul) => current && (soul.status === "anchored" || soul.status === "active") && setAnchoredSoul(soul.id))
+      .catch(() => undefined);
+    return () => {
+      current = false;
+    };
+  }, [almaId, almaApi]);
 
   // Opens the custody session once per soul: needs the ID token, which arrives with each sign-in and refresh
   useEffect(() => {
@@ -112,7 +138,7 @@ export function AlmaAuthProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AlmaSessionValue>(
     () => ({
-      status,
+      status: status === "player" && almaId !== undefined && anchoredSoul === almaId ? "soul" : status,
       almaId,
       amr: user?.profile.amr as string[] | undefined,
       account,
@@ -122,8 +148,9 @@ export function AlmaAuthProvider({ children }: { children: ReactNode }) {
       accessToken: session.accessToken,
       signIn,
       signOut,
+      refreshSoul,
     }),
-    [status, almaId, user, account, accountError, returning, signInFailed, session, signIn, signOut],
+    [status, anchoredSoul, almaId, user, account, accountError, returning, signInFailed, session, signIn, signOut, refreshSoul],
   );
 
   return <AlmaSessionContext.Provider value={value}>{children}</AlmaSessionContext.Provider>;
