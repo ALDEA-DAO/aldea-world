@@ -45,7 +45,7 @@ export function Layout() {
         </p>
       )}
       <AuthReturnState />
-      <main className="flex-1">
+      <main className="flex flex-1 flex-col">
         <Outlet />
       </main>
     </div>

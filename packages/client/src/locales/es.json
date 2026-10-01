@@ -165,7 +165,14 @@
     "unknown": "Algo no salió. Prueba de nuevo."
   },
   "village": {
-    "beBorn": "Nacer en ALDEA"
+    "beBorn": "Nacer en ALDEA",
+    "loading": "El camino se está abriendo…",
+    "enter": "Entrar a {{building}}",
+    "canvasLabel": "La aldea. Flechas o WASD para caminar, Tab para ir de puerta en puerta, Enter para entrar.",
+    "hint": "Tocá el suelo o un edificio para caminar · flechas o WASD · rueda para acercar",
+    "guestHint": "Arrastrá para mirar la aldea · tocá un edificio para entrar",
+    "failed": "No pudimos abrir la aldea en este dispositivo.",
+    "useList": "Abrir el modo lista"
   },
   "identity": {
     "copy": "Copiar",

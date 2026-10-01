@@ -65,8 +65,15 @@ async function build(pieces) {
     const node = SkeletonUtils.clone(gltf.scene);
     node.position.set(...(piece.pos ?? [0, 0, 0]));
     node.rotation.y = ((piece.rot ?? 0) * Math.PI) / 2; // quarter turns (fractions for 8-direction characters)
-    // Kenney's foliage is single-sided planes: show both faces instead of black backs
-    node.traverse((o) => o.isMesh && (o.material.side = THREE.DoubleSide));
+    // Kenney's foliage is single-sided planes, and the Nature Kit's materials are exported as metallic (black without
+    // an environment map): show both faces, as matte surfaces
+    node.traverse((o) => {
+      if (!o.isMesh) return;
+      for (const material of [o.material].flat()) {
+        material.side = THREE.DoubleSide;
+        if ("metalness" in material) material.metalness = 0;
+      }
+    });
     if (piece.scale) node.scale.setScalar(piece.scale);
     node.userData.animations = gltf.animations;
     group.add(node);

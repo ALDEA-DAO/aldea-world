@@ -165,7 +165,14 @@
     "unknown": "Something went wrong. Try again."
   },
   "village": {
-    "beBorn": "Be born in ALDEA"
+    "beBorn": "Be born in ALDEA",
+    "loading": "The path is opening…",
+    "enter": "Enter {{building}}",
+    "canvasLabel": "The village. Arrows or WASD to walk, Tab to move from door to door, Enter to go in.",
+    "hint": "Tap the ground or a building to walk · arrows or WASD · wheel to zoom",
+    "guestHint": "Drag to look around · tap a building to go in",
+    "failed": "We could not open the village on this device.",
+    "useList": "Open list mode"
   },
   "identity": {
     "copy": "Copy",
