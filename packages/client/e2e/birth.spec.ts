@@ -7,12 +7,14 @@ import { foundry } from "viem/chains";
 import { decodeGameError } from "../src/lib/errors";
 
 /**
- * The magic moment, locally: sign in with a passkey, pick a class with the keyboard, be born. With no Midwife
- * running, the client completes the birth itself (FR-011) within 30 s; the tribe is revealed without scale or
- * particles when the system asks for reduced motion. A second birth fails with its own copy.
- * Needs the local stack with anvil producing blocks and the World deployed.
+ * The magic moment, locally: sign in with a passkey, pick a class with the keyboard, be born. The Midwife completes
+ * the birth (or, without it, the client does after 20 s, FR-011); the tribe is revealed without scale or particles
+ * when the system asks for reduced motion; the Resolver records the soul's tribe membership within 10 s. A second
+ * birth fails with its own copy.
+ * Needs the full local stack (`pnpm dev`): anvil producing blocks, the World, Effectstream, the relay and the Resolver.
  */
 
+const RESOLVER = process.env.E2E_RESOLVER_URL ?? "http://localhost:8787";
 const deployment = JSON.parse(readFileSync(new URL("../../shared/src/deployments/31337.json", import.meta.url), "utf8")) as { world: { address: Address } };
 
 async function passkeyDevice(context: BrowserContext, page: Page) {
@@ -60,8 +62,17 @@ test("a soul is born as an Archer, chosen with the keyboard, and learns its trib
   await page.getByRole("tab", { name: /Censo|Census/ }).click();
   await expect(page.getByText(/[1-9]\d* (almas nacidas|souls born)/)).toBeVisible();
 
-  // One person, one character: a second request fails with its own copy
   const almaId = (await page.getByTitle(/^alma:main:human:/).getAttribute("title"))!;
+
+  // Within 10 s the Resolver knows: the soul is active and a member of its tribe's organization, with evidence
+  const soul = async () => (await (await fetch(`${RESOLVER}/v1/souls/${almaId}`)).json()) as { status: string; tribe: { almaId: string } | null; relationships: { type: string; to: string; evidence: { event: string } }[] };
+  await expect.poll(async () => (await soul()).status, { timeout: 10_000 }).toBe("active");
+  const { tribe, relationships } = await soul();
+  expect(relationships).toEqual([{ type: "member_of", to: tribe!.almaId, evidence: expect.objectContaining({ event: "CharacterBorn" }) }]);
+  const members = (await (await fetch(`${RESOLVER}/v1/orgs/${tribe!.almaId}/members`)).json()) as { items: { almaId: string; characterClass: number }[] };
+  expect(members.items).toContainEqual(expect.objectContaining({ almaId, characterClass: 0 }));
+
+  // One person, one character: a second request fails with its own copy
   const devKey = (await page.evaluate((id) => localStorage.getItem(`aldea:dev-owner:${id}`), almaId)) as Hex;
   const client = createPublicClient({ chain: foundry, transport: http() });
   const second = await client

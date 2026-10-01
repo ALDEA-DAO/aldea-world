@@ -15,7 +15,8 @@
     "db:generate": "drizzle-kit generate",
     "smoke:custody": "tsx --env-file=.env.staging scripts/smoke-custody.ts",
     "db:clients": "tsx src/db/clients.ts",
-    "auth:keygen": "tsx scripts/auth-keygen.ts"
+    "auth:keygen": "tsx scripts/auth-keygen.ts",
+    "seed": "tsx src/seed/orgs.ts"
   },
   "dependencies": {
     "@adasouls/alma-core": "^0.3.0",

@@ -219,3 +219,10 @@ export const custody = alma.table("custody", {
   smartAccountAddress: text("smart_account_address").notNull().unique(),
   createdAt: tz("created_at").notNull().defaultNow(),
 });
+
+// drizzle/0002_sync_state.sql
+export const syncState = alma.table("sync_state", {
+  key: text("key").primaryKey(),
+  since: bigint("since", { mode: "number" }).notNull(),
+  updatedAt: tz("updated_at").notNull().defaultNow(),
+});

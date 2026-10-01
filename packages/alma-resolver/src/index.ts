@@ -13,7 +13,9 @@ import { createDb } from "./db/client";
 import { logger } from "./lib/logger";
 import { initSentry } from "./lib/sentry";
 import { createSponsorshipPolicy } from "./lib/sponsorship";
-import { NO_ACTIVITY } from "./routes/souls";
+import { createSyncJob, effectstreamFeeds } from "./jobs/syncFromEffectstream";
+import { soulActivityFromDb } from "./routes/orgs";
+import { loadDeployment } from "./seed/orgs";
 import { createTurnkeyClient, turnkeyConfigFromEnv, turnkeyCustodyProvisioner } from "./lib/turnkey";
 import { createResolverServer } from "./server";
 
@@ -115,8 +117,8 @@ const app = createApp({
   souls: {
     soul,
     verifyAccessToken,
-    // The read model (Effectstream) fills in characters, tribes and Founders once it indexes births
-    activity: async () => NO_ACTIVITY,
+    // Characters and tribes as the sync job recorded them from Effectstream
+    activity: soulActivityFromDb(db),
     allowDevelopmentController: !turnkey && !production,
   },
   links: {
@@ -125,5 +127,19 @@ const app = createApp({
   },
   custody: turnkey ? { soul, turnkey, verifyAccessToken, issuer, jwks: publicJwks(signingKeys) } : undefined,
 });
+
+// Every 2 s: anchors and births from Effectstream into souls, bindings and tribe memberships
+const sync = createSyncJob({ db, feeds: effectstreamFeeds(env.EFFECTSTREAM_API_URL ?? "http://localhost:9999"), deployment: () => loadDeployment(chainId) });
+let syncDown = false;
+setInterval(() => {
+  sync.tick().then(
+    () => (syncDown = false),
+    (err: unknown) => {
+      // Effectstream may be starting or restarting: say so once, then stay quiet until it is back
+      if (!syncDown) logger.warn({ err: err instanceof Error ? err.message : String(err) }, "sync from Effectstream is failing");
+      syncDown = true;
+    },
+  );
+}, Number(env.SYNC_INTERVAL_MS ?? 2_000)).unref();
 
 createResolverServer(app, auth).listen(port, () => logger.info({ port, issuer }, "alma-resolver listening"));

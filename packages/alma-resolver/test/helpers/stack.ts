@@ -18,7 +18,7 @@ import { createAlmaAuth, type AlmaAuth } from "../../src/auth/provider";
 import type { ProvisionedCustody } from "../../src/auth/souls";
 import { upsertOidcClients } from "../../src/db/clients";
 import * as schema from "../../src/db/schema";
-import { NO_ACTIVITY } from "../../src/routes/souls";
+import { soulActivityFromDb } from "../../src/routes/orgs";
 import { createRequestHandler } from "../../src/server";
 import type { VirtualAuthenticator } from "./virtualAuthenticator";
 
@@ -83,7 +83,7 @@ export async function startStack({ custody = true }: { custody?: boolean } = {})
     baseHead: async () => 1n,
     corsOrigins: [WORLD],
     interaction: { auth, soul, passkey, wallet, email },
-    souls: { soul, verifyAccessToken, activity: async () => NO_ACTIVITY, allowDevelopmentController: !custody },
+    souls: { soul, verifyAccessToken, activity: soulActivityFromDb(db), allowDevelopmentController: !custody },
     links: {
       me: { db, challenges, verifyAccessToken, wallet, email, worldOrigins: [WORLD], issuer },
       passkey: { db, challenges, passkey },

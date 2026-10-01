@@ -8,6 +8,7 @@ import { createAaRoutes, type AaRoutesDeps } from "./routes/aa";
 import { createCustodyRoutes, type CustodyRoutesDeps } from "./routes/custody";
 import { createLinkPasskeyRoutes, type LinkPasskeyDeps } from "./routes/linkPasskey";
 import { createMeRoutes, type MeRoutesDeps } from "./routes/me";
+import { createOrgRoutes } from "./routes/orgs";
 import { createSoulRoutes, type SoulRoutesDeps } from "./routes/souls";
 import { createInteractionRoutes, type InteractionRoutesDeps } from "./routes/interaction";
 
@@ -55,7 +56,10 @@ export function createApp(deps: AppDeps) {
 
   if (deps.aa) app.route("/v1/aa", createAaRoutes(deps.aa));
   if (deps.custody) app.route("/v1/custody", createCustodyRoutes(deps.custody));
-  if (deps.souls) app.route("/v1/souls", createSoulRoutes(deps.souls));
+  if (deps.souls) {
+    app.route("/v1/souls", createSoulRoutes(deps.souls));
+    app.route("/v1/orgs", createOrgRoutes(deps.souls.soul.db));
+  }
   if (deps.links) {
     app.route("/v1/me", createMeRoutes(deps.links.me));
     app.route("/link", createLinkPasskeyRoutes(deps.links.passkey));
