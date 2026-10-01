@@ -31,6 +31,8 @@ procs:
       DB_PORT: "5433"
       PGLITE: "true"
       CHAIN_ID: "31337"
+  # Health only in lite mode: the embedded PGlite server takes one client (Effectstream), so the client completes
+  # births itself after 20 s. Use `pnpm dev` to run the Midwife.
   relay-worker:
     shell: pnpm --filter @aldea/relay-worker dev
     env:

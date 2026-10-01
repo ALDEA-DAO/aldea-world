@@ -308,10 +308,29 @@ importers:
         version: 5.16.0(bufferutil@4.0.8)(utf-8-validate@6.0.6)
 
   packages/relay-worker:
+    dependencies:
+      '@aldea/shared':
+        specifier: workspace:^
+        version: link:../shared
+      '@sentry/node':
+        specifier: ^11.0.0
+        version: 11.0.0
+      postgres:
+        specifier: ^3.4.9
+        version: 3.4.9
+      viem:
+        specifier: ^2.56.9
+        version: 2.56.9(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
     devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.4
       tsx:
         specifier: ^4.23.15
         version: 4.23.15
+      vitest:
+        specifier: ^5.0.2
+        version: 5.0.2(@opentelemetry/api@1.9.1)(@types/node@22.20.4)(vite@8.3.1(@types/node@22.20.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
 
   packages/shared:
     dependencies:
@@ -8121,7 +8140,7 @@ snapshots:
       '@effectstream/event-server': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@effectstream/precompile': 0.200.6
       '@effectstream/runtime': 0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
-      '@effectstream/sm': 0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
+      '@effectstream/sm': 0.200.6(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@effectstream/sync': 0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
       '@effectstream/utils': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       effection: 3.6.1
@@ -8163,7 +8182,7 @@ snapshots:
       '@effectstream/event-client': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@effectstream/event-server': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@effectstream/log': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
-      '@effectstream/sm': 0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
+      '@effectstream/sm': 0.200.6(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@effectstream/sync': 0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
       '@effectstream/utils': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@fastify/cors': 11.3.0
@@ -8205,7 +8224,7 @@ snapshots:
       - ws
       - zod
 
-  '@effectstream/sm@0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)':
+  '@effectstream/sm@0.200.6(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)':
     dependencies:
       '@effectstream/concise': 0.200.6(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@effectstream/config': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
@@ -8224,27 +8243,16 @@ snapshots:
       pg-tx: 1.0.1
       viem: 2.37.3(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
     transitivePeerDependencies:
-      - '@bufbuild/protobuf'
-      - '@dcspark/cardano-multiplatform-lib-asmjs'
-      - '@dcspark/cardano-multiplatform-lib-browser'
-      - '@dcspark/cardano-multiplatform-lib-nodejs'
-      - '@fastify/websocket'
       - '@midnightntwrk/ledger-v9'
       - '@midnightntwrk/wallet-sdk-address-format'
       - bufferutil
-      - crossws
       - debug
       - encoding
-      - graphql
       - pg-native
-      - react
-      - react-dom
       - react-native-b4a
-      - subscriptions-transport-ws
       - supports-color
       - typescript
       - utf-8-validate
-      - ws
       - zod
 
   '@effectstream/sync@0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)':
@@ -9372,7 +9380,7 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
       drizzle-orm: 0.28.6(@opentelemetry/api@1.9.1)(@types/pg@8.6.1)(better-sqlite3@8.7.0)(bun-types@1.4.2)(kysely@0.26.3)(pg@8.23.0)(postgres@3.4.9)(sql.js@1.14.2)
       fast-deep-equal: 3.1.3
-      isomorphic-ws: 5.0.0(ws@8.18.3(bufferutil@4.0.8)(utf-8-validate@6.0.6))
+      isomorphic-ws: 5.0.0(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))
       kysely: 0.26.3
       postgres: 3.4.9
       rxjs: 7.5.5
