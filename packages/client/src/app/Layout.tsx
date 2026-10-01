@@ -2,6 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { AuthReturnState, SignInWithAlma } from "../features/auth/SignInWithAlma";
+import { MiniCensus } from "../features/census/MiniCensus";
 import { useWorldPaused } from "../mud/store";
 
 const links = [
@@ -35,6 +36,7 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
+        <MiniCensus />
         <SignInWithAlma />
       </header>
       {paused && (

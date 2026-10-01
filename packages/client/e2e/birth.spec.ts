@@ -25,8 +25,15 @@ async function passkeyDevice(context: BrowserContext, page: Page) {
   });
 }
 
-test("a soul is born as an Archer, chosen with the keyboard, and learns its tribe", async ({ context, page }) => {
+test("a soul is born as an Archer, chosen with the keyboard, and learns its tribe", async ({ browser, context, page }) => {
   test.setTimeout(90_000);
+  // Another browser, a guest with the census open: it must see this birth without reloading
+  const guest = await (await browser.newContext()).newPage();
+  await guest.goto("/#/b/centro-urbano");
+  await guest.getByRole("tab", { name: /Censo|Census/ }).click();
+  const bornCount = async () => Number((await guest.getByTestId("mini-census").locator("span.font-bold").textContent()) ?? "0");
+  await expect(guest.getByTestId("census-panel")).toBeVisible();
+  const before = await bornCount();
   await page.emulateMedia({ reducedMotion: "reduce" });
   await passkeyDevice(context, page);
 
@@ -53,6 +60,9 @@ test("a soul is born as an Archer, chosen with the keyboard, and learns its trib
   expect(await page.locator(".embers span").first().evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
 
   await expect(page.getByText(/Tu alma ya tiene nombre|Your soul now has a name/)).toBeVisible({ timeout: 45_000 });
+  // …and within 5 s the other browser's census (HUD and panel) counts it
+  await expect.poll(bornCount, { timeout: 5_000 }).toBe(before + 1);
+  await expect(guest.getByTestId("census-panel")).toContainText(new RegExp(`${before + 1} (almas nacidas|souls born)`));
   expect(Date.now() - requested).toBeLessThan(45_000);
   // The reveal fades in, without scale or blur
   expect(await page.locator(".tribe-reveal").evaluate((el) => getComputedStyle(el).animationName)).toBe("fade-in");
@@ -60,7 +70,7 @@ test("a soul is born as an Archer, chosen with the keyboard, and learns its trib
 
   await page.getByRole("button", { name: /Recorrer la aldea|Explore the village/ }).click();
   await page.getByRole("tab", { name: /Censo|Census/ }).click();
-  await expect(page.getByText(/[1-9]\d* (almas nacidas|souls born)/)).toBeVisible();
+  await expect(page.getByTestId("census-panel")).toContainText(/[1-9]\d* (almas nacidas|souls born)/);
 
   const almaId = (await page.getByTitle(/^alma:main:human:/).getAttribute("title"))!;
 

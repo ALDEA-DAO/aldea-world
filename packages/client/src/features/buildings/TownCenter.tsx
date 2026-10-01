@@ -1,4 +1,4 @@
-import { classByIndex, classes, tribeByIndex, tribes } from "@aldea/shared/catalog";
+import { classByIndex, tribeByIndex } from "@aldea/shared/catalog";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Panel } from "../../components/ui/Panel";
@@ -7,6 +7,7 @@ import { Tabs } from "../../components/ui/Tabs";
 import { useCensus, useMud, useWorldPaused } from "../../mud/store";
 import { useAlmaSession } from "../auth/useAlmaSession";
 import { BirthRitual } from "../birth/BirthRitual";
+import { CensusPanel } from "../census/CensusPanel";
 import { ClassPicker } from "../birth/ClassPicker";
 import { useBirth } from "../birth/useBirth";
 
@@ -41,7 +42,7 @@ export function TownCenter() {
               label: stage === "born" ? t("townCenter.yourCharacter") : t("townCenter.beBorn"),
               content: <BirthTab stage={stage} ready={ready} character={character} error={inRitual ? undefined : error?.copyKey} onBirth={birth} />,
             },
-            { id: "census", label: t("townCenter.census"), content: <CensusTab /> },
+            { id: "census", label: t("townCenter.census"), content: <CensusPanel /> },
           ]}
         />
       </Panel>
@@ -100,45 +101,6 @@ function BirthTab({
       {paused && <p role="alert">{t("townCenter.maintenance")}</p>}
       {error && <p role="alert">{t(error)}</p>}
       <ClassPicker onBirth={onBirth} busy={stage === "sending"} disabled={paused || !ready} />
-    </div>
-  );
-}
-
-function CensusTab() {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language === "en" ? "en" : "es";
-  const census = useCensus();
-  if (!census) return <Skeleton className="h-48" />;
-  const maxTribe = Math.max(1, ...census.tribePopulation);
-  const maxClass = Math.max(1, ...census.classPopulation);
-
-  return (
-    <div className="flex flex-col gap-6" aria-live="polite">
-      <p className="text-lg">{t("census.summary", { born: census.totalPopulation, gestating: census.gestating })}</p>
-      <section>
-        <h3 className="mb-2 font-display">{t("townCenter.byTribe")}</h3>
-        {tribes.map((tribe, i) => (
-          <Bar key={tribe.enum} label={tribe.name[lang]} value={census.tribePopulation[i] ?? 0} max={maxTribe} color={`var(${tribe.colorToken})`} />
-        ))}
-      </section>
-      <section>
-        <h3 className="mb-2 font-display">{t("townCenter.byClass")}</h3>
-        {classes.map((c, i) => (
-          <Bar key={c.enum} label={c.name[lang]} value={census.classPopulation[i] ?? 0} max={maxClass} color="var(--color-wood)" />
-        ))}
-      </section>
-    </div>
-  );
-}
-
-function Bar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
-  return (
-    <div className="mb-1 grid grid-cols-[8rem_1fr_2rem] items-center gap-2 text-sm">
-      <span>{label}</span>
-      <span className="h-3 rounded-full bg-surface">
-        <span className="block h-3 rounded-full" style={{ width: `${(value / max) * 100}%`, background: color }} />
-      </span>
-      <span className="text-right tabular-nums">{value}</span>
     </div>
   );
 }
