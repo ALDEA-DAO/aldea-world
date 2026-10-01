@@ -29,7 +29,7 @@ export function TribeReveal({ tribe, characterClass, almaId, onClose }: { tribe:
       {almaId && <p className="font-mono text-xs break-all text-text-muted">{almaId}</p>}
       <div className="mt-2 flex flex-wrap justify-center gap-2">
         {almaId && (
-          <Link to={`/alma/${almaId}`} className="inline-flex h-10 items-center rounded-md px-4 underline" onClick={onClose}>
+          <Link to="/b/registro-de-almas" className="inline-flex h-10 items-center rounded-md px-4 underline" onClick={onClose}>
             {t("birth.viewSoul")}
           </Link>
         )}

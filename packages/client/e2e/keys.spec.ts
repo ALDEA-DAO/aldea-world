@@ -72,7 +72,7 @@ test("a second passkey is added on ALMA Auth's page and the first one can then b
   await expect(page.getByRole("status")).toContainText(/ya tiene una passkey|already has a passkey/);
   await device.swap();
   await page.getByRole("button", { name: /Crear passkey|Create passkey/ }).click();
-  await expect(page).toHaveURL(/localhost:3000\/#\/alma\//);
+  await expect(page).toHaveURL(/localhost:3000\/#\/b\/registro-de-almas$/);
   await expect(keyRows(page)).toHaveCount(2);
 
   await keyRows(page).first().getByRole("button", { name: /Quitar|Remove/ }).click();
@@ -83,7 +83,7 @@ test("a wallet linked from the world signs in to the same soul", async ({ contex
   await passkeyDevice(context, page);
   const wallet = await injectWallet(context);
   await createSoulWithPasskey(page);
-  const almaId = decodeURIComponent(new URL(page.url()).hash.split("/").at(-1)!);
+  const almaId = (await page.getByTitle(/^alma:main:human:/).first().getAttribute("title"))!;
 
   await page.getByRole("button", { name: /^(Vincular una wallet|Link a wallet)$/ }).click();
   await expect(page.getByText(wallet.address)).toBeVisible();
@@ -92,5 +92,5 @@ test("a wallet linked from the world signs in to the same soul", async ({ contex
   await page.getByRole("button", { name: /^(Entrar|Sign in)$/ }).click();
   await page.getByRole("button", { name: /Tengo una wallet|I have a wallet/ }).click();
   await expect(page.getByRole("button", { name: /^(Salir|Sign out)$/ })).toBeVisible();
-  await expect(page.getByTitle(almaId)).toBeAttached();
+  await expect(page.getByTitle(almaId).first()).toBeAttached();
 });

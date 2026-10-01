@@ -56,7 +56,7 @@ export function SettingsScreen() {
       </fieldset>
       {isSignedIn(status) && almaId && (
         <p className="mt-8">
-          <Link className="underline" to={`/alma/${almaId}`}>
+          <Link className="underline" to="/b/registro-de-almas">
             {t("settings.yourKeys")}
           </Link>
         </p>

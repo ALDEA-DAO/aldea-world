@@ -72,7 +72,7 @@ test("a soul is born as an Archer, chosen with the keyboard, and learns its trib
   await page.getByRole("tab", { name: /Censo|Census/ }).click();
   await expect(page.getByTestId("census-panel")).toContainText(/[1-9]\d* (almas nacidas|souls born)/);
 
-  const almaId = (await page.getByTitle(/^alma:main:human:/).getAttribute("title"))!;
+  const almaId = (await page.getByTitle(/^alma:main:human:/).first().getAttribute("title"))!;
 
   // Within 10 s the Resolver knows: the soul is active and a member of its tribe's organization, with evidence
   const soul = async () => (await (await fetch(`${RESOLVER}/v1/souls/${almaId}`)).json()) as { status: string; tribe: { almaId: string } | null; relationships: { type: string; to: string; evidence: { event: string } }[] };
@@ -81,6 +81,13 @@ test("a soul is born as an Archer, chosen with the keyboard, and learns its trib
   expect(relationships).toEqual([{ type: "member_of", to: tribe!.almaId, evidence: expect.objectContaining({ event: "CharacterBorn" }) }]);
   const members = (await (await fetch(`${RESOLVER}/v1/orgs/${tribe!.almaId}/members`)).json()) as { items: { almaId: string; characterClass: number }[] };
   expect(members.items).toContainEqual(expect.objectContaining({ almaId, characterClass: 0 }));
+
+  // "Your soul" shows the identifier, the tribe and the birth transaction as its evidence
+  await page.goto("/#/b/registro-de-almas");
+  const ties = page.getByRole("region", { name: /Tus lazos|Your ties/ });
+  await expect(ties.getByText(/Amazónicos|Himalayos|Poseidones|Raes|Tropicales|Amazonians|Himalayans|Poseidons|Tropicals/)).toBeVisible({ timeout: 10_000 });
+  await expect(ties.getByText(/^0x[0-9a-f]{4}…[0-9a-f]{4}$/)).toBeVisible();
+  await expect(page.getByRole("region", { name: /Tu alma|Your soul/ }).getByText(almaId)).toBeVisible();
 
   // One person, one character: a second request fails with its own copy
   const devKey = (await page.evaluate((id) => localStorage.getItem(`aldea:dev-owner:${id}`), almaId)) as Hex;

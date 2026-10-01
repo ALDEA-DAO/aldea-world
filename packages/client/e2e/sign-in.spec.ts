@@ -35,7 +35,7 @@ test("a passkey creates the soul, survives a reload and signing out ends it in e
 
   await expect(signOut(page)).toBeVisible();
   await expect(page).toHaveURL(/localhost:3000\/#\/portal$/);
-  await expect(page.getByTitle(/^alma:main:human:[0-9a-f]{32}$/)).toBeAttached();
+  await expect(page.getByTitle(/^alma:main:human:[0-9a-f]{32}$/).first()).toBeAttached();
 
   // A reload renews the session from the refresh token: no trip to ALMA Auth
   const visitedAuth: string[] = [];

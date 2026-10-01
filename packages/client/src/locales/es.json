@@ -166,5 +166,33 @@
   },
   "village": {
     "beBorn": "Nacer en ALDEA"
+  },
+  "identity": {
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "viewOnChain": "Ver en la cadena: transacción {{hash}}"
+  },
+  "registry": {
+    "title": "Registro de Almas",
+    "yourSoul": "Tu alma",
+    "aSoul": "Alma",
+    "yourTies": "Tus lazos",
+    "ties": "Lazos",
+    "noTies": "Esta alma todavía no nació en la aldea.",
+    "notBornYet": "Todavía no naciste. El Centro Urbano te espera.",
+    "registeringTribe": "registrando tu tribu…",
+    "closed": "El Registro está cerrado un momento.",
+    "seeYourSoul": "ver tu alma",
+    "type": {
+      "human": "Humana",
+      "org": "Organización",
+      "agent": "Agente"
+    },
+    "status": {
+      "prepared": "preparada",
+      "anchored": "anclada",
+      "active": "activa",
+      "revoked": "revocada"
+    }
   }
 }

@@ -2,9 +2,7 @@ import { buildingByRoute } from "@aldea/shared/catalog";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Placeholder } from "./Placeholder";
-import { isSignedIn } from "../../features/auth/AlmaAuthProvider";
-import { useAlmaSession } from "../../features/auth/useAlmaSession";
-import { YourKeys } from "../../features/soul/YourKeys";
+import { SoulRegistry } from "../../features/buildings/SoulRegistry";
 import { useCensus } from "../../mud/store";
 import { TownCenter } from "../../features/buildings/TownCenter";
 
@@ -39,6 +37,7 @@ export function BuildingScreen() {
   const building = buildingByRoute(buildingSlug);
   if (!building) return <NotFoundScreen />;
   if (building.kind === "TownCenter") return <TownCenter />;
+  if (building.kind === "SoulRegistry") return <SoulRegistry />;
   return <Placeholder title={building.name[i18n.language === "en" ? "en" : "es"]}>{t("screens.building")}</Placeholder>;
 }
 
@@ -52,16 +51,10 @@ export function WorldScreen() {
   );
 }
 
+/** The public view of any soul (your own shows your keys too). */
 export function SoulScreen() {
-  const { t } = useTranslation();
   const { almaId } = useParams();
-  const session = useAlmaSession();
-  return (
-    <Placeholder title={t("screens.soul")}>
-      <p className="mt-2 font-mono text-xs break-all">{almaId}</p>
-      {isSignedIn(session.status) && session.almaId === almaId && <YourKeys />}
-    </Placeholder>
-  );
+  return <SoulRegistry almaId={almaId} />;
 }
 
 export function SimpleScreen({ titleKey }: { titleKey: string }) {

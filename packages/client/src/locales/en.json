@@ -166,5 +166,33 @@
   },
   "village": {
     "beBorn": "Be born in ALDEA"
+  },
+  "identity": {
+    "copy": "Copy",
+    "copied": "Copied",
+    "viewOnChain": "View on-chain: transaction {{hash}}"
+  },
+  "registry": {
+    "title": "Soul Registry",
+    "yourSoul": "Your soul",
+    "aSoul": "Soul",
+    "yourTies": "Your ties",
+    "ties": "Ties",
+    "noTies": "This soul has not been born in the village yet.",
+    "notBornYet": "You haven't been born yet. The Town Center is waiting for you.",
+    "registeringTribe": "registering your tribe…",
+    "closed": "The Registry is closed for a moment.",
+    "seeYourSoul": "see your soul",
+    "type": {
+      "human": "Human",
+      "org": "Organization",
+      "agent": "Agent"
+    },
+    "status": {
+      "prepared": "prepared",
+      "anchored": "anchored",
+      "active": "active",
+      "revoked": "revoked"
+    }
   }
 }
