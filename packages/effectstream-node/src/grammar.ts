@@ -20,6 +20,32 @@ export const birthRequestedGrammar = [
   ...logCoordinates,
 ] as const;
 
+/** BirthRescheduled(uint32 indexed characterId, uint64 newTargetBlock) */
+export const birthRescheduledGrammar = [["characterId", Type.Number()], ["newTargetBlock", Type.String()], ...logCoordinates] as const;
+
+/** CharacterBorn(uint32 indexed characterId, bytes32 indexed almaIdHash, CharacterClass characterClass, Tribe tribe) */
+export const birthCompletedGrammar = [
+  ["characterId", Type.Number()],
+  ["almaIdHash", Type.String()],
+  ["characterClass", Type.Number()],
+  ["tribe", Type.Number()],
+  ...logCoordinates,
+] as const;
+
+/** SubjectAnchored(bytes32 indexed almaIdHash, string almaId, SubjectType subjectType, address indexed controller, bytes32 ownerIdHash, bytes32 docHash) */
+export const soulAnchoredGrammar = [
+  ["almaIdHash", Type.String()],
+  ["almaId", Type.String()],
+  ["subjectType", Type.Number()],
+  ["controller", Type.String()],
+  ["ownerIdHash", Type.String()],
+  ["docHash", Type.String()],
+  ...logCoordinates,
+] as const;
+
 export const grammar = {
   birthRequested: birthRequestedGrammar,
+  birthRescheduled: birthRescheduledGrammar,
+  birthCompleted: birthCompletedGrammar,
+  soulAnchored: soulAnchoredGrammar,
 } as const satisfies GrammarDefinition;

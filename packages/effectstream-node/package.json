@@ -23,6 +23,7 @@
     "viem": "^2.56.9"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@types/bun": "^1.4.2",
     "mqtt": "^5.16.0"
   },
