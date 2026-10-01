@@ -1,0 +1,17 @@
+# Build context for infra/docker/*.Dockerfile: sources only
+**/node_modules
+**/out
+**/cache
+**/broadcast
+**/dist
+**/test-results
+**/playwright-report
+.git
+docs
+vision.json
+reference
+**/.env
+**/.env.*
+!**/.env.example
+# Local chain deployments are never shipped; public networks' files are committed and needed
+packages/shared/src/deployments/31337.json

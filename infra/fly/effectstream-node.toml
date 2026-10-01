@@ -1,0 +1,42 @@
+# Effectstream node (staging): read model, outbox, read API and MQTT. Deploy from the repository root:
+#   fly deploy . --config infra/fly/effectstream-node.toml --dockerfile infra/docker/effectstream-node.Dockerfile
+# Secrets: DB_HOST, DB_PORT, DB_USER, DB_PW, DB_NAME (its own database, with the pg_ivm extension), SENTRY_DSN
+# The contract addresses come from packages/shared/src/deployments/84532.json (committed after the deploy).
+app = "aldea-staging-effectstream"
+primary_region = "gru"
+
+[env]
+  NODE_ENV = "production"
+  CHAIN_ID = "84532"
+  BASE_RPC_URL = "https://sepolia.base.org"
+  BASE_CONFIRMATIONS = "2"
+  PGLITE = "false"
+  # The main clock's start and each start block are immutable once the database exists (see SPIKE.md)
+  EFFECTSTREAM_API_PORT = "9999"
+  MQTT_BROKER = "true"
+
+# Read API (public: the Portal and widgets read it; the Resolver and the relay use the private network)
+[http_service]
+  internal_port = 9999
+  force_https = true
+  auto_stop_machines = "off"
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    path = "/health"
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "90s"
+
+# MQTT over WebSocket for browsers
+[[services]]
+  internal_port = 9883
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 9883
+    handlers = ["tls"]
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"
