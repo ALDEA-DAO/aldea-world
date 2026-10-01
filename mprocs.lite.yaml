@@ -20,7 +20,7 @@ procs:
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5435/postgres
       PORT: "3001"
   alma-resolver:
-    shell: scripts/wait-for.sh 5434 && pnpm --filter @aldea/alma-resolver db:migrate && pnpm --filter @aldea/alma-resolver dev
+    shell: scripts/wait-for.sh 5434 && pnpm --filter @aldea/alma-resolver db:migrate && pnpm --filter @aldea/alma-resolver db:clients && pnpm --filter @aldea/alma-resolver dev
     env:
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5434/postgres
       BASE_RPC_URL: http://127.0.0.1:8545
@@ -31,6 +31,8 @@ procs:
       DB_PORT: "5433"
       PGLITE: "true"
       CHAIN_ID: "31337"
+  # Health only in lite mode: the embedded PGlite server takes one client (Effectstream), so the client completes
+  # births itself after 20 s. Use `pnpm dev` to run the Midwife.
   relay-worker:
     shell: pnpm --filter @aldea/relay-worker dev
     env:

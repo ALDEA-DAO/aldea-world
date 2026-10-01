@@ -1,33 +1,42 @@
 import { Stm, type BaseStfInput } from "@effectstream/node-sdk/sm";
 import type { StartConfigGameStateTransitions } from "@effectstream/node-sdk/runtime";
 import { type SyncStateUpdateStream, World } from "@effectstream/node-sdk/coroutine";
+import { env } from "./env.ts";
 import { AldeaEvents } from "./events.ts";
 import { grammar } from "./grammar.ts";
-import { insertBirthRequested } from "./stf/births.ts";
+import { birthCompleted, birthRequested, birthRescheduled, type BirthCompleted, type BirthRequested, type BirthRescheduled, type Effect, type StfContext } from "./stf/births.ts";
+import { soulAnchored, type SoulAnchored } from "./stf/souls.ts";
 
+/**
+ * The state transitions: each one turns an on-chain event into read-model effects (src/stf/*) and real-time events.
+ * Deterministic: only World.resolve, no Date, Math.random or I/O.
+ */
 const stm = new Stm<typeof grammar, {}>(grammar);
 
-/** CharacterBirthRequested → births(gestating). Deterministic: only World.resolve, no Date/Math.random/IO. */
+function* apply(effects: Effect[]) {
+  for (const [query, params] of effects) yield* World.resolve(query, params);
+}
+
+const context = (data: BaseStfInput): StfContext => ({ height: data.blockHeight, timestampMs: data.blockTimestamp, worldId: env.activityWorldId });
+
 stm.addStateTransition("birthRequested", function* (data) {
-  const input = data.parsedInput as {
-    characterId: number;
-    owner: string;
-    almaIdHash: string;
-    characterClass: number;
-    targetBlock: string;
-    txHash: string;
-    blockNumber: number;
-  };
-  yield* World.resolve(insertBirthRequested, {
-    character_id: input.characterId,
-    owner: input.owner.toLowerCase(),
-    alma_id_hash: input.almaIdHash.toLowerCase(),
-    character_class: input.characterClass,
-    target_block: input.targetBlock,
-    requested_block: input.blockNumber,
-    requested_tx: input.txHash.toLowerCase(),
-  });
+  const input = data.parsedInput as BirthRequested;
+  yield* apply(birthRequested(input, context(data)));
   data.emit(AldeaEvents.BirthUpdated, { characterId: input.characterId, status: "gestating", tribe: -1, bornTx: "" });
+});
+
+stm.addStateTransition("birthRescheduled", function* (data) {
+  yield* apply(birthRescheduled(data.parsedInput as BirthRescheduled, context(data)));
+});
+
+stm.addStateTransition("birthCompleted", function* (data) {
+  const input = data.parsedInput as BirthCompleted;
+  yield* apply(birthCompleted(input, context(data)));
+  data.emit(AldeaEvents.BirthUpdated, { characterId: input.characterId, status: "born", tribe: input.tribe, bornTx: input.txHash.toLowerCase() });
+});
+
+stm.addStateTransition("soulAnchored", function* (data) {
+  yield* apply(soulAnchored(data.parsedInput as SoulAnchored));
 });
 
 export const gameStateTransitions: StartConfigGameStateTransitions = function* (

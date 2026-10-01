@@ -65,6 +65,7 @@ jobs:
       - run: pnpm --filter @aldea/shared test
       - run: pnpm --filter @aldea/alma-resolver test
       - run: pnpm --filter @aldea/effectstream-node test
+      - run: pnpm --filter @aldea/relay-worker test
 
   slither:
     name: Slither (fails on high)

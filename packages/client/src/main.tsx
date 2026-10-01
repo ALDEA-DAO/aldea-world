@@ -15,6 +15,8 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./app/routes";
 import { ToastProvider } from "./components/ui/Toast";
+import { AlmaAuthProvider } from "./features/auth/AlmaAuthProvider";
+import { MudProvider } from "./mud/store";
 import { applyTheme, getThemePreference } from "./lib/theme";
 
 applyTheme(getThemePreference());
@@ -22,11 +24,15 @@ applyTheme(getThemePreference());
 const root = document.getElementById("root");
 if (!root) throw new Error("Missing #root element");
 
-// Providers grow in Phase 1: AlmaAuthProvider (OIDC + Turnkey) → SmartAccountProvider → MUDProvider → router.
+// Providers: Sign in with ALMA (OIDC + custody + smart account) → the World (MUD sync + system calls) → router.
 createRoot(root).render(
   <StrictMode>
     <ToastProvider>
-      <RouterProvider router={router} />
+      <AlmaAuthProvider>
+        <MudProvider>
+          <RouterProvider router={router} />
+        </MudProvider>
+      </AlmaAuthProvider>
     </ToastProvider>
   </StrictMode>,
 );

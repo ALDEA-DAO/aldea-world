@@ -1,12 +1,17 @@
 import { ConfigBuilder, ConfigNetworkType, ConfigSyncProtocolType, getEvmEvent } from "@effectstream/node-sdk/config";
 import { getConnection } from "@effectstream/node-sdk/db";
-import { characterSystemAbi } from "@aldea/shared/abis";
+import { almaAnchorRegistryAbi, characterSystemAbi } from "@aldea/shared/abis";
 import { defineChain } from "viem";
 import { env } from "./env.ts";
-import { birthRequestedGrammar } from "./grammar.ts";
+import { birthCompletedGrammar, birthRequestedGrammar, birthRescheduledGrammar, soulAnchoredGrammar } from "./grammar.ts";
 import { PrimitiveTypeAldeaEvmEvent } from "./primitives/evmEvent.ts";
 
 const systems = env.systems();
+const almaRegistry = env.almaRegistry();
+
+/** An on-chain event folded into the state machine under `prefix` (see AldeaEvmEventPrimitive). */
+const eventPrimitive = (name: string, contractAddress: string, abi: readonly unknown[], signature: string, grammar: unknown, prefix: string, startBlockHeight: number) =>
+  ({ name, type: PrimitiveTypeAldeaEvmEvent, startBlockHeight, contractAddress, abi: getEvmEvent(abi as any, signature), grammar, stateMachinePrefix: prefix }) as any;
 const MAIN_SYNC_PROTOCOL = "mainNtp";
 
 /**
@@ -36,8 +41,8 @@ const base = defineChain({
 });
 
 /**
- * Networks and primitives. Phase 0 syncs CharacterBirthRequested; the remaining World,
- * protocol and Cardano primitives are added with their STFs in later phases.
+ * Networks and primitives: births (CharacterSystem) and soul anchors (AlmaAnchorRegistry). The remaining World,
+ * Atlas, Council and Cardano primitives are added with their STFs in later phases.
  */
 export const config = new ConfigBuilder()
   .setNamespace((b) => b.setSecurityNamespace("aldea-world"))
@@ -66,18 +71,25 @@ export const config = new ConfigBuilder()
       ),
   )
   .buildPrimitives((b) =>
-    b.addPrimitive(
-      (s) => s.baseRpc,
-      () =>
-        ({
-          name: "CharacterBirthRequested",
-          type: PrimitiveTypeAldeaEvmEvent,
-          startBlockHeight: env.startBlock,
-          contractAddress: systems.CharacterSystem,
-          abi: getEvmEvent(characterSystemAbi, "CharacterBirthRequested(uint32,address,bytes32,uint8,uint64)"),
-          grammar: birthRequestedGrammar,
-          stateMachinePrefix: "birthRequested",
-        }) as any,
-    ),
+    b
+      // Systems in the aldea namespace emit from their own address, not the World's
+      .addPrimitive(
+        (s) => s.baseRpc,
+        () =>
+          eventPrimitive("CharacterBirthRequested", systems.CharacterSystem, characterSystemAbi, "CharacterBirthRequested(uint32,address,bytes32,uint8,uint64)", birthRequestedGrammar, "birthRequested", env.worldStartBlock),
+      )
+      .addPrimitive(
+        (s) => s.baseRpc,
+        () => eventPrimitive("BirthRescheduled", systems.CharacterSystem, characterSystemAbi, "BirthRescheduled(uint32,uint64)", birthRescheduledGrammar, "birthRescheduled", env.worldStartBlock),
+      )
+      .addPrimitive(
+        (s) => s.baseRpc,
+        () => eventPrimitive("CharacterBorn", systems.CharacterSystem, characterSystemAbi, "CharacterBorn(uint32,bytes32,uint8,uint8)", birthCompletedGrammar, "birthCompleted", env.worldStartBlock),
+      )
+      .addPrimitive(
+        (s) => s.baseRpc,
+        () =>
+          eventPrimitive("SubjectAnchored", almaRegistry, almaAnchorRegistryAbi, "SubjectAnchored(bytes32,string,uint8,address,bytes32,bytes32)", soulAnchoredGrammar, "soulAnchored", env.startBlock),
+      ),
   )
   .build();

@@ -1,0 +1,28 @@
+# Relay worker, the Midwife (staging). No public service. Deploy from the repository root:
+#   fly deploy . --config infra/fly/relay-worker.toml --dockerfile infra/docker/node-service.Dockerfile
+# Secrets: RELAYER_PRIVATE_KEY (pays gas for permissionless calls only; keep under 0.1 ETH),
+# DATABASE_URL (Effectstream's database, with a role that is read-only except INSERT on relay_attempts), SENTRY_DSN
+app = "aldea-staging-relay"
+primary_region = "gru"
+
+[build.args]
+  PACKAGE = "@aldea/relay-worker"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "8788"
+  CHAIN_ID = "84532"
+  BASE_RPC_URL = "https://sepolia.base.org"
+  POLL_MS = "2000"
+  # WORLD_ADDRESS defaults to packages/shared/src/deployments/84532.json
+
+[checks.health]
+  type = "http"
+  port = 8788
+  path = "/health"
+  interval = "15s"
+  timeout = "3s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

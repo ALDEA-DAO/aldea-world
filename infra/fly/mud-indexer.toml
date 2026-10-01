@@ -1,0 +1,26 @@
+# MUD store indexer (staging): the client's fast initial sync. Deploy from the repository root:
+#   fly deploy . --config infra/fly/mud-indexer.toml --dockerfile infra/docker/mud-indexer.Dockerfile
+# Secrets: DATABASE_URL (its own database). Set STORE_ADDRESS and START_BLOCK below after the World is deployed.
+app = "aldea-staging-indexer"
+primary_region = "gru"
+
+[processes]
+  indexer = "pnpm exec postgres-indexer"
+  frontend = "pnpm exec postgres-frontend"
+
+[env]
+  RPC_HTTP_URL = "https://sepolia.base.org"
+  PORT = "3001"
+  # STORE_ADDRESS = "0x…"   (the World)
+  # START_BLOCK = "…"       (its deployment block)
+
+[http_service]
+  processes = ["frontend"]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = "off"
+  min_machines_running = 1
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

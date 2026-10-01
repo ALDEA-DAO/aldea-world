@@ -17,7 +17,8 @@
     "about": "Acerca de",
     "terms": "Términos",
     "privacy": "Privacidad",
-    "designKit": "Kit de diseño"
+    "designKit": "Kit de diseño",
+    "townCenter": "Centro Urbano"
   },
   "screens": {
     "village": "La aldea",
@@ -37,7 +38,8 @@
     "themeLight": "Claro",
     "themeDark": "Oscuro",
     "themeSystem": "Según el sistema",
-    "language": "Idioma"
+    "language": "Idioma",
+    "yourKeys": "Tus llaves"
   },
   "kit": {
     "title": "Kit de diseño",
@@ -64,5 +66,133 @@
     "tabBirthBody": "Elige una de las 11 clases.",
     "skeletons": "Cargando",
     "tribes": "Tribus"
+  },
+  "auth": {
+    "signIn": "Entrar",
+    "signOut": "Salir",
+    "signInTo": "Inicia sesión para {{action}}",
+    "lookingForSoul": "Buscando tu alma…",
+    "failed": "No pudimos confirmar tu identidad. Probemos de nuevo.",
+    "retry": "Reintentar"
+  },
+  "keys": {
+    "title": "Tus llaves",
+    "loading": "Buscando tus llaves…",
+    "addAnother": "Agrega otra forma de entrar: si pierdes esta, no pierdes tu alma.",
+    "remove": "Quitar",
+    "confirm": "Confirmar con mi passkey",
+    "merge": "Unir las dos almas",
+    "addPasskey": "Agregar una passkey",
+    "linkWallet": "Vincular una wallet",
+    "linkOwner": "Vincular una wallet como dueña de mi cuenta",
+    "recoveryEmail": "Email de recuperación",
+    "code": "Código",
+    "sendCode": "Enviar código",
+    "verifyEmail": "Vincular email",
+    "role": {
+      "login": "para entrar",
+      "controller": "dueña de tu cuenta en Base",
+      "holdings": "tenencias"
+    },
+    "kind": {
+      "passkey": "Passkey",
+      "email": "Email",
+      "google": "Google",
+      "apple": "Apple",
+      "evm": "Wallet (Base)",
+      "cardano": "Wallet de Cardano",
+      "midnight": "Wallet de Midnight",
+      "bitcoin": "Bitcoin",
+      "lightning": "Lightning",
+      "smartWallet": "Tu cuenta en Base"
+    },
+    "error": {
+      "step_up_required": "Por seguridad, confirma que eres tú antes de agregar esta llave.",
+      "link_belongs_to_other_soul": "Esta llave pertenece a otra alma. Si las dos son tuyas, puedes unirlas.",
+      "last_login_method": "Es tu única forma de entrar. Agrega otra antes de quitarla.",
+      "controller_link": "Esta llave es dueña de tu cuenta en Base; todavía no se puede quitar.",
+      "soul_anchored": "La otra alma ya nació en la aldea: no se puede unir.",
+      "invalid_code": "Ese código no funcionó.",
+      "invalid_signature": "La firma no coincide.",
+      "no_wallet": "No encontramos una wallet en este navegador."
+    }
+  },
+  "census": {
+    "summary": "{{born}} almas nacidas · {{gestating}} en gestación"
+  },
+  "world": {
+    "paused": "La aldea está en pausa: por ahora no se puede nacer ni entrar a los edificios."
+  },
+  "townCenter": {
+    "title": "Centro Urbano",
+    "beBorn": "Nacer",
+    "yourCharacter": "Tu personaje",
+    "census": "Censo",
+    "chooseClass": "Elige tu clase",
+    "pickAClass": "Elige una clase para nacer",
+    "beBornAs": "Nacer como {{name}}",
+    "beBornAction": "nacer en la aldea",
+    "beFirst": "Sé la primera alma de la aldea.",
+    "maintenance": "La aldea está en mantenimiento.",
+    "pathCut": "El camino al Centro Urbano está cortado. Probemos de nuevo.",
+    "bornOn": "Nació el {{date}}",
+    "byTribe": "Por tribu",
+    "byClass": "Por clase"
+  },
+  "birth": {
+    "title": "Tu nacimiento",
+    "arriving": "Tu alma está llegando…",
+    "choosing": "Las brasas eligen su color…",
+    "completing": "Encendiendo el fuego nosotros mismos…",
+    "rekindled": "Las brasas se reavivaron, unos segundos más.",
+    "failed": "No pudimos completar tu nacimiento. Tu pedido está a salvo; reintenta.",
+    "retry": "Reintentar",
+    "howDrawn": "¿Cómo se sortea?",
+    "howDrawnText": "Tu tribu sale del hash de un bloque de Base que todavía no existe cuando pides nacer. Nadie, ni siquiera el equipo, puede saberla de antemano.",
+    "bornInto": "Naciste en la tribu",
+    "named": "Tu alma ya tiene nombre.",
+    "viewSoul": "Ver tu alma",
+    "explore": "Recorrer la aldea"
+  },
+  "errors": {
+    "worldPaused": "La aldea está en mantenimiento. Prueba en unos minutos.",
+    "alreadyHasCharacter": "Tu alma ya tiene un personaje: una persona, un personaje.",
+    "notSoulController": "Esta cuenta no controla tu alma. Vuelve a entrar e inténtalo otra vez.",
+    "genesisFoundersOnly": "Durante la Semana Génesis solo nacen los Fundadores. Si tienes $ALDEA, vincula tu wallet.",
+    "birthNotReady": "Las brasas todavía no están listas; unos segundos más.",
+    "alreadyAnchored": "Tu alma ya estaba anclada; sigue adelante.",
+    "network": "Tu pedido no salió. Reintentar.",
+    "unknown": "Algo no salió. Prueba de nuevo."
+  },
+  "village": {
+    "beBorn": "Nacer en ALDEA"
+  },
+  "identity": {
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "viewOnChain": "Ver en la cadena: transacción {{hash}}"
+  },
+  "registry": {
+    "title": "Registro de Almas",
+    "yourSoul": "Tu alma",
+    "aSoul": "Alma",
+    "yourTies": "Tus lazos",
+    "ties": "Lazos",
+    "noTies": "Esta alma todavía no nació en la aldea.",
+    "notBornYet": "Todavía no naciste. El Centro Urbano te espera.",
+    "registeringTribe": "registrando tu tribu…",
+    "closed": "El Registro está cerrado un momento.",
+    "seeYourSoul": "ver tu alma",
+    "type": {
+      "human": "Humana",
+      "org": "Organización",
+      "agent": "Agente"
+    },
+    "status": {
+      "prepared": "preparada",
+      "anchored": "anclada",
+      "active": "activa",
+      "revoked": "revocada"
+    }
   }
 }

@@ -18,7 +18,7 @@ procs:
       DATABASE_URL: postgres://aldea:aldea@127.0.0.1:5442/mud_indexer
       PORT: "3001"
   alma-resolver:
-    shell: scripts/wait-for.sh 5442 && pnpm --filter @aldea/alma-resolver db:migrate && pnpm --filter @aldea/alma-resolver dev
+    shell: scripts/wait-for.sh 5442 && pnpm --filter @aldea/alma-resolver db:migrate && pnpm --filter @aldea/alma-resolver db:clients && pnpm --filter @aldea/alma-resolver dev
     env:
       DATABASE_URL: postgres://aldea:aldea@127.0.0.1:5442/aldea
       BASE_RPC_URL: http://127.0.0.1:8545
@@ -36,8 +36,13 @@ procs:
       ALLOW_NO_PG_IVM: "true"
       CHAIN_ID: "31337"
   relay-worker:
-    shell: pnpm --filter @aldea/relay-worker dev
+    shell: scripts/wait-for-deploy.sh && pnpm --filter @aldea/relay-worker dev
     env:
       PORT: "8788"
+      BASE_RPC_URL: http://127.0.0.1:8545
+      # Effectstream's database: the Midwife reads relay_outbox there
+      DATABASE_URL: postgres://aldea:aldea@127.0.0.1:5442/effectstream
+      # anvil's default account 2: a public development key
+      RELAYER_PRIVATE_KEY: "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a"
   client:
     shell: pnpm --filter client dev

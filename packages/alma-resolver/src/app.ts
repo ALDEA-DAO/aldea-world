@@ -4,6 +4,13 @@ import { requestId } from "hono/request-id";
 import { captureError } from "./lib/sentry";
 import { logger } from "./lib/logger";
 import { problemResponse, toProblem } from "./lib/problem";
+import { createAaRoutes, type AaRoutesDeps } from "./routes/aa";
+import { createCustodyRoutes, type CustodyRoutesDeps } from "./routes/custody";
+import { createLinkPasskeyRoutes, type LinkPasskeyDeps } from "./routes/linkPasskey";
+import { createMeRoutes, type MeRoutesDeps } from "./routes/me";
+import { createOrgRoutes } from "./routes/orgs";
+import { createSoulRoutes, type SoulRoutesDeps } from "./routes/souls";
+import { createInteractionRoutes, type InteractionRoutesDeps } from "./routes/interaction";
 
 export interface AppDeps {
   /** Resolves when the database answers `SELECT 1`. */
@@ -11,6 +18,16 @@ export interface AppDeps {
   /** Latest Base block, or throws when the RPC is unavailable. */
   baseHead: () => Promise<bigint>;
   corsOrigins: string[];
+  /** Bundler and paymaster proxy; absent when no CDP endpoint is configured (local development). */
+  aa?: AaRoutesDeps;
+  /** ALMA Auth's login pages; absent in tests that only exercise the API. */
+  interaction?: InteractionRoutesDeps;
+  /** Turnkey sessions for the browser; absent when custody is not configured (local development). */
+  custody?: CustodyRoutesDeps;
+  /** The soul's linked keys (`/v1/me`) and ALMA Auth's "add a passkey" page (`/link`). */
+  links?: { me: MeRoutesDeps; passkey: LinkPasskeyDeps };
+  /** Souls: prepare before birth, the signed-in soul and public views. */
+  souls?: SoulRoutesDeps;
 }
 
 const withTimeout = <T>(p: Promise<T>, ms: number) =>
@@ -36,6 +53,18 @@ export function createApp(deps: AppDeps) {
       dbOk ? 200 : 503,
     );
   });
+
+  if (deps.aa) app.route("/v1/aa", createAaRoutes(deps.aa));
+  if (deps.custody) app.route("/v1/custody", createCustodyRoutes(deps.custody));
+  if (deps.souls) {
+    app.route("/v1/souls", createSoulRoutes(deps.souls));
+    app.route("/v1/orgs", createOrgRoutes(deps.souls.soul.db));
+  }
+  if (deps.links) {
+    app.route("/v1/me", createMeRoutes(deps.links.me));
+    app.route("/link", createLinkPasskeyRoutes(deps.links.passkey));
+  }
+  if (deps.interaction) app.route("/interaction", createInteractionRoutes(deps.interaction));
 
   app.notFound((c) => problemResponse(c, { status: 404, code: "not_found", title: "Not found" }));
   app.onError((err, c) => {
