@@ -68,7 +68,11 @@ test("a soul is born as an Archer, chosen with the keyboard, and learns its trib
   expect(await page.locator(".tribe-reveal").evaluate((el) => getComputedStyle(el).animationName)).toBe("fade-in");
   await expect(page.getByText(/Arquero|Archer/).first()).toBeVisible();
 
+  // "Explore the village" closes the Town Center: the newborn is standing in the village
   await page.getByRole("button", { name: /Recorrer la aldea|Explore the village/ }).click();
+  await expect(page).toHaveURL(/#\/$/);
+  await expect(page.getByTestId("village")).toHaveAttribute("data-tile", /\d+,\d+/, { timeout: 20_000 });
+  await page.goto("/#/b/centro-urbano");
   await page.getByRole("tab", { name: /Censo|Census/ }).click();
   await expect(page.getByTestId("census-panel")).toContainText(/[1-9]\d* (almas nacidas|souls born)/);
 

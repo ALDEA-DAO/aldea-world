@@ -162,17 +162,29 @@
     "birthNotReady": "Las brasas todavía no están listas; unos segundos más.",
     "alreadyAnchored": "Tu alma ya estaba anclada; sigue adelante.",
     "network": "Tu pedido no salió. Reintentar.",
-    "unknown": "Algo no salió. Prueba de nuevo."
+    "unknown": "Algo no salió. Prueba de nuevo.",
+    "noCharacter": "Todavía no tienes un personaje. Nace en el Centro Urbano para entrar a los edificios.",
+    "notBornYet": "Tu alma todavía está llegando; espera a nacer para entrar.",
+    "unknownBuilding": "Ese edificio no existe en esta aldea.",
+    "buildingClosed": "Este edificio está cerrado por ahora.",
+    "entryNotRecorded": "Tu entrada no quedó registrada en la cadena. Puedes seguir mirando."
   },
   "village": {
     "beBorn": "Nacer en ALDEA",
     "loading": "El camino se está abriendo…",
-    "enter": "Entrar a {{building}}",
     "canvasLabel": "La aldea. Flechas o WASD para caminar, Tab para ir de puerta en puerta, Enter para entrar.",
     "hint": "Tocá el suelo o un edificio para caminar · flechas o WASD · rueda para acercar",
     "guestHint": "Arrastrá para mirar la aldea · tocá un edificio para entrar",
     "failed": "No pudimos abrir la aldea en este dispositivo.",
-    "useList": "Abrir el modo lista"
+    "useList": "Abrir el modo lista",
+    "enterBuilding": {
+      "town-center": "Entrar al Centro Urbano",
+      "portal": "Entrar al Portal de los Mundos",
+      "soul-registry": "Entrar al Registro de Almas",
+      "council": "Entrar al Consejo",
+      "velum-archive": "Entrar al Archivo Velum",
+      "npc-forge": "Entrar a la Forja de NPCs"
+    }
   },
   "identity": {
     "copy": "Copiar",
@@ -201,5 +213,15 @@
       "active": "activa",
       "revoked": "revocada"
     }
+  },
+  "hud": {
+    "menu": "Menú",
+    "closeMenu": "Cerrar menú",
+    "bottomBar": "Acciones de la aldea",
+    "home": "ALDEA World: volver a la aldea"
+  },
+  "building": {
+    "notFound": "Ese edificio no existe",
+    "backToVillage": "Volver a la aldea"
   }
 }

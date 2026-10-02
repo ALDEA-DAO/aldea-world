@@ -1,7 +1,6 @@
 import { classByIndex, tribeByIndex } from "@aldea/shared/catalog";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Panel } from "../../components/ui/Panel";
 import { Skeleton } from "../../components/ui/Skeleton";
 import { Tabs } from "../../components/ui/Tabs";
 import { useCensus, useMud, useWorldPaused } from "../../mud/store";
@@ -12,10 +11,10 @@ import { ClassPicker } from "../birth/ClassPicker";
 import { useBirth } from "../birth/useBirth";
 
 /**
- * The Town Center (no map yet): be born here, or see your character and the census. The birth ritual covers the
- * screen from the request to the reveal.
+ * The Town Center's interior: be born here, or see your character and the census. The birth ritual is drawn over the
+ * dimmed village from the request to the reveal; `onExplore` runs when the newborn chooses to walk the village.
  */
-export function TownCenter() {
+export function TownCenter({ onExplore }: { onExplore?: () => void }) {
   const { t } = useTranslation();
   const [tab, setTab] = useState("birth");
   const { stage, character, error, rescheduled, ready, birth, retryCompletion } = useBirth();
@@ -30,9 +29,8 @@ export function TownCenter() {
   const completionFailed = Boolean(error && stage !== "idle" && stage !== "sending");
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
-      <Panel variant="inline" title={t("townCenter.title")}>
-        <Tabs
+    <>
+      <Tabs
           label={t("townCenter.title")}
           value={tab}
           onChange={setTab}
@@ -44,8 +42,7 @@ export function TownCenter() {
             },
             { id: "census", label: t("townCenter.census"), content: <CensusPanel /> },
           ]}
-        />
-      </Panel>
+      />
       {showRitual && (
         <BirthRitual
           stage={stage}
@@ -53,11 +50,14 @@ export function TownCenter() {
           rescheduled={rescheduled}
           failed={completionFailed}
           onRetry={() => void retryCompletion()}
-          onClose={() => setRitualClosed(true)}
+          onClose={() => {
+            setRitualClosed(true);
+            onExplore?.();
+          }}
           almaId={almaId}
         />
       )}
-    </div>
+    </>
   );
 }
 

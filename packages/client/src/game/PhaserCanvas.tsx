@@ -115,7 +115,7 @@ export function PhaserCanvas({ onEnterDoor, children }: { onEnterDoor: (slug: st
       data-door={state.door ?? ""}
       data-tile={state.playerTile ? `${state.playerTile.x},${state.playerTile.y}` : ""}
     >
-      <div ref={holder} className="absolute inset-0 [&>canvas]:block [&>canvas]:touch-none" />
+      <div ref={holder} className="absolute inset-x-0 top-0 bottom-hud-bottom [&>canvas]:block [&>canvas]:touch-none" />
       {children(state)}
     </div>
   );

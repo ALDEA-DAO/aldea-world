@@ -18,6 +18,18 @@ import { YourKeys } from "../soul/YourKeys";
  * signed-in soul.
  */
 export function SoulRegistry({ almaId }: { almaId?: string }) {
+  const { t } = useTranslation();
+  return (
+    <div className="mx-auto max-w-2xl px-4 py-8">
+      <Panel variant="inline" title={t("registry.title")}>
+        <SoulRegistryContent almaId={almaId} />
+      </Panel>
+    </div>
+  );
+}
+
+/** The registry's content, for the building panel in the village and for the standalone page of any soul. */
+export function SoulRegistryContent({ almaId }: { almaId?: string }) {
   const { t, i18n } = useTranslation();
   const session = useAlmaSession();
   const { stage } = useBirth();
@@ -25,8 +37,7 @@ export function SoulRegistry({ almaId }: { almaId?: string }) {
   const guestOnOwn = almaId === undefined && !isSignedIn(session.status);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
-      <Panel variant="inline" title={t("registry.title")}>
+    <>
         {guestOnOwn ? (
           <div className="flex flex-col items-start gap-3">
             <p>{t("registry.notBornYet")}</p>
@@ -80,7 +91,6 @@ export function SoulRegistry({ almaId }: { almaId?: string }) {
             {own && <YourKeys />}
           </div>
         )}
-      </Panel>
-    </div>
+    </>
   );
 }

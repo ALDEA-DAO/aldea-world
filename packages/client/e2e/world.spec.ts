@@ -22,7 +22,7 @@ test.afterAll(async () => {
 
 test("guests see the live census and a pause within 3 seconds", async ({ page }) => {
   await page.goto("/#/");
-  await expect(page.getByTestId("census")).toContainText(/\d+ (almas nacidas|souls born)/);
+  await expect(page.getByTestId("mini-census")).toContainText(/\d+ (almas nacidas|souls born)/);
 
   const banner = page.getByText(/La aldea está en pausa|The village is paused/);
   await expect(banner).toBeHidden();

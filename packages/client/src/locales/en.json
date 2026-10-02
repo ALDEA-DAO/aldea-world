@@ -162,17 +162,29 @@
     "birthNotReady": "The embers are not ready yet; a few more seconds.",
     "alreadyAnchored": "Your soul was already anchored; carry on.",
     "network": "Your request didn't go through. Retry.",
-    "unknown": "Something went wrong. Try again."
+    "unknown": "Something went wrong. Try again.",
+    "noCharacter": "You don't have a character yet. Be born at the Town Center to enter buildings.",
+    "notBornYet": "Your soul is still arriving; wait to be born before entering.",
+    "unknownBuilding": "That building does not exist in this village.",
+    "buildingClosed": "This building is closed for now.",
+    "entryNotRecorded": "Your entry was not recorded on-chain. You can keep looking around."
   },
   "village": {
     "beBorn": "Be born in ALDEA",
     "loading": "The path is opening…",
-    "enter": "Enter {{building}}",
     "canvasLabel": "The village. Arrows or WASD to walk, Tab to move from door to door, Enter to go in.",
     "hint": "Tap the ground or a building to walk · arrows or WASD · wheel to zoom",
     "guestHint": "Drag to look around · tap a building to go in",
     "failed": "We could not open the village on this device.",
-    "useList": "Open list mode"
+    "useList": "Open list mode",
+    "enterBuilding": {
+      "town-center": "Enter the Town Center",
+      "portal": "Enter the Portal of Worlds",
+      "soul-registry": "Enter the Soul Registry",
+      "council": "Enter the Council",
+      "velum-archive": "Enter the Velum Archive",
+      "npc-forge": "Enter the NPC Forge"
+    }
   },
   "identity": {
     "copy": "Copy",
@@ -201,5 +213,15 @@
       "active": "active",
       "revoked": "revoked"
     }
+  },
+  "hud": {
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "bottomBar": "Village actions",
+    "home": "ALDEA World: back to the village"
+  },
+  "building": {
+    "notFound": "That building does not exist",
+    "backToVillage": "Back to the village"
   }
 }

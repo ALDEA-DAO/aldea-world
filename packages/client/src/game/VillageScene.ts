@@ -3,6 +3,7 @@ import * as Phaser from "phaser";
 import { assetUrl, buildingSpriteKey, manifest } from "./assets/manifest";
 import type { GameBridge, WorldBuilding, WorldCharacter } from "./bridge";
 import { CharacterSprite, loadCharacter } from "./CharacterSprite";
+import { buildingAt, doorAt, footprint } from "./doors";
 import { attachInput } from "./input";
 import { IsoMap, type Tile, type TiledMap } from "./IsoMap";
 import { Pathfinding } from "./Pathfinding";
@@ -169,8 +170,7 @@ export class VillageScene extends Phaser.Scene {
 
   private blockFootprint(building: WorldBuilding | undefined, blocked: boolean) {
     if (!building) return;
-    const info = manifest.buildings[buildingSpriteKey(building.slug, building.underConstruction)];
-    for (const [dx, dy] of info?.footprint ?? []) this.map.setBlocked({ x: building.door.x + dx, y: building.door.y - 1 + dy }, blocked);
+    for (const tile of footprint(building)) this.map.setBlocked(tile, blocked);
     this.map.setBlocked(building.door, false);
   }
 
@@ -241,10 +241,7 @@ export class VillageScene extends Phaser.Scene {
 
   private walkTo(target: Tile) {
     // Clicking a building walks to its door
-    const building = this.placed.find((b) => {
-      const info = manifest.buildings[buildingSpriteKey(b.slug, b.underConstruction)];
-      return (b.door.x === target.x && b.door.y === target.y) || info?.footprint.some(([dx, dy]) => b.door.x + dx === target.x && b.door.y - 1 + dy === target.y);
-    });
+    const building = buildingAt(this.placed, target);
     if (!this.player) {
       // Guests have no character: choosing a building offers to look inside
       this.bridge.setState({ door: building?.slug });
@@ -267,8 +264,7 @@ export class VillageScene extends Phaser.Scene {
   }
 
   private arrived(tile: Tile) {
-    const door = this.placed.find((b) => b.door.x === tile.x && b.door.y === tile.y);
-    this.bridge.setState({ door: door?.slug, playerTile: tile });
+    this.bridge.setState({ door: doorAt(this.placed, tile)?.slug, playerTile: tile });
     try {
       sessionStorage.setItem("aldea:tile", JSON.stringify(tile));
     } catch {

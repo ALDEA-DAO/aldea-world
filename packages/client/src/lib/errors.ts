@@ -24,6 +24,12 @@ const COPY: Record<string, string> = {
   CharacterSystem_NotHumanSoul: "errors.notSoulController",
   CharacterSystem_GenesisFoundersOnly: "errors.genesisFoundersOnly",
   CharacterSystem_BirthNotReady: "errors.birthNotReady",
+  MovementSystem_WorldPaused: "errors.worldPaused",
+  MovementSystem_NoSoul: "errors.notSoulController",
+  MovementSystem_NoCharacter: "errors.noCharacter",
+  MovementSystem_NotBorn: "errors.notBornYet",
+  MovementSystem_UnknownBuilding: "errors.unknownBuilding",
+  MovementSystem_BuildingClosed: "errors.buildingClosed",
   AlreadyHasHuman: "errors.alreadyAnchored",
   AlreadyAnchored: "errors.alreadyAnchored",
 };

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../components/ui/Button";
 import { TribeReveal } from "./TribeReveal";
@@ -25,6 +26,12 @@ export function BirthRitual({
   almaId?: string;
 }) {
   const { t } = useTranslation();
+  // The ritual is not dismissed with Escape: the panel underneath must not close while a birth is in progress
+  useEffect(() => {
+    const swallow = (e: KeyboardEvent) => e.key === "Escape" && e.stopImmediatePropagation();
+    window.addEventListener("keydown", swallow, true);
+    return () => window.removeEventListener("keydown", swallow, true);
+  }, []);
   const copy = failed
     ? t("birth.failed")
     : rescheduled && stage !== "born"
