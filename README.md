@@ -66,7 +66,7 @@ Each package documents its own design in code comments; the Effectstream integra
 
 ## Getting started
 
-**Requirements:** Node 24 (`.nvmrc`), pnpm 9 (`corepack enable`), [Foundry](https://getfoundry.sh),
+**Requirements:** Node 22 (`.nvmrc`), pnpm 9 (`corepack enable`), [Foundry](https://getfoundry.sh),
 [Bun](https://bun.sh) and [Podman](https://podman.io) (or Docker).
 
 ```bash

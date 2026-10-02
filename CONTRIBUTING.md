@@ -13,7 +13,7 @@ looks like.
 
 ## Development setup
 
-Follow [Getting started](README.md#getting-started). In short: Node 24, pnpm 9, Foundry, Bun and Podman (or use
+Follow [Getting started](README.md#getting-started). In short: Node 22, pnpm 9, Foundry, Bun and Podman (or use
 `pnpm dev:lite` without containers).
 
 ## Workflow

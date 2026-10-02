@@ -1,6 +1,6 @@
 # A Node service of the monorepo (ALMA Resolver, relay worker), run with tsx from its sources.
 #   podman build -f infra/docker/node-service.Dockerfile --build-arg PACKAGE=@aldea/alma-resolver -t alma-resolver .
-FROM node:24-slim
+FROM node:22-slim
 ARG PACKAGE
 ENV PACKAGE=${PACKAGE} NODE_ENV=production CI=true
 RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
