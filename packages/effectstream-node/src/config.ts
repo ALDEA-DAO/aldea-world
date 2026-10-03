@@ -1,9 +1,9 @@
 import { ConfigBuilder, ConfigNetworkType, ConfigSyncProtocolType, getEvmEvent } from "@effectstream/node-sdk/config";
 import { getConnection } from "@effectstream/node-sdk/db";
-import { almaAnchorRegistryAbi, characterSystemAbi } from "@aldea/shared/abis";
+import { almaAnchorRegistryAbi, characterSystemAbi, movementSystemAbi } from "@aldea/shared/abis";
 import { defineChain } from "viem";
 import { env } from "./env.ts";
-import { birthCompletedGrammar, birthRequestedGrammar, birthRescheduledGrammar, soulAnchoredGrammar } from "./grammar.ts";
+import { birthCompletedGrammar, birthRequestedGrammar, birthRescheduledGrammar, buildingEnteredGrammar, buildingLeftGrammar, soulAnchoredGrammar } from "./grammar.ts";
 import { PrimitiveTypeAldeaEvmEvent } from "./primitives/evmEvent.ts";
 
 const systems = env.systems();
@@ -41,7 +41,8 @@ const base = defineChain({
 });
 
 /**
- * Networks and primitives: births (CharacterSystem) and soul anchors (AlmaAnchorRegistry). The remaining World,
+ * Networks and primitives: births (CharacterSystem), building visits (MovementSystem) and soul anchors
+ * (AlmaAnchorRegistry). The remaining World,
  * Atlas, Council and Cardano primitives are added with their STFs in later phases.
  */
 export const config = new ConfigBuilder()
@@ -85,6 +86,14 @@ export const config = new ConfigBuilder()
       .addPrimitive(
         (s) => s.baseRpc,
         () => eventPrimitive("CharacterBorn", systems.CharacterSystem, characterSystemAbi, "CharacterBorn(uint32,bytes32,uint8,uint8)", birthCompletedGrammar, "birthCompleted", env.worldStartBlock),
+      )
+      .addPrimitive(
+        (s) => s.baseRpc,
+        () => eventPrimitive("BuildingEntered", systems.MovementSystem, movementSystemAbi, "BuildingEntered(uint32,bytes32,bytes32)", buildingEnteredGrammar, "buildingEntered", env.worldStartBlock),
+      )
+      .addPrimitive(
+        (s) => s.baseRpc,
+        () => eventPrimitive("BuildingLeft", systems.MovementSystem, movementSystemAbi, "BuildingLeft(uint32,bytes32)", buildingLeftGrammar, "buildingLeft", env.worldStartBlock),
       )
       .addPrimitive(
         (s) => s.baseRpc,

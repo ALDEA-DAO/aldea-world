@@ -54,6 +54,42 @@ const birthView = (row: Record<string, unknown>) => ({
   bornTs: row.born_ts === null ? null : Number(row.born_ts),
 });
 
+/** Activity windows the API accepts, in seconds. */
+export const WINDOWS = { "1h": 3_600, "24h": 86_400, "7d": 604_800 } as const;
+export type ActivityWindow = keyof typeof WINDOWS;
+
+/** Visits and distinct souls per building since `fromTs` (unix seconds), plus the totals across buildings. */
+export async function buildingActivity(db: Db, fromTs: number) {
+  const perBuilding = await db.query(
+    `SELECT building_id, count(*)::int AS visits, count(DISTINCT alma_id_hash)::int AS unique_souls, max(base_ts) AS last_visit_ts,
+       count(*) FILTER (WHERE left_ts IS NULL)::int AS inside
+     FROM building_visits WHERE base_ts >= $1 GROUP BY building_id ORDER BY building_id`,
+    [fromTs],
+  );
+  const totals = await db.query(`SELECT count(*)::int AS visits, count(DISTINCT alma_id_hash)::int AS unique_souls FROM building_visits WHERE base_ts >= $1`, [fromTs]);
+  return {
+    items: perBuilding.rows.map((row) => ({
+      buildingId: row.building_id,
+      visits: row.visits,
+      uniqueSouls: row.unique_souls,
+      // Visits not closed yet: souls that went in during the window and have not left (an approximation: a closed tab
+      // without leaveBuilding stays "inside" until that soul's next entry)
+      inside: row.inside,
+      lastVisitTs: Number(row.last_visit_ts),
+    })),
+    totals: { visits: totals.rows[0]?.visits ?? 0, uniqueSouls: totals.rows[0]?.unique_souls ?? 0 },
+  };
+}
+
+/** Souls that went into at least one building in the 7 days before `nowTs` (unix seconds). */
+export async function weeklySouls(db: Db, nowTs: number) {
+  const fromTs = nowTs - WINDOWS["7d"];
+  const { rows } = await db.query(`SELECT count(DISTINCT alma_id_hash)::int AS unique_souls, count(*)::int AS visits FROM building_visits WHERE base_ts >= $1 AND base_ts <= $2`, [fromTs, nowTs]);
+  return { fromTs, toTs: nowTs, uniqueSouls: rows[0]?.unique_souls ?? 0, visits: rows[0]?.visits ?? 0 };
+}
+
+const nowSeconds = () => Math.floor(Date.now() / 1000);
+
 export const apiRouter: StartConfigApiRouter = async (server, dbConn) => {
   server.get<{ Params: { characterId: string } }>("/api/v1/births/:characterId", async (request, reply) => {
     const id = Number(request.params.characterId);
@@ -88,4 +124,15 @@ export const apiRouter: StartConfigApiRouter = async (server, dbConn) => {
       nextSince,
     };
   });
+
+  /** Activity per building in a recent window (1h, 24h or 7d; 24h by default). */
+  server.get<{ Querystring: { window?: string } }>("/api/v1/activity/buildings", async (request, reply) => {
+    const window = (request.query.window ?? "24h") as ActivityWindow;
+    if (!(window in WINDOWS)) return reply.code(400).send({ error: "invalid_window", hint: "window=1h|24h|7d" });
+    const fromTs = nowSeconds() - WINDOWS[window];
+    return { window, fromTs, ...(await buildingActivity(dbConn, fromTs)) };
+  });
+
+  /** Weekly active souls: distinct souls with at least one building entry in the last 7 days. */
+  server.get("/api/v1/activity/souls/weekly", async () => weeklySouls(dbConn, nowSeconds()));
 };
