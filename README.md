@@ -60,7 +60,6 @@ Each package documents its own design in code comments; the Effectstream integra
 | `packages/alma-resolver` | ALMA Resolver (Hono, Drizzle, Postgres) |
 | `packages/effectstream-node` | Effectstream node (Bun): read model, STFs, API, MQTT |
 | `packages/relay-worker` | Relay worker ("the Midwife") |
-| `packages/cli` | `aldea` fork kit CLI — moving to `AdaSouls/fork-kit` |
 | `infra/`, `scripts/` | Local orchestration and deployment scripts |
 | `reference/` | The verified reference contracts the packages were migrated from |
 
@@ -105,7 +104,7 @@ CI runs the same checks plus Slither and gitleaks on every pull request.
 ## Forking ALDEA World
 
 ALDEA World is designed to be forked: register your organization and world in the Atlas, deploy your own World and
-publish your client. A step-by-step fork guide arrives with the fork kit CLI. Code is MIT; the ALDEA name, lore
+publish your client, with the [fork kit CLI](https://github.com/AdaSouls/fork-kit) (its README walks through the steps). Code is MIT; the ALDEA name, lore
 and art are not part of the code license — **you fork the world, not the brand** (see [Licensing](#licensing)).
 
 ## Governance and trust

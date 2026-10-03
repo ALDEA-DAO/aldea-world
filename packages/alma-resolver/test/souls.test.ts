@@ -5,7 +5,7 @@ import type { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import * as schema from "../src/db/schema";
-import { api, CHAIN_ID, signInWithEmail, signInWithPasskey, startStack, type Stack } from "./helpers/stack";
+import { api, CHAIN_ID, signInWithEmail, signInWithPasskey, signInWithWallet, startStack, type Stack } from "./helpers/stack";
 import { VirtualAuthenticator } from "./helpers/virtualAuthenticator";
 
 let stack: Stack;
@@ -61,6 +61,22 @@ describe("POST /v1/souls/prepare", () => {
     expect((await me.post("/v1/souls/prepare", { controller: key.address })).status).toBe(200);
     const other = privateKeyToAccount(`0x${randomBytes(32).toString("hex")}` as Hex);
     expect(await (await me.post("/v1/souls/prepare", { controller: other.address })).json()).toMatchObject({ code: "controller_mismatch" });
+  });
+
+  it("locally, lets the wallet that signed in control its own soul, and no other soul take it", async () => {
+    const wallet = privateKeyToAccount(`0x${randomBytes(32).toString("hex")}` as Hex);
+    const tokens = await signInWithWallet(local, wallet);
+    const me = api(local, tokens.accessToken);
+    const prepared = (await (await me.post("/v1/souls/prepare", { controller: wallet.address })).json()) as Prepared;
+    expect(prepared.doc.controllers[0]?.id).toBe(`did:pkh:eip155:${CHAIN_ID}:${wallet.address}`);
+    expect((await me.post("/v1/souls/prepare", { controller: wallet.address })).status).toBe(200);
+    const links = await local.db.select().from(schema.links).where(eq(schema.links.almaId, tokens.almaId));
+    expect(links.map((l) => l.roles)).toEqual([["login", "controller"]]);
+
+    const other = await signInWithEmail(local, newEmail());
+    const taken = await api(local, other.accessToken).post("/v1/souls/prepare", { controller: wallet.address });
+    expect(taken.status).toBe(409);
+    expect(await taken.json()).toMatchObject({ code: "link_belongs_to_other_soul" });
   });
 });
 
