@@ -253,5 +253,21 @@
     "signUpAction": "sign up",
     "listed": "You're already signed up.",
     "failed": "We couldn't sign you up, try again."
+  },
+  "portal": {
+    "verified": "Verified",
+    "forkOf": "fork of {{world}}",
+    "activity24h": "Last 24 h: {{births}} births · {{visits}} visits",
+    "clouded": "The Portal is clouded over.",
+    "retry": "Retry",
+    "youAreHere": "You are here.",
+    "onlyWorld": "For now, ALDEA is the only world in the Atlas. Want to found the second one?",
+    "forkGuide": "How to fork it"
+  },
+  "council": {
+    "charter": "The Genesis Charter",
+    "opensOn": "The Council will open with the Genesis Charter on {{date}}.",
+    "opensSoon": "The Council will open with the Genesis Charter. The date will be announced soon.",
+    "whatItIs": "It ratifies the village's official version: approved unless there is a qualified objection from $ALDEA holders."
   }
 }

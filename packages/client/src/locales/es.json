@@ -253,5 +253,21 @@
     "signUpAction": "anotarte",
     "listed": "Ya estás anotada.",
     "failed": "No pudimos anotarte, reintenta."
+  },
+  "portal": {
+    "verified": "Verificado",
+    "forkOf": "fork de {{world}}",
+    "activity24h": "Últimas 24 h: {{births}} nacimientos · {{visits}} visitas",
+    "clouded": "El Portal está nublado.",
+    "retry": "Reintentar",
+    "youAreHere": "Estás aquí.",
+    "onlyWorld": "Por ahora ALDEA es el único mundo del Atlas. ¿Quieres fundar el segundo?",
+    "forkGuide": "Cómo hacer un fork"
+  },
+  "council": {
+    "charter": "El Acta de Génesis",
+    "opensOn": "El Consejo abrirá con el Acta de Génesis el {{date}}.",
+    "opensSoon": "El Consejo abrirá con el Acta de Génesis. La fecha se anuncia pronto.",
+    "whatItIs": "Ahí se ratifica la versión oficial de la aldea: queda aprobada salvo que haya una objeción calificada de quienes tienen $ALDEA."
   }
 }

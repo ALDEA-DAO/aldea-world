@@ -58,7 +58,7 @@ const birthView = (row: Record<string, unknown>) => ({
 export const WINDOWS = { "1h": 3_600, "24h": 86_400, "7d": 604_800 } as const;
 export type ActivityWindow = keyof typeof WINDOWS;
 
-/** Visits and distinct souls per building since `fromTs` (unix seconds), plus the totals across buildings. */
+/** Visits and distinct souls per building since `fromTs` (unix seconds), plus the totals across buildings and births. */
 export async function buildingActivity(db: Db, fromTs: number) {
   const perBuilding = await db.query(
     `SELECT building_id, count(*)::int AS visits, count(DISTINCT alma_id_hash)::int AS unique_souls, max(base_ts) AS last_visit_ts,
@@ -67,6 +67,8 @@ export async function buildingActivity(db: Db, fromTs: number) {
     [fromTs],
   );
   const totals = await db.query(`SELECT count(*)::int AS visits, count(DISTINCT alma_id_hash)::int AS unique_souls FROM building_visits WHERE base_ts >= $1`, [fromTs]);
+  // Births are counted per hour: the hours that started inside the window
+  const births = await db.query(`SELECT coalesce(sum(births), 0)::int AS births FROM world_activity_hourly WHERE hour_start >= $1`, [Math.ceil(fromTs / 3600) * 3600]);
   return {
     items: perBuilding.rows.map((row) => ({
       buildingId: row.building_id,
@@ -77,7 +79,7 @@ export async function buildingActivity(db: Db, fromTs: number) {
       inside: row.inside,
       lastVisitTs: Number(row.last_visit_ts),
     })),
-    totals: { visits: totals.rows[0]?.visits ?? 0, uniqueSouls: totals.rows[0]?.unique_souls ?? 0 },
+    totals: { visits: totals.rows[0]?.visits ?? 0, uniqueSouls: totals.rows[0]?.unique_souls ?? 0, births: births.rows[0]?.births ?? 0 },
   };
 }
 

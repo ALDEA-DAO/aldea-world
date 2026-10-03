@@ -3,6 +3,8 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Panel } from "../../components/ui/Panel";
+import { Portal } from "../atlas/Portal";
+import { Council } from "./Council";
 import { SoulRegistryContent } from "./SoulRegistry";
 import { TownCenter } from "./TownCenter";
 import { UnderConstructionPanel } from "./UnderConstructionPanel";
@@ -36,6 +38,10 @@ export function BuildingPanel() {
           <TownCenter onExplore={close} />
         ) : building.kind === "SoulRegistry" ? (
           <SoulRegistryContent />
+        ) : building.kind === "Council" ? (
+          <Council />
+        ) : building.kind === "Portal" ? (
+          <Portal layout="panel" />
         ) : building.underConstruction ? (
           <UnderConstructionPanel building={building} />
         ) : (

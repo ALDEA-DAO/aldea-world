@@ -62,3 +62,30 @@ test("a soul signs up once; signing up again says it already is", async ({ conte
   await expect(page.getByRole("alert").filter({ hasText: /No pudimos anotarte|We couldn't sign you up/ })).toBeVisible();
   await expect(forgeSignUp).toBeEnabled();
 });
+
+test("the Portal lists ALDEA World with its last 24 h, and says so when Effectstream is down", async ({ page }) => {
+  // Effectstream down first: the card stays, the activity line offers to retry
+  await page.route("**/api/v1/activity/buildings**", (route) => route.fulfill({ status: 503, body: "down" }));
+  await page.goto("/#/b/portal");
+  const portal = panel(page, /Portal de los Mundos|Portal of Worlds/);
+  const aldea = portal.getByRole("article", { name: "ALDEA World" });
+  await expect(aldea.getByText(/Verificado|Verified/)).toBeVisible();
+  await expect(aldea.getByText(/El Portal está nublado|The Portal is clouded over/)).toBeVisible();
+  await expect(portal.getByText(/único mundo del Atlas|only world in the Atlas/)).toBeVisible();
+
+  await page.unroute("**/api/v1/activity/buildings**");
+  await aldea.getByRole("button", { name: /Reintentar|Retry/ }).click();
+  await expect(aldea.getByTestId("world-activity")).toHaveText(/(Últimas 24 h|Last 24 h): \d+ (nacimientos|births) · \d+ (visitas|visits)/);
+
+  // The full page shows the same world
+  await page.goto("/#/portal");
+  await expect(page.getByRole("heading", { level: 1, name: /Portal de los Mundos|Portal of Worlds/ })).toBeVisible();
+  await expect(page.getByRole("article", { name: "ALDEA World" })).toBeVisible();
+});
+
+test("the Council says when it opens", async ({ page }) => {
+  await page.goto("/#/b/consejo");
+  const council = panel(page, /^(Consejo|Council)$/);
+  await expect(council.getByRole("heading", { name: /El Acta de Génesis|The Genesis Charter/ })).toBeVisible();
+  await expect(council.getByRole("status")).toHaveText(/El Consejo abrirá con el Acta de Génesis|The Council will open with the Genesis Charter/);
+});

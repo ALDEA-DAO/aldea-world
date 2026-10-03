@@ -48,7 +48,7 @@ describe("buildingEntered", () => {
     await apply(db, buildingEntered(entry(3, REGISTRY, "0xE3"), ctx(12)));
 
     const activity = await buildingActivity(db as never, T0 + 12 - 86_400);
-    expect(activity.totals).toEqual({ visits: 3, uniqueSouls: 3 });
+    expect(activity.totals).toEqual({ visits: 3, uniqueSouls: 3, births: 0 });
     expect(activity.items).toEqual([
       { buildingId: PORTAL, visits: 2, uniqueSouls: 2, inside: 2, lastVisitTs: T0 + 11 },
       { buildingId: REGISTRY, visits: 1, uniqueSouls: 1, inside: 1, lastVisitTs: T0 + 12 },
@@ -64,7 +64,7 @@ describe("buildingEntered", () => {
       { world_id: "0xworld", hour_start: T0, births: 0, visits: 2, unique_souls: 1 },
       { world_id: "0xworld", hour_start: T0 + 3_600, births: 0, visits: 1, unique_souls: 1 },
     ]);
-    expect((await buildingActivity(db as never, T0)).totals).toEqual({ visits: 3, uniqueSouls: 1 });
+    expect((await buildingActivity(db as never, T0)).totals).toEqual({ visits: 3, uniqueSouls: 1, births: 0 });
   });
 
   it("closes the previous visit when the character goes into another building without leaving", async () => {
