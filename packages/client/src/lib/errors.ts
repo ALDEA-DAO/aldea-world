@@ -24,6 +24,8 @@ const COPY: Record<string, string> = {
   CharacterSystem_NotHumanSoul: "errors.notSoulController",
   CharacterSystem_GenesisFoundersOnly: "errors.genesisFoundersOnly",
   CharacterSystem_BirthNotReady: "errors.birthNotReady",
+  // Lost the completion race to the Midwife: harmless, callers ignore it
+  CharacterSystem_NotGestating: "errors.unknown",
   MovementSystem_WorldPaused: "errors.worldPaused",
   MovementSystem_NoSoul: "errors.notSoulController",
   MovementSystem_NoCharacter: "errors.noCharacter",
@@ -60,6 +62,8 @@ export function decodeGameError(err: unknown): GameError {
     }
   }
   const message = err instanceof Error ? err.message : String(err);
+  // The paymaster refused to sponsor (spending limit or allowlist): the village is busy, not broken
+  if (/paymaster|sponsor|AA3[0-9]|policy/i.test(message)) return { name: "sponsorship", copyKey: "errors.busy" };
   if (/fetch|network|timeout|HTTP request failed/i.test(message)) return { name: "network", copyKey: "errors.network" };
   return { name: "unknown", copyKey: "errors.unknown" };
 }

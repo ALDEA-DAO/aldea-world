@@ -5,6 +5,7 @@ import { useToast } from "../../components/ui/Toast";
 import { decodeGameError } from "../../lib/errors";
 import { useMud } from "../../mud/store";
 import { useBirth } from "../birth/useBirth";
+import { useWorldActions } from "../world/useWorldActions";
 
 const BORN = 2;
 // Entries and exits are sent one after another, in the order the player made them
@@ -21,7 +22,9 @@ export function useBuildingEntry(building: BuildingInfo | undefined) {
   const { systemCalls } = useMud();
   const { character } = useBirth();
   const born = character?.status === BORN;
-  const id = building?.id;
+  const { blocked } = useWorldActions();
+  // While paused or offline the panel still opens (looking is always allowed) but nothing is sent
+  const id = blocked ? undefined : building?.id;
 
   const notify = useRef<(err: unknown) => void>(() => {});
   useEffect(() => {

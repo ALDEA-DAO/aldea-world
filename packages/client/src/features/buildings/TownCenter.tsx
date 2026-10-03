@@ -3,12 +3,13 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "../../components/ui/Skeleton";
 import { Tabs } from "../../components/ui/Tabs";
-import { useCensus, useMud, useWorldPaused } from "../../mud/store";
+import { useCensus, useMud } from "../../mud/store";
 import { useAlmaSession } from "../auth/useAlmaSession";
 import { BirthRitual } from "../birth/BirthRitual";
 import { CensusPanel } from "../census/CensusPanel";
 import { ClassPicker } from "../birth/ClassPicker";
 import { useBirth } from "../birth/useBirth";
+import { useWorldActions } from "../world/useWorldActions";
 
 /**
  * The Town Center's interior: be born here, or see your character and the census. The birth ritual is drawn over the
@@ -77,7 +78,7 @@ function BirthTab({
   const { t, i18n } = useTranslation();
   const lang = i18n.language === "en" ? "en" : "es";
   const { network, error: networkError } = useMud();
-  const paused = useWorldPaused();
+  const { paused, online } = useWorldActions();
   const census = useCensus();
 
   if (networkError) return <p role="alert">{t("townCenter.pathCut")}</p>;
@@ -98,9 +99,9 @@ function BirthTab({
   return (
     <div className="flex flex-col gap-4">
       {census?.totalPopulation === 0 && census.gestating === 0 && <p>{t("townCenter.beFirst")}</p>}
-      {paused && <p role="alert">{t("townCenter.maintenance")}</p>}
+      {paused ? <p role="alert">{t("townCenter.maintenance")}</p> : !online && <p role="alert">{t("status.offlineShort")}</p>}
       {error && <p role="alert">{t(error)}</p>}
-      <ClassPicker onBirth={onBirth} busy={stage === "sending"} disabled={paused || !ready} />
+      <ClassPicker onBirth={onBirth} busy={stage === "sending"} disabled={paused || !online || !ready} />
     </div>
   );
 }

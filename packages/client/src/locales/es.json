@@ -120,9 +120,6 @@
   "census": {
     "summary": "{{born}} almas nacidas · {{gestating}} en gestación"
   },
-  "world": {
-    "paused": "La aldea está en pausa: por ahora no se puede nacer ni entrar a los edificios."
-  },
   "townCenter": {
     "title": "Centro Urbano",
     "beBorn": "Nacer",
@@ -167,7 +164,8 @@
     "notBornYet": "Tu alma todavía está llegando; espera a nacer para entrar.",
     "unknownBuilding": "Ese edificio no existe en esta aldea.",
     "buildingClosed": "Este edificio está cerrado por ahora.",
-    "entryNotRecorded": "Tu entrada no quedó registrada en la cadena. Puedes seguir mirando."
+    "entryNotRecorded": "Tu entrada no quedó registrada en la cadena. Puedes seguir mirando.",
+    "busy": "La aldea está recibiendo muchas almas; prueba en unos minutos."
   },
   "village": {
     "beBorn": "Nacer en ALDEA",
@@ -278,5 +276,12 @@
     "yourSoul": "Tu alma",
     "signInAction": "nacer y entrar a los edificios",
     "fallback": "Este dispositivo no puede dibujar la aldea: estás en el modo lista, con los mismos edificios y acciones."
+  },
+  "status": {
+    "paused": "La aldea está en mantenimiento. Puedes mirar, pero no nacer ni entrar por ahora.",
+    "offline": "Estás sin conexión. La aldea te espera.",
+    "pausedShort": "La aldea está en mantenimiento.",
+    "offlineShort": "Estás sin conexión.",
+    "bornFirst": "Primero tienes que nacer en el Centro Urbano."
   }
 }

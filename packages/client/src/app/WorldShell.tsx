@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, Outlet, useMatch, useNavigate } from "react-router-dom";
 import { HudBottomBar } from "../components/hud/HudBottomBar";
+import { useWorldActions } from "../features/world/useWorldActions";
 import { PhaserCanvas } from "../game/PhaserCanvas";
 
 /**
@@ -14,7 +15,14 @@ export function WorldShell() {
   const navigate = useNavigate();
   const match = useMatch("/b/:buildingSlug");
   const open = match?.params.buildingSlug ? buildingByRoute(match.params.buildingSlug) : undefined;
-  const enter = useCallback((slug: string) => void navigate(`/b/${buildings.find((b) => b.slug === slug)?.routeSlug ?? ""}`), [navigate]);
+  const { enterBlockedReason } = useWorldActions();
+  // Enter on the canvas (keyboard) follows the same rules as the bottom bar's button
+  const enter = useCallback(
+    (slug: string) => {
+      if (!enterBlockedReason(slug)) void navigate(`/b/${buildings.find((b) => b.slug === slug)?.routeSlug ?? ""}`);
+    },
+    [navigate, enterBlockedReason],
+  );
 
   return (
     <div className="relative min-h-[70dvh] flex-1">
@@ -31,7 +39,7 @@ export function WorldShell() {
                 </p>
               )
             )}
-            <HudBottomBar game={game} open={open} />
+            <HudBottomBar game={game} open={open} enterBlockedReason={enterBlockedReason} />
           </>
         )}
       </PhaserCanvas>

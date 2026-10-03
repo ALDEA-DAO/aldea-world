@@ -21,7 +21,7 @@ async function passkeyDevice(context: BrowserContext, page: Page) {
 const village = (page: Page) => page.getByTestId("village");
 const tile = async (page: Page) => (await village(page).getAttribute("data-tile")) ?? "";
 
-test("a guest sees the village and goes into a building with the keyboard", async ({ page }) => {
+test("a guest sees the village, is invited to be born and cannot enter other buildings yet", async ({ page }) => {
   await page.goto("/#/");
   await expect(page.getByText(/El camino se está abriendo|The path is opening/)).toBeVisible();
   await expect(village(page)).toHaveAttribute("data-ready", "true", { timeout: 20_000 });
@@ -39,10 +39,12 @@ test("a guest sees the village and goes into a building with the keyboard", asyn
   await canvas.focus();
   await page.keyboard.press("Tab");
   await expect(village(page)).toHaveAttribute("data-door", /.+/);
+  // The first door from the top of the map is the Council's; without a character it cannot be entered yet
+  await expect(village(page)).toHaveAttribute("data-door", "council");
+  await expect(page.getByTestId("enter-building")).toBeDisabled();
+  await expect(page.getByText(/Primero tienes que nacer en el Centro Urbano|First you need to be born at the Town Center/)).toBeVisible();
   await page.keyboard.press("Enter");
-  // The first door from the top of the map is the Council's: its panel opens over the village
-  await expect(page).toHaveURL(/#\/b\/consejo$/);
-  await expect(page.getByRole("region", { name: /^(Consejo|Council)$/ }).getByText(/abrirá con el Acta de Génesis|will open with the Genesis Charter/)).toBeVisible();
+  await expect(page).toHaveURL(/#\/$/);
 });
 
 test("a born soul walks the village and is offered the door it stands at", async ({ context, page }) => {
@@ -115,4 +117,13 @@ test("a born soul walks the village and is offered the door it stands at", async
   await expect(panel).toBeHidden();
   await expect(page).toHaveURL(/#\/$/);
   await expect.poll(async () => (await chain.getLogs({ event: left, args: { characterId }, fromBlock })).length, { timeout: 12_000 }).toBe(1);
+
+  // The Council's door (Escape cleared the keyboard focus, so Tab starts again at the first door): its panel opens
+  // from the door too
+  await canvas.focus();
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Enter");
+  await expect(village(page)).toHaveAttribute("data-door", "council", { timeout: 20_000 });
+  await enter.click();
+  await expect(page.getByRole("region", { name: /^(Consejo|Council)$/ }).getByText(/abrirá con el Acta de Génesis|will open with the Genesis Charter/)).toBeVisible();
 });

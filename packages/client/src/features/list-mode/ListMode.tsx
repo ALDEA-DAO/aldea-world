@@ -12,6 +12,7 @@ import { useAlmaSession } from "../auth/useAlmaSession";
 import { useBirth } from "../birth/useBirth";
 import { BuildingContent } from "../buildings/BuildingContent";
 import { useBuildingEntry } from "../buildings/useBuildingEntry";
+import { useWorldActions } from "../world/useWorldActions";
 
 /**
  * List mode (`#/lista`, `#/lista/:buildingSlug`): the village without the canvas. A status header (your soul, your
@@ -29,6 +30,7 @@ export function ListMode() {
   const heading = useRef<HTMLHeadingElement>(null);
   const leave = useCallback(() => void navigate("/lista"), [navigate]);
   useBuildingEntry(selected);
+  const { enterBlockedReason } = useWorldActions();
 
   // Entering a building moves the focus to its heading, so a screen reader starts reading inside it
   useEffect(() => {
@@ -53,13 +55,24 @@ export function ListMode() {
                 <p className="font-medium">{b.name[lang]}</p>
                 <p className="text-sm text-text-muted">{b.underConstruction ? t("list.underConstruction") : t("list.open")}</p>
               </div>
-              <Link
-                to={`/lista/${b.routeSlug}`}
-                aria-current={selected?.slug === b.slug ? "page" : undefined}
-                className="inline-flex min-h-11 items-center rounded-md bg-primary px-4 font-medium text-on-primary bevel"
-              >
-                {t(`village.enterBuilding.${b.slug}`)}
-              </Link>
+              {enterBlockedReason(b.slug) ? (
+                <div className="flex flex-col items-end gap-1">
+                  <button type="button" disabled aria-describedby={`blocked-${b.slug}`} className="inline-flex min-h-11 cursor-not-allowed items-center rounded-md bg-primary px-4 font-medium text-on-primary opacity-60">
+                    {t(`village.enterBuilding.${b.slug}`)}
+                  </button>
+                  <span id={`blocked-${b.slug}`} className="text-xs text-text-muted">
+                    {t(enterBlockedReason(b.slug)!)}
+                  </span>
+                </div>
+              ) : (
+                <Link
+                  to={`/lista/${b.routeSlug}`}
+                  aria-current={selected?.slug === b.slug ? "page" : undefined}
+                  className="inline-flex min-h-11 items-center rounded-md bg-primary px-4 font-medium text-on-primary bevel"
+                >
+                  {t(`village.enterBuilding.${b.slug}`)}
+                </Link>
+              )}
             </li>
           ))}
         </ul>

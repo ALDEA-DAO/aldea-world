@@ -120,9 +120,6 @@
   "census": {
     "summary": "{{born}} souls born · {{gestating}} gestating"
   },
-  "world": {
-    "paused": "The village is paused: births and building entries are on hold for now."
-  },
   "townCenter": {
     "title": "Town Center",
     "beBorn": "Be born",
@@ -167,7 +164,8 @@
     "notBornYet": "Your soul is still arriving; wait to be born before entering.",
     "unknownBuilding": "That building does not exist in this village.",
     "buildingClosed": "This building is closed for now.",
-    "entryNotRecorded": "Your entry was not recorded on-chain. You can keep looking around."
+    "entryNotRecorded": "Your entry was not recorded on-chain. You can keep looking around.",
+    "busy": "The village is receiving many souls; try again in a few minutes."
   },
   "village": {
     "beBorn": "Be born in ALDEA",
@@ -278,5 +276,12 @@
     "yourSoul": "Your soul",
     "signInAction": "be born and enter buildings",
     "fallback": "This device cannot draw the village: you are in List mode, with the same buildings and actions."
+  },
+  "status": {
+    "paused": "The village is under maintenance. You can look around, but you can't be born or enter buildings for now.",
+    "offline": "You're offline. The village is waiting for you.",
+    "pausedShort": "The village is under maintenance.",
+    "offlineShort": "You're offline.",
+    "bornFirst": "First you need to be born at the Town Center."
   }
 }
