@@ -146,6 +146,25 @@ export const buildings: readonly BuildingInfo[] = [
   },
 ];
 
+/** A world as the Portal lists it. */
+export interface PortalWorld {
+  name: string;
+  /** The world's ALMA organization. */
+  almaOrgId: string;
+  verified: boolean;
+  url: string;
+  /** The world it was forked from, if any. */
+  forkOf: string | null;
+}
+
+/**
+ * The Portal's worlds until the Atlas feeds it (Phase 3): only ALDEA World, the official one.
+ */
+export const PORTAL_SEED_WORLDS: readonly PortalWorld[] = [{ name: "ALDEA World", almaOrgId: WORLD_ORGS.aldeaWorld, verified: true, url: "https://aldea.world", forkOf: null }];
+
+/** Where a would-be founder of the second world starts. */
+export const FORK_GUIDE_URL = "https://github.com/ALDEA-DAO/aldea-world#forking-aldea-world";
+
 // TODO(founder): set the Genesis Charter opening date ; the Council panel reads it.
 export const COUNCIL_OPENS_AT: string | null = null;
 

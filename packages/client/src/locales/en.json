@@ -120,9 +120,6 @@
   "census": {
     "summary": "{{born}} souls born · {{gestating}} gestating"
   },
-  "world": {
-    "paused": "The village is paused: births and building entries are on hold for now."
-  },
   "townCenter": {
     "title": "Town Center",
     "beBorn": "Be born",
@@ -162,10 +159,32 @@
     "birthNotReady": "The embers are not ready yet; a few more seconds.",
     "alreadyAnchored": "Your soul was already anchored; carry on.",
     "network": "Your request didn't go through. Retry.",
-    "unknown": "Something went wrong. Try again."
+    "unknown": "Something went wrong. Try again.",
+    "noCharacter": "You don't have a character yet. Be born at the Town Center to enter buildings.",
+    "notBornYet": "Your soul is still arriving; wait to be born before entering.",
+    "unknownBuilding": "That building does not exist in this village.",
+    "buildingClosed": "This building is closed for now.",
+    "entryNotRecorded": "Your entry was not recorded on-chain. You can keep looking around.",
+    "busy": "The village is receiving many souls; try again in a few minutes."
   },
   "village": {
-    "beBorn": "Be born in ALDEA"
+    "beBorn": "Be born in ALDEA",
+    "loading": "The path is opening…",
+    "canvasLabel": "The village. Arrows or WASD to walk, Tab to move from door to door, Enter to go in.",
+    "hint": "Tap the ground or a building to walk · arrows or WASD · wheel to zoom",
+    "guestHint": "Drag to look around · be born at the Town Center to enter the buildings",
+    "failed": "We could not open the village on this device.",
+    "useList": "Open list mode",
+    "enterBuilding": {
+      "town-center": "Enter the Town Center",
+      "portal": "Enter the Portal of Worlds",
+      "soul-registry": "Enter the Soul Registry",
+      "council": "Enter the Council",
+      "velum-archive": "Enter the Velum Archive",
+      "npc-forge": "Enter the NPC Forge"
+    },
+    "lite": "Lite mode",
+    "liteHint": "This device is running slow: smoke, embers and background animations are off."
   },
   "identity": {
     "copy": "Copy",
@@ -193,6 +212,78 @@
       "anchored": "anchored",
       "active": "active",
       "revoked": "revoked"
-    }
+    },
+    "bornOn": "born on {{date}}",
+    "seals": "Seals",
+    "founder": "Founder",
+    "charterSignatory": "Charter Signatory",
+    "sealHeld": "sealed",
+    "sealNone": "no seal",
+    "founderNotYet": "not yet. If you hold $ALDEA, you can claim it by linking your Cardano wallet.",
+    "charterNotYet": "not yet. It is signed when the Council opens with the Genesis Charter.",
+    "agentsSoon": "Coming soon: register souls for your agents",
+    "agentsSoonText": "Your agents will have their own soul, tied to yours, with the same on-chain evidence."
+  },
+  "hud": {
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "bottomBar": "Village actions",
+    "home": "ALDEA World: back to the village"
+  },
+  "building": {
+    "notFound": "That building does not exist",
+    "backToVillage": "Back to the village"
+  },
+  "tribe": {
+    "mine": "My tribe",
+    "members": "Tribe members",
+    "membersOf": "Members of {{tribe}}",
+    "empty": "No souls in this tribe yet.",
+    "more": "Load more",
+    "you": "you"
+  },
+  "construction": {
+    "title": "Under construction",
+    "willDo": "What this building will do",
+    "rail": "Which AdaSouls rail it demonstrates",
+    "estimated": "Estimated date"
+  },
+  "waitlist": {
+    "signUp": "Sign me up",
+    "signUpAction": "sign up",
+    "listed": "You're already signed up.",
+    "failed": "We couldn't sign you up, try again."
+  },
+  "portal": {
+    "verified": "Verified",
+    "forkOf": "fork of {{world}}",
+    "activity24h": "Last 24 h: {{births}} births · {{visits}} visits",
+    "clouded": "The Portal is clouded over.",
+    "retry": "Retry",
+    "youAreHere": "You are here.",
+    "onlyWorld": "For now, ALDEA is the only world in the Atlas. Want to found the second one?",
+    "forkGuide": "How to fork it"
+  },
+  "council": {
+    "charter": "The Genesis Charter",
+    "opensOn": "The Council will open with the Genesis Charter on {{date}}.",
+    "opensSoon": "The Council will open with the Genesis Charter. The date will be announced soon.",
+    "whatItIs": "It ratifies the village's official version: approved unless there is a qualified objection from $ALDEA holders."
+  },
+  "list": {
+    "buildings": "Village buildings",
+    "open": "Open",
+    "underConstruction": "Under construction",
+    "leave": "Leave the building",
+    "yourSoul": "Your soul",
+    "signInAction": "be born and enter buildings",
+    "fallback": "This device cannot draw the village: you are in List mode, with the same buildings and actions."
+  },
+  "status": {
+    "paused": "The village is under maintenance. You can look around, but you can't be born or enter buildings for now.",
+    "offline": "You're offline. The village is waiting for you.",
+    "pausedShort": "The village is under maintenance.",
+    "offlineShort": "You're offline.",
+    "bornFirst": "First you need to be born at the Town Center."
   }
 }

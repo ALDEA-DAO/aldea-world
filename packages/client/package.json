@@ -9,7 +9,9 @@
     "dev": "vite",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "art": "tsx scripts/art/build.mjs",
+    "art:webp": "node scripts/art/webp.mjs"
   },
   "dependencies": {
     "@aldea/shared": "workspace:^",
@@ -26,9 +28,11 @@
     "@turnkey/viem": "0.14.43",
     "clsx": "^2.1.1",
     "contracts": "workspace:^",
+    "easystarjs": "^0.4.4",
     "i18next": "^26.4.2",
     "lucide-react": "^1.48.0",
     "oidc-client-ts": "3.5.0",
+    "phaser": "^4.2.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-i18next": "^17.0.15",
@@ -37,12 +41,15 @@
     "zustand": "^4.3.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
     "tailwindcss": "^4.3.3",
+    "three": "^0.186.1",
+    "tsx": "^4.23.15",
     "vite": "^8.3.1"
   },
   "repository": {

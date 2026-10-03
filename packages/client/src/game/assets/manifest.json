@@ -1,0 +1,738 @@
+{
+  "tile": {
+    "width": 128,
+    "height": 64
+  },
+  "tiles": [
+    "grass",
+    "jungle",
+    "dirt",
+    "plaza",
+    "sand",
+    "snow",
+    "water",
+    "shallows",
+    "coral"
+  ],
+  "buildings": {
+    "town-center": {
+      "width": 388,
+      "height": 540,
+      "anchor": [
+        130,
+        473
+      ],
+      "footprint": [
+        [
+          0,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    "portal": {
+      "width": 276,
+      "height": 390,
+      "anchor": [
+        146,
+        316
+      ],
+      "footprint": [
+        [
+          -1,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    "soul-registry": {
+      "width": 269,
+      "height": 370,
+      "anchor": [
+        134,
+        301
+      ],
+      "footprint": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ]
+    },
+    "council": {
+      "width": 260,
+      "height": 419,
+      "anchor": [
+        130,
+        352
+      ],
+      "footprint": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ]
+    },
+    "velum-archive": {
+      "width": 214,
+      "height": 356,
+      "anchor": [
+        76,
+        286
+      ],
+      "footprint": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ]
+    },
+    "velum-archive-construction": {
+      "width": 335,
+      "height": 380,
+      "anchor": [
+        174,
+        298
+      ],
+      "footprint": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          -1,
+          0
+        ]
+      ]
+    },
+    "npc-forge": {
+      "width": 273,
+      "height": 320,
+      "anchor": [
+        142,
+        252
+      ],
+      "footprint": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          -1,
+          0
+        ]
+      ]
+    },
+    "npc-forge-construction": {
+      "width": 335,
+      "height": 380,
+      "anchor": [
+        161,
+        292
+      ],
+      "footprint": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          -1,
+          0
+        ]
+      ]
+    }
+  },
+  "decorations": {
+    "tree-oak": {
+      "width": 93,
+      "height": 145,
+      "anchor": [
+        46,
+        116
+      ],
+      "solid": true
+    },
+    "tree-default": {
+      "width": 95,
+      "height": 183,
+      "anchor": [
+        47,
+        154
+      ],
+      "solid": true
+    },
+    "tree-detailed": {
+      "width": 107,
+      "height": 160,
+      "anchor": [
+        55,
+        128
+      ],
+      "solid": true
+    },
+    "bush": {
+      "width": 55,
+      "height": 49,
+      "anchor": [
+        27,
+        30
+      ],
+      "solid": false
+    },
+    "bush-large": {
+      "width": 50,
+      "height": 46,
+      "anchor": [
+        25,
+        28
+      ],
+      "solid": true
+    },
+    "flower-red": {
+      "width": 26,
+      "height": 38,
+      "anchor": [
+        14,
+        27
+      ],
+      "solid": false
+    },
+    "flower-yellow": {
+      "width": 26,
+      "height": 30,
+      "anchor": [
+        14,
+        19
+      ],
+      "solid": false
+    },
+    "flower-purple": {
+      "width": 26,
+      "height": 34,
+      "anchor": [
+        14,
+        23
+      ],
+      "solid": false
+    },
+    "grass": {
+      "width": 57,
+      "height": 51,
+      "anchor": [
+        27,
+        31
+      ],
+      "solid": false
+    },
+    "log": {
+      "width": 65,
+      "height": 48,
+      "anchor": [
+        32,
+        27
+      ],
+      "solid": false
+    },
+    "campfire": {
+      "width": 72,
+      "height": 44,
+      "anchor": [
+        34,
+        20
+      ],
+      "solid": true
+    },
+    "lantern": {
+      "width": 33,
+      "height": 141,
+      "anchor": [
+        16,
+        131
+      ],
+      "solid": true
+    },
+    "fountain": {
+      "width": 260,
+      "height": 154,
+      "anchor": [
+        130,
+        88
+      ],
+      "solid": true
+    },
+    "palm-tall": {
+      "width": 192,
+      "height": 210,
+      "anchor": [
+        96,
+        156
+      ],
+      "solid": true
+    },
+    "palm-bend": {
+      "width": 129,
+      "height": 175,
+      "anchor": [
+        64,
+        137
+      ],
+      "solid": true
+    },
+    "tree-fat": {
+      "width": 95,
+      "height": 140,
+      "anchor": [
+        47,
+        111
+      ],
+      "solid": true
+    },
+    "bush-triangle": {
+      "width": 61,
+      "height": 46,
+      "anchor": [
+        33,
+        27
+      ],
+      "solid": true
+    },
+    "pine-tall": {
+      "width": 54,
+      "height": 149,
+      "anchor": [
+        26,
+        130
+      ],
+      "solid": true
+    },
+    "pine-round": {
+      "width": 90,
+      "height": 154,
+      "anchor": [
+        45,
+        126
+      ],
+      "solid": true
+    },
+    "rock-tall": {
+      "width": 111,
+      "height": 136,
+      "anchor": [
+        55,
+        103
+      ],
+      "solid": true
+    },
+    "rock-large": {
+      "width": 120,
+      "height": 82,
+      "anchor": [
+        60,
+        47
+      ],
+      "solid": true
+    },
+    "stone-large": {
+      "width": 120,
+      "height": 82,
+      "anchor": [
+        60,
+        47
+      ],
+      "solid": true
+    },
+    "stone-flat": {
+      "width": 64,
+      "height": 39,
+      "anchor": [
+        32,
+        18
+      ],
+      "solid": false
+    },
+    "canoe": {
+      "width": 97,
+      "height": 65,
+      "anchor": [
+        48,
+        36
+      ],
+      "solid": true
+    },
+    "cactus-tall": {
+      "width": 52,
+      "height": 87,
+      "anchor": [
+        28,
+        67
+      ],
+      "solid": true
+    },
+    "cactus-short": {
+      "width": 45,
+      "height": 67,
+      "anchor": [
+        24,
+        49
+      ],
+      "solid": true
+    },
+    "rock-small": {
+      "width": 51,
+      "height": 43,
+      "anchor": [
+        25,
+        25
+      ],
+      "solid": false
+    },
+    "obelisk": {
+      "width": 44,
+      "height": 93,
+      "anchor": [
+        22,
+        77
+      ],
+      "solid": true
+    },
+    "palm-short": {
+      "width": 192,
+      "height": 186,
+      "anchor": [
+        96,
+        133
+      ],
+      "solid": true
+    },
+    "palm": {
+      "width": 129,
+      "height": 186,
+      "anchor": [
+        64,
+        148
+      ],
+      "solid": true
+    },
+    "lily": {
+      "width": 42,
+      "height": 31,
+      "anchor": [
+        21,
+        15
+      ],
+      "solid": false
+    },
+    "tent": {
+      "width": 103,
+      "height": 98,
+      "anchor": [
+        50,
+        67
+      ],
+      "solid": true
+    }
+  },
+  "characters": {
+    "0": {
+      "frameWidth": 113,
+      "frameHeight": 118,
+      "anchor": [
+        56,
+        86
+      ],
+      "directions": 8,
+      "idle": [
+        0,
+        1
+      ],
+      "walk": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "1": {
+      "frameWidth": 113,
+      "frameHeight": 118,
+      "anchor": [
+        56,
+        86
+      ],
+      "directions": 8,
+      "idle": [
+        0,
+        1
+      ],
+      "walk": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "2": {
+      "frameWidth": 113,
+      "frameHeight": 118,
+      "anchor": [
+        56,
+        86
+      ],
+      "directions": 8,
+      "idle": [
+        0,
+        1
+      ],
+      "walk": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "3": {
+      "frameWidth": 113,
+      "frameHeight": 118,
+      "anchor": [
+        56,
+        86
+      ],
+      "directions": 8,
+      "idle": [
+        0,
+        1
+      ],
+      "walk": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "4": {
+      "frameWidth": 113,
+      "frameHeight": 118,
+      "anchor": [
+        56,
+        86
+      ],
+      "directions": 8,
+      "idle": [
+        0,
+        1
+      ],
+      "walk": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "5": {
+      "frameWidth": 113,
+      "frameHeight": 118,
+      "anchor": [
+        56,
+        86
+      ],
+      "directions": 8,
+      "idle": [
+        0,
+        1
+      ],
+      "walk": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "6": {
+      "frameWidth": 113,
+      "frameHeight": 118,
+      "anchor": [
+        56,
+        86
+      ],
+      "directions": 8,
+      "idle": [
+        0,
+        1
+      ],
+      "walk": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "7": {
+      "frameWidth": 113,
+      "frameHeight": 118,
+      "anchor": [
+        56,
+        86
+      ],
+      "directions": 8,
+      "idle": [
+        0,
+        1
+      ],
+      "walk": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "8": {
+      "frameWidth": 113,
+      "frameHeight": 118,
+      "anchor": [
+        56,
+        86
+      ],
+      "directions": 8,
+      "idle": [
+        0,
+        1
+      ],
+      "walk": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "9": {
+      "frameWidth": 113,
+      "frameHeight": 118,
+      "anchor": [
+        56,
+        86
+      ],
+      "directions": 8,
+      "idle": [
+        0,
+        1
+      ],
+      "walk": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "10": {
+      "frameWidth": 113,
+      "frameHeight": 118,
+      "anchor": [
+        56,
+        86
+      ],
+      "directions": 8,
+      "idle": [
+        0,
+        1
+      ],
+      "walk": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  }
+}

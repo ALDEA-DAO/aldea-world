@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [develop]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -66,6 +66,19 @@ jobs:
       - run: pnpm --filter @aldea/alma-resolver test
       - run: pnpm --filter @aldea/effectstream-node test
       - run: pnpm --filter @aldea/relay-worker test
+
+  client:
+    name: Client build and initial JS budget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with: { node-version-file: .nvmrc, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter client build
+      - name: Initial JavaScript ≤ 250 KB gzip
+        run: pnpm check:bundle
 
   slither:
     name: Slither (fails on high)

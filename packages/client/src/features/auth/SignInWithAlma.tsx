@@ -21,7 +21,7 @@ export function SignInWithAlma() {
   return (
     <div className="flex items-center gap-2">
       {almaId && <SoulChip almaId={almaId} tribe={character?.status === 2 ? character.tribe : undefined} />}
-      <Button size="sm" variant="ghost" className="text-on-wood" onClick={() => void signOut()}>
+      <Button size="sm" variant="ghost" className="!text-on-wood" onClick={() => void signOut()}>
         {t("auth.signOut")}
       </Button>
     </div>

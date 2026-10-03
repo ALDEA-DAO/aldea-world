@@ -120,9 +120,6 @@
   "census": {
     "summary": "{{born}} almas nacidas · {{gestating}} en gestación"
   },
-  "world": {
-    "paused": "La aldea está en pausa: por ahora no se puede nacer ni entrar a los edificios."
-  },
   "townCenter": {
     "title": "Centro Urbano",
     "beBorn": "Nacer",
@@ -162,10 +159,32 @@
     "birthNotReady": "Las brasas todavía no están listas; unos segundos más.",
     "alreadyAnchored": "Tu alma ya estaba anclada; sigue adelante.",
     "network": "Tu pedido no salió. Reintentar.",
-    "unknown": "Algo no salió. Prueba de nuevo."
+    "unknown": "Algo no salió. Prueba de nuevo.",
+    "noCharacter": "Todavía no tienes un personaje. Nace en el Centro Urbano para entrar a los edificios.",
+    "notBornYet": "Tu alma todavía está llegando; espera a nacer para entrar.",
+    "unknownBuilding": "Ese edificio no existe en esta aldea.",
+    "buildingClosed": "Este edificio está cerrado por ahora.",
+    "entryNotRecorded": "Tu entrada no quedó registrada en la cadena. Puedes seguir mirando.",
+    "busy": "La aldea está recibiendo muchas almas; prueba en unos minutos."
   },
   "village": {
-    "beBorn": "Nacer en ALDEA"
+    "beBorn": "Nacer en ALDEA",
+    "loading": "El camino se está abriendo…",
+    "canvasLabel": "La aldea. Flechas o WASD para caminar, Tab para ir de puerta en puerta, Enter para entrar.",
+    "hint": "Toca el suelo o un edificio para caminar · flechas o WASD · rueda para acercar",
+    "guestHint": "Arrastra para mirar la aldea · nace en el Centro Urbano para entrar a los edificios",
+    "failed": "No pudimos abrir la aldea en este dispositivo.",
+    "useList": "Abrir el modo lista",
+    "enterBuilding": {
+      "town-center": "Entrar al Centro Urbano",
+      "portal": "Entrar al Portal de los Mundos",
+      "soul-registry": "Entrar al Registro de Almas",
+      "council": "Entrar al Consejo",
+      "velum-archive": "Entrar al Archivo Velum",
+      "npc-forge": "Entrar a la Forja de NPCs"
+    },
+    "lite": "Modo liviano",
+    "liteHint": "Este dispositivo va lento: apagamos el humo, las brasas y las animaciones de fondo."
   },
   "identity": {
     "copy": "Copiar",
@@ -193,6 +212,78 @@
       "anchored": "anclada",
       "active": "activa",
       "revoked": "revocada"
-    }
+    },
+    "bornOn": "nació el {{date}}",
+    "seals": "Sellos",
+    "founder": "Fundador",
+    "charterSignatory": "Firmante del Acta",
+    "sealHeld": "sellado",
+    "sealNone": "sin sello",
+    "founderNotYet": "todavía no. Si tienes $ALDEA, podrás reclamarlo vinculando tu wallet de Cardano.",
+    "charterNotYet": "todavía no. Se firma cuando el Consejo abra con el Acta de Génesis.",
+    "agentsSoon": "Próximamente: registra almas para tus agentes",
+    "agentsSoonText": "Tus agentes van a tener su propia alma, vinculada a la tuya, con la misma evidencia en la cadena."
+  },
+  "hud": {
+    "menu": "Menú",
+    "closeMenu": "Cerrar menú",
+    "bottomBar": "Acciones de la aldea",
+    "home": "ALDEA World: volver a la aldea"
+  },
+  "building": {
+    "notFound": "Ese edificio no existe",
+    "backToVillage": "Volver a la aldea"
+  },
+  "tribe": {
+    "mine": "Mi tribu",
+    "members": "Miembros de la tribu",
+    "membersOf": "Miembros de {{tribe}}",
+    "empty": "Todavía no hay almas en esta tribu.",
+    "more": "Cargar más",
+    "you": "tú"
+  },
+  "construction": {
+    "title": "En construcción",
+    "willDo": "Qué hará este edificio",
+    "rail": "Qué riel de AdaSouls demuestra",
+    "estimated": "Fecha estimada"
+  },
+  "waitlist": {
+    "signUp": "Anotarme",
+    "signUpAction": "anotarte",
+    "listed": "Ya estás anotada.",
+    "failed": "No pudimos anotarte, reintenta."
+  },
+  "portal": {
+    "verified": "Verificado",
+    "forkOf": "fork de {{world}}",
+    "activity24h": "Últimas 24 h: {{births}} nacimientos · {{visits}} visitas",
+    "clouded": "El Portal está nublado.",
+    "retry": "Reintentar",
+    "youAreHere": "Estás aquí.",
+    "onlyWorld": "Por ahora ALDEA es el único mundo del Atlas. ¿Quieres fundar el segundo?",
+    "forkGuide": "Cómo hacer un fork"
+  },
+  "council": {
+    "charter": "El Acta de Génesis",
+    "opensOn": "El Consejo abrirá con el Acta de Génesis el {{date}}.",
+    "opensSoon": "El Consejo abrirá con el Acta de Génesis. La fecha se anuncia pronto.",
+    "whatItIs": "Ahí se ratifica la versión oficial de la aldea: queda aprobada salvo que haya una objeción calificada de quienes tienen $ALDEA."
+  },
+  "list": {
+    "buildings": "Edificios de la aldea",
+    "open": "Abierto",
+    "underConstruction": "En construcción",
+    "leave": "Salir del edificio",
+    "yourSoul": "Tu alma",
+    "signInAction": "nacer y entrar a los edificios",
+    "fallback": "Este dispositivo no puede dibujar la aldea: estás en el modo lista, con los mismos edificios y acciones."
+  },
+  "status": {
+    "paused": "La aldea está en mantenimiento. Puedes mirar, pero no nacer ni entrar por ahora.",
+    "offline": "Estás sin conexión. La aldea te espera.",
+    "pausedShort": "La aldea está en mantenimiento.",
+    "offlineShort": "Estás sin conexión.",
+    "bornFirst": "Primero tienes que nacer en el Centro Urbano."
   }
 }

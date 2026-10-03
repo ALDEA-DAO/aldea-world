@@ -77,7 +77,7 @@ input{border:1px solid var(--line);background:var(--bg);color:var(--fg)}
   <h1>${t.title}</h1>
   <p>${t.lead(clientName)}</p>
   <button class="primary" id="passkey">${t.passkey}</button>
-  <button id="create" hidden>${t.create}</button>
+  <button id="create">${t.create}</button>
   <div class="or">${t.or}</div>
   <form id="email-form"><input id="email" type="email" autocomplete="email" placeholder="${t.emailPlaceholder}" required><button type="submit">${t.email}</button></form>
   <form id="code-form" hidden><input id="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="${t.codePlaceholder}" required><button class="primary" type="submit">${t.verify}</button></form>

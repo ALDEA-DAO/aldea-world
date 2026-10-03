@@ -5,6 +5,7 @@ import { env } from "./env.ts";
 import { AldeaEvents } from "./events.ts";
 import { grammar } from "./grammar.ts";
 import { birthCompleted, birthRequested, birthRescheduled, type BirthCompleted, type BirthRequested, type BirthRescheduled, type Effect, type StfContext } from "./stf/births.ts";
+import { buildingEntered, buildingLeft, type BuildingEntered, type BuildingLeft } from "./stf/buildings.ts";
 import { soulAnchored, type SoulAnchored } from "./stf/souls.ts";
 
 /**
@@ -37,6 +38,18 @@ stm.addStateTransition("birthCompleted", function* (data) {
 
 stm.addStateTransition("soulAnchored", function* (data) {
   yield* apply(soulAnchored(data.parsedInput as SoulAnchored));
+});
+
+stm.addStateTransition("buildingEntered", function* (data) {
+  const input = data.parsedInput as BuildingEntered;
+  yield* apply(buildingEntered(input, context(data)));
+  data.emit(AldeaEvents.BuildingActivity, { buildingId: input.buildingId.toLowerCase(), characterId: input.characterId, kind: "entered" });
+});
+
+stm.addStateTransition("buildingLeft", function* (data) {
+  const input = data.parsedInput as BuildingLeft;
+  yield* apply(buildingLeft(input, context(data)));
+  data.emit(AldeaEvents.BuildingActivity, { buildingId: input.buildingId.toLowerCase(), characterId: input.characterId, kind: "left" });
 });
 
 export const gameStateTransitions: StartConfigGameStateTransitions = function* (

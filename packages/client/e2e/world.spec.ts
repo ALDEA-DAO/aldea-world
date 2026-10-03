@@ -22,15 +22,32 @@ test.afterAll(async () => {
 
 test("guests see the live census and a pause within 3 seconds", async ({ page }) => {
   await page.goto("/#/");
-  await expect(page.getByTestId("census")).toContainText(/\d+ (almas nacidas|souls born)/);
+  await expect(page.getByTestId("mini-census")).toContainText(/\d+ (almas nacidas|souls born)/);
 
-  const banner = page.getByText(/La aldea está en pausa|The village is paused/);
+  const banner = page.getByTestId("paused-banner");
   await expect(banner).toBeHidden();
   const started = Date.now();
   await setPaused(true);
   await expect(banner).toBeVisible({ timeout: 3_000 });
   expect(Date.now() - started).toBeLessThan(3_000);
 
+  // Paused: you can look, but "Entrar" is disabled everywhere (List mode shows all six)
+  await page.goto("/#/lista");
+  await expect(page.getByRole("navigation", { name: /Edificios de la aldea|Village buildings/ }).getByRole("button", { disabled: true })).toHaveCount(6);
+  await expect(banner).toHaveText(/La aldea está en mantenimiento\. Puedes mirar, pero no nacer ni entrar por ahora\.|The village is under maintenance\. You can look around, but you can't be born or enter buildings for now\./);
+
   await setPaused(false);
   await expect(banner).toBeHidden({ timeout: 3_000 });
+});
+
+test("offline: a banner says so and entering is disabled until the connection is back", async ({ context, page }) => {
+  await page.goto("/#/lista");
+  const nav = page.getByRole("navigation", { name: /Edificios de la aldea|Village buildings/ });
+  await expect(nav.getByRole("link", { name: /Entrar al Centro Urbano|Enter the Town Center/ })).toBeVisible();
+  await context.setOffline(true);
+  await expect(page.getByText(/Estás sin conexión\. La aldea te espera|You're offline\. The village is waiting for you/)).toBeVisible();
+  await expect(nav.getByRole("button", { name: /Entrar al Centro Urbano|Enter the Town Center/ })).toBeDisabled();
+  await context.setOffline(false);
+  await expect(page.getByText(/Estás sin conexión\. La aldea te espera|You're offline\. The village is waiting for you/)).toBeHidden();
+  await expect(nav.getByRole("link", { name: /Entrar al Centro Urbano|Enter the Town Center/ })).toBeVisible();
 });

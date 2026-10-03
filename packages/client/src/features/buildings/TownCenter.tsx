@@ -1,21 +1,21 @@
 import { classByIndex, tribeByIndex } from "@aldea/shared/catalog";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Panel } from "../../components/ui/Panel";
 import { Skeleton } from "../../components/ui/Skeleton";
 import { Tabs } from "../../components/ui/Tabs";
-import { useCensus, useMud, useWorldPaused } from "../../mud/store";
+import { useCensus, useMud } from "../../mud/store";
 import { useAlmaSession } from "../auth/useAlmaSession";
 import { BirthRitual } from "../birth/BirthRitual";
 import { CensusPanel } from "../census/CensusPanel";
 import { ClassPicker } from "../birth/ClassPicker";
 import { useBirth } from "../birth/useBirth";
+import { useWorldActions } from "../world/useWorldActions";
 
 /**
- * The Town Center (no map yet): be born here, or see your character and the census. The birth ritual covers the
- * screen from the request to the reveal.
+ * The Town Center's interior: be born here, or see your character and the census. The birth ritual is drawn over the
+ * dimmed village from the request to the reveal; `onExplore` runs when the newborn chooses to walk the village.
  */
-export function TownCenter() {
+export function TownCenter({ onExplore }: { onExplore?: () => void }) {
   const { t } = useTranslation();
   const [tab, setTab] = useState("birth");
   const { stage, character, error, rescheduled, ready, birth, retryCompletion } = useBirth();
@@ -30,9 +30,8 @@ export function TownCenter() {
   const completionFailed = Boolean(error && stage !== "idle" && stage !== "sending");
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
-      <Panel variant="inline" title={t("townCenter.title")}>
-        <Tabs
+    <>
+      <Tabs
           label={t("townCenter.title")}
           value={tab}
           onChange={setTab}
@@ -44,8 +43,7 @@ export function TownCenter() {
             },
             { id: "census", label: t("townCenter.census"), content: <CensusPanel /> },
           ]}
-        />
-      </Panel>
+      />
       {showRitual && (
         <BirthRitual
           stage={stage}
@@ -53,11 +51,14 @@ export function TownCenter() {
           rescheduled={rescheduled}
           failed={completionFailed}
           onRetry={() => void retryCompletion()}
-          onClose={() => setRitualClosed(true)}
+          onClose={() => {
+            setRitualClosed(true);
+            onExplore?.();
+          }}
           almaId={almaId}
         />
       )}
-    </div>
+    </>
   );
 }
 
@@ -77,7 +78,7 @@ function BirthTab({
   const { t, i18n } = useTranslation();
   const lang = i18n.language === "en" ? "en" : "es";
   const { network, error: networkError } = useMud();
-  const paused = useWorldPaused();
+  const { paused, online } = useWorldActions();
   const census = useCensus();
 
   if (networkError) return <p role="alert">{t("townCenter.pathCut")}</p>;
@@ -98,9 +99,9 @@ function BirthTab({
   return (
     <div className="flex flex-col gap-4">
       {census?.totalPopulation === 0 && census.gestating === 0 && <p>{t("townCenter.beFirst")}</p>}
-      {paused && <p role="alert">{t("townCenter.maintenance")}</p>}
+      {paused ? <p role="alert">{t("townCenter.maintenance")}</p> : !online && <p role="alert">{t("status.offlineShort")}</p>}
       {error && <p role="alert">{t(error)}</p>}
-      <ClassPicker onBirth={onBirth} busy={stage === "sending"} disabled={paused || !ready} />
+      <ClassPicker onBirth={onBirth} busy={stage === "sending"} disabled={paused || !online || !ready} />
     </div>
   );
 }

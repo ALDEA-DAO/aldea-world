@@ -16,7 +16,8 @@
     "test": "pnpm -r test",
     "dev:lite": "mprocs --config mprocs.lite.yaml",
     "dev:deploy": "scripts/dev-deploy.sh",
-    "dev:health": "scripts/dev-health.sh"
+    "dev:health": "scripts/dev-health.sh",
+    "check:bundle": "node --experimental-strip-types scripts/check-bundle.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

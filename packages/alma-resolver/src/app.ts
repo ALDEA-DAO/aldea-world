@@ -10,6 +10,7 @@ import { createLinkPasskeyRoutes, type LinkPasskeyDeps } from "./routes/linkPass
 import { createMeRoutes, type MeRoutesDeps } from "./routes/me";
 import { createOrgRoutes } from "./routes/orgs";
 import { createSoulRoutes, type SoulRoutesDeps } from "./routes/souls";
+import { createWaitlistRoutes } from "./routes/waitlist";
 import { createInteractionRoutes, type InteractionRoutesDeps } from "./routes/interaction";
 
 export interface AppDeps {
@@ -59,6 +60,7 @@ export function createApp(deps: AppDeps) {
   if (deps.souls) {
     app.route("/v1/souls", createSoulRoutes(deps.souls));
     app.route("/v1/orgs", createOrgRoutes(deps.souls.soul.db));
+    app.route("/v1/waitlist", createWaitlistRoutes(deps.souls));
   }
   if (deps.links) {
     app.route("/v1/me", createMeRoutes(deps.links.me));

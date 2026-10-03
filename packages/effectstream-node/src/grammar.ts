@@ -43,9 +43,17 @@ export const soulAnchoredGrammar = [
   ...logCoordinates,
 ] as const;
 
+/** BuildingEntered(uint32 indexed characterId, bytes32 indexed buildingId, bytes32 indexed almaIdHash) */
+export const buildingEnteredGrammar = [["characterId", Type.Number()], ["buildingId", Type.String()], ["almaIdHash", Type.String()], ...logCoordinates] as const;
+
+/** BuildingLeft(uint32 indexed characterId, bytes32 indexed buildingId) */
+export const buildingLeftGrammar = [["characterId", Type.Number()], ["buildingId", Type.String()], ...logCoordinates] as const;
+
 export const grammar = {
   birthRequested: birthRequestedGrammar,
   birthRescheduled: birthRescheduledGrammar,
   birthCompleted: birthCompletedGrammar,
   soulAnchored: soulAnchoredGrammar,
+  buildingEntered: buildingEnteredGrammar,
+  buildingLeft: buildingLeftGrammar,
 } as const satisfies GrammarDefinition;

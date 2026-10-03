@@ -2,13 +2,17 @@ import { init, start, type DBMigrations } from "@effectstream/node-sdk/runtime";
 import { toSyncProtocolWithNetwork, withEffectstreamStaticConfig } from "@effectstream/node-sdk/config";
 import { main, suspend } from "effection";
 import readModelSql from "../db/migrations/0001_read_model.sql" with { type: "text" };
+import visitExitsSql from "../db/migrations/0002_visit_exits.sql" with { type: "text" };
 import { apiRouter } from "./api.ts";
 import { config } from "./config.ts";
 import { grammar } from "./grammar.ts";
 import { AldeaEvmEventPrimitive, PrimitiveTypeAldeaEvmEvent } from "./primitives/evmEvent.ts";
 import { gameStateTransitions } from "./state-machine.ts";
 
-const migrations: DBMigrations[] = [{ name: "0001_read_model.sql", sql: readModelSql }];
+const migrations: DBMigrations[] = [
+  { name: "0001_read_model.sql", sql: readModelSql },
+  { name: "0002_visit_exits.sql", sql: visitExitsSql },
+];
 
 /**
  * Startup watchdog. When the runtime fails during startup (missing pg_ivm, a changed immutable config such as the

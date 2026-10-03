@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from "bun:test";
 import { PGlite } from "@electric-sql/pglite";
 import readModelSql from "../db/migrations/0001_read_model.sql" with { type: "text" };
-import { feedPage } from "../src/api.ts";
+import visitExitsSql from "../db/migrations/0002_visit_exits.sql" with { type: "text" };
+import { buildingActivity, feedPage } from "../src/api.ts";
 import { birthCompleted, birthRequested, birthRescheduled, completeBirthKey, type Effect, type StfContext } from "../src/stf/births.ts";
 import { soulAnchored } from "../src/stf/souls.ts";
 
@@ -13,6 +14,7 @@ import { soulAnchored } from "../src/stf/souls.ts";
 async function freshDb() {
   const db = new PGlite();
   await db.exec(readModelSql);
+  await db.exec(visitExitsSql);
   return db;
 }
 
@@ -59,6 +61,8 @@ describe("birthCompleted", () => {
     expect(once.births[0]).toMatchObject({ status: "born", tribe: 3, born_block: 122, born_tx: "0xborn", born_ts: Number(Math.floor(ctx(14).timestampMs / 1000)) });
     expect(once.outbox[0]).toMatchObject({ status: "done", done_height: 14 });
     expect(once.activity).toEqual([{ world_id: "0xworld", hour_start: Number(Math.floor(ctx(14).timestampMs / 1000 / 3600) * 3600), births: 1, visits: 0, unique_souls: 0 }]);
+
+    expect((await buildingActivity(db as never, Math.floor(ctx(14).timestampMs / 1000 / 3600) * 3600)).totals.births).toBe(1);
 
     // the same event again (a replay) leaves everything as it was
     await apply(db, birthCompleted(completed, ctx(15)));
