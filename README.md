@@ -78,7 +78,8 @@ pnpm dev:health     # checks anvil, Resolver, Effectstream, relay, MUD indexer a
 
 `pnpm dev` deploys the protocol contracts and the World to a fresh local anvil (`scripts/dev-deploy.sh`) and writes the
 addresses to `packages/shared/src/deployments/31337.json`. The client runs on <http://localhost:3000> (design kit at
-`#/ui`).
+`#/ui`). Starting `pnpm dev` again over an anvil that is still running keeps that deployment; `REDEPLOY=1 pnpm dev:deploy`
+deploys again and empties the read models (Effectstream and the MUD indexer).
 
 | Service | Port |
 |---|---|

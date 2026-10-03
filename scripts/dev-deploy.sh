@@ -5,6 +5,10 @@
 #   2. the MUD World with ALMA_REGISTRY_ADDRESS (PostDeploy seeds Config, tribes and buildings)
 #   3. World and system addresses merged into packages/shared/src/deployments/31337.json
 # Services wait for the "world" key in that file (scripts/wait-for-deploy.sh).
+#
+# If that deployment is already on the running chain (`pnpm dev` started again over the same anvil), it is kept, so the
+# read models stay in step with it. REDEPLOY=1 deploys again; any new deploy empties Effectstream's and the MUD
+# indexer's databases, which store the start block as immutable config.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -15,6 +19,10 @@ export COUNCIL_DELAY="${COUNCIL_DELAY:-600}"
 DEPLOYMENT="$ROOT/packages/shared/src/deployments/31337.json"
 
 "$ROOT/scripts/wait-for.sh" "$RPC_URL"
+if [ -z "${REDEPLOY:-}" ] && "$ROOT/scripts/wait-for-deploy.sh" 1 2>/dev/null; then
+  echo "✓ already deployed on this chain: $DEPLOYMENT (REDEPLOY=1 to deploy again)"
+  exit 0
+fi
 rm -f "$DEPLOYMENT"
 
 echo "▸ rails and council"
@@ -24,6 +32,16 @@ ALMA_REGISTRY_ADDRESS="$(node -e "console.log(require('$DEPLOYMENT').protocol.al
 export ALMA_REGISTRY_ADDRESS
 echo "▸ world (AlmaAnchorRegistry $ALMA_REGISTRY_ADDRESS)"
 (cd "$ROOT/packages/contracts" && pnpm mud deploy --rpc "$RPC_URL")
+
+# Only the containers' Postgres outlives a deploy (pnpm dev:lite keeps its databases in memory and restarts them)
+PG_PORT="${ALDEA_PG_PORT:-5442}"
+if (echo >"/dev/tcp/127.0.0.1/$PG_PORT") 2>/dev/null; then
+  echo "▸ empty read models (effectstream, mud_indexer)"
+  for db in effectstream mud_indexer; do
+    "$ROOT/scripts/compose.sh" exec -T postgres psql -q -U aldea -d postgres \
+      -c "DROP DATABASE IF EXISTS $db WITH (FORCE)" -c "CREATE DATABASE $db OWNER aldea"
+  done
+fi
 
 echo "▸ addresses"
 pnpm --dir "$ROOT/packages/shared" merge-world --chain-id 31337 --rpc-url "$RPC_URL"
