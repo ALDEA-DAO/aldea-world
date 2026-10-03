@@ -3,7 +3,8 @@ import { Layout } from "./Layout";
 import { DesignKitScreen } from "./screens/DesignKit";
 import { SettingsScreen } from "./screens/Settings";
 import { BuildingPanel } from "../features/buildings/BuildingPanel";
-import { NotFoundScreen, SimpleScreen, SoulScreen, WorldScreen } from "./screens/screens";
+import { SoulPublic } from "./routes/SoulPublic";
+import { NotFoundScreen, SimpleScreen, WorldScreen } from "./screens/screens";
 import { WorldShell } from "./WorldShell";
 
 /**
@@ -25,7 +26,7 @@ export const router = createHashRouter([
       { path: "/lista", element: <SimpleScreen titleKey="screens.list" /> },
       { path: "/portal", element: <SimpleScreen titleKey="screens.portal" /> },
       { path: "/portal/:worldId", element: <WorldScreen /> },
-      { path: "/alma/:almaId", element: <SoulScreen /> },
+      { path: "/alma/:almaId", element: <SoulPublic /> },
       { path: "/ajustes", element: <SettingsScreen /> },
       { path: "/acerca", element: <SimpleScreen titleKey="screens.about" /> },
       { path: "/terminos", element: <SimpleScreen titleKey="screens.terms" /> },

@@ -93,8 +93,29 @@ test("a soul is born as an Archer, chosen with the keyboard, and learns its trib
   await expect(ties.getByText(/^0x[0-9a-f]{4}…[0-9a-f]{4}$/)).toBeVisible();
   await expect(page.getByRole("region", { name: /Tu alma|Your soul/ }).getByText(almaId)).toBeVisible();
 
-  // One person, one character: a second request fails with its own copy
+  // "My tribe": the members list includes this soul, marked as you, with its evidence
+  await page.getByRole("button", { name: /^(Mi tribu|My tribe)$/ }).click();
+  const tribeList = page.getByTestId("tribe-members");
+  await expect(tribeList.getByTitle(almaId)).toBeVisible();
+  await expect(tribeList.getByText(/^(tú|you)$/)).toBeVisible();
+  await expect(page.getByRole("region", { name: /^(Sellos|Seals)$/ })).toBeVisible();
+  await page.screenshot({ path: "test-results/soul-registry.png", fullPage: true });
+
+  // Anyone's public view of this soul: identity, tribe and seals, but no keys and no private addresses
   const devKey = (await page.evaluate((id) => localStorage.getItem(`aldea:dev-owner:${id}`), almaId)) as Hex;
+  const owner = privateKeyToAccount(devKey).address;
+  const visitor = await (await browser.newContext()).newPage();
+  await visitor.goto(`/#/alma/${encodeURIComponent(almaId)}`);
+  const view = visitor.getByTestId("soul-registry");
+  await expect(view.getByText(almaId)).toBeVisible();
+  await expect(view.getByText(/Amazónicos|Himalayos|Poseidones|Raes|Tropicales|Amazonians|Himalayans|Poseidons|Tropicals/)).toBeVisible();
+  await expect(visitor.getByRole("heading", { name: /Tus llaves|Your keys/ })).toHaveCount(0);
+  const text = (await visitor.locator("body").innerText()).toLowerCase();
+  expect(text).not.toContain(owner.toLowerCase());
+  expect(text).not.toContain(owner.slice(2, 8).toLowerCase());
+  await visitor.screenshot({ path: "test-results/soul-public.png", fullPage: true });
+
+  // One person, one character: a second request fails with its own copy
   const client = createPublicClient({ chain: foundry, transport: http() });
   const second = await client
     .simulateContract({

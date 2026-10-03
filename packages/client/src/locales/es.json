@@ -212,7 +212,17 @@
       "anchored": "anclada",
       "active": "activa",
       "revoked": "revocada"
-    }
+    },
+    "bornOn": "nació el {{date}}",
+    "seals": "Sellos",
+    "founder": "Fundador",
+    "charterSignatory": "Firmante del Acta",
+    "sealHeld": "sellado",
+    "sealNone": "sin sello",
+    "founderNotYet": "todavía no. Si tienes $ALDEA, podrás reclamarlo vinculando tu wallet de Cardano.",
+    "charterNotYet": "todavía no. Se firma cuando el Consejo abra con el Acta de Génesis.",
+    "agentsSoon": "Próximamente: registra almas para tus agentes",
+    "agentsSoonText": "Tus agentes van a tener su propia alma, vinculada a la tuya, con la misma evidencia en la cadena."
   },
   "hud": {
     "menu": "Menú",
@@ -223,5 +233,13 @@
   "building": {
     "notFound": "Ese edificio no existe",
     "backToVillage": "Volver a la aldea"
+  },
+  "tribe": {
+    "mine": "Mi tribu",
+    "members": "Miembros de la tribu",
+    "membersOf": "Miembros de {{tribe}}",
+    "empty": "Todavía no hay almas en esta tribu.",
+    "more": "Cargar más",
+    "you": "tú"
   }
 }

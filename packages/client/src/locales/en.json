@@ -212,7 +212,17 @@
       "anchored": "anchored",
       "active": "active",
       "revoked": "revoked"
-    }
+    },
+    "bornOn": "born on {{date}}",
+    "seals": "Seals",
+    "founder": "Founder",
+    "charterSignatory": "Charter Signatory",
+    "sealHeld": "sealed",
+    "sealNone": "no seal",
+    "founderNotYet": "not yet. If you hold $ALDEA, you can claim it by linking your Cardano wallet.",
+    "charterNotYet": "not yet. It is signed when the Council opens with the Genesis Charter.",
+    "agentsSoon": "Coming soon: register souls for your agents",
+    "agentsSoonText": "Your agents will have their own soul, tied to yours, with the same on-chain evidence."
   },
   "hud": {
     "menu": "Menu",
@@ -223,5 +233,13 @@
   "building": {
     "notFound": "That building does not exist",
     "backToVillage": "Back to the village"
+  },
+  "tribe": {
+    "mine": "My tribe",
+    "members": "Tribe members",
+    "membersOf": "Members of {{tribe}}",
+    "empty": "No souls in this tribe yet.",
+    "more": "Load more",
+    "you": "you"
   }
 }

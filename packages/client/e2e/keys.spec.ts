@@ -53,7 +53,7 @@ async function createSoulWithPasskey(page: Page) {
   await expect(page.getByRole("heading", { name: /Tus llaves|Your keys/ })).toBeVisible();
 }
 
-const keyRows = (page: Page) => page.getByRole("listitem");
+const keyRows = (page: Page) => page.getByRole("region", { name: /Tus llaves|Your keys/ }).getByRole("listitem");
 
 test("a second passkey is added on ALMA Auth's page and the first one can then be removed", async ({ context, page }) => {
   const device = await passkeyDevice(context, page);

@@ -12,12 +12,18 @@ export interface SoulView {
   createdAt: string;
   status: "prepared" | "anchored" | "active" | "revoked";
   relationships: { type: string; to: string; evidence: { txHash?: string } }[];
+  /** The soul's born character in ALDEA World, as the Resolver recorded it. */
+  character?: { characterId: number; characterClass: number; bornAt?: string | null; bornTx?: string } | null;
+  /** Founder seal: an object on your own soul, a boolean on anyone's public view. */
+  founder?: { claimed: boolean } | boolean | null;
 }
+
+export const founderClaimed = (soul: SoulView) => (typeof soul.founder === "boolean" ? soul.founder : Boolean(soul.founder?.claimed));
 
 export interface SoulState {
   soul?: SoulView;
   /** The tribe the soul is a member of, once the Resolver recorded it. */
-  tribe?: { index: number; txHash?: string };
+  tribe?: { index: number; almaOrgId: string; txHash?: string };
   loading: boolean;
   failed: boolean;
   own: boolean;
@@ -60,7 +66,7 @@ export function useSoul(almaId: string | undefined, awaitTribe: boolean): SoulSt
 
   return {
     soul: target ? soul : undefined,
-    tribe: tribeInfo ? { index: tribeInfo.index, txHash: membership?.evidence.txHash } : undefined,
+    tribe: tribeInfo ? { index: tribeInfo.index, almaOrgId: tribeInfo.almaOrgId, txHash: membership?.evidence.txHash } : undefined,
     loading: Boolean(target) && !soul && !failed,
     failed,
     own,
