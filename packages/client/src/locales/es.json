@@ -241,5 +241,17 @@
     "empty": "Todavía no hay almas en esta tribu.",
     "more": "Cargar más",
     "you": "tú"
+  },
+  "construction": {
+    "title": "En construcción",
+    "willDo": "Qué hará este edificio",
+    "rail": "Qué riel de AdaSouls demuestra",
+    "estimated": "Fecha estimada"
+  },
+  "waitlist": {
+    "signUp": "Anotarme",
+    "signUpAction": "anotarte",
+    "listed": "Ya estás anotada.",
+    "failed": "No pudimos anotarte, reintenta."
   }
 }

@@ -15,6 +15,7 @@ import { useBirth } from "../birth/useBirth";
 import { TribeMembers } from "../soul/TribeMembers";
 import { founderClaimed, useSoul, type SoulView } from "../soul/useSoul";
 import { YourKeys } from "../soul/YourKeys";
+import { WaitlistButton } from "./WaitlistButton";
 
 /** The standalone page of a soul (`#/alma/:almaId`); in the village the registry's content opens in its panel. */
 export function SoulRegistry({ almaId }: { almaId?: string }) {
@@ -84,6 +85,11 @@ export function SoulRegistryContent({ almaId }: { almaId?: string }) {
           {t("registry.agentsSoon")}
         </h2>
         <p className="mt-1 text-sm text-text-muted">{t("registry.agentsSoonText")}</p>
+        {own && (
+          <div className="mt-3">
+            <WaitlistButton building="soul_registry_agents" />
+          </div>
+        )}
       </section>
     </div>
   );

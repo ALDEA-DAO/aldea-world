@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Panel } from "../../components/ui/Panel";
 import { SoulRegistryContent } from "./SoulRegistry";
 import { TownCenter } from "./TownCenter";
+import { UnderConstructionPanel } from "./UnderConstructionPanel";
 import { useBuildingEntry } from "./useBuildingEntry";
 
 /**
@@ -31,7 +32,15 @@ export function BuildingPanel() {
   return (
     <Panel key={building.slug} title={building.name[i18n.language === "en" ? "en" : "es"]} onClose={close} className="z-30">
       <div data-testid="building-panel" data-building={building.slug}>
-        {building.kind === "TownCenter" ? <TownCenter onExplore={close} /> : building.kind === "SoulRegistry" ? <SoulRegistryContent /> : <p>{t("common.comingSoon")}</p>}
+        {building.kind === "TownCenter" ? (
+          <TownCenter onExplore={close} />
+        ) : building.kind === "SoulRegistry" ? (
+          <SoulRegistryContent />
+        ) : building.underConstruction ? (
+          <UnderConstructionPanel building={building} />
+        ) : (
+          <p>{t("common.comingSoon")}</p>
+        )}
       </div>
     </Panel>
   );

@@ -241,5 +241,17 @@
     "empty": "No souls in this tribe yet.",
     "more": "Load more",
     "you": "you"
+  },
+  "construction": {
+    "title": "Under construction",
+    "willDo": "What this building will do",
+    "rail": "Which AdaSouls rail it demonstrates",
+    "estimated": "Estimated date"
+  },
+  "waitlist": {
+    "signUp": "Sign me up",
+    "signUpAction": "sign up",
+    "listed": "You're already signed up.",
+    "failed": "We couldn't sign you up, try again."
   }
 }

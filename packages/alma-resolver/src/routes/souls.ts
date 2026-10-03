@@ -35,12 +35,9 @@ export interface SoulRoutesDeps {
   allowDevelopmentController: boolean;
 }
 
-export const NO_ACTIVITY: SoulActivity = { character: null, founder: null, tribe: null };
-
-export function createSoulRoutes(deps: SoulRoutesDeps) {
-  const app = new Hono();
-
-  const signedIn = async (c: Context) => {
+/** The soul behind the request's access token: 401 without a valid token, 404 when the soul is gone. */
+export function signedInSoul(deps: Pick<SoulRoutesDeps, "soul" | "verifyAccessToken">) {
+  return async (c: Context) => {
     const token = bearerToken(c);
     const access = token ? await deps.verifyAccessToken(token) : undefined;
     if (!access) throw new ProblemError(401, "unauthorized", "Sign in first");
@@ -48,6 +45,14 @@ export function createSoulRoutes(deps: SoulRoutesDeps) {
     if (!soul || soul.status === "revoked") throw new ProblemError(404, "soul_not_found", "This soul does not exist");
     return soul;
   };
+}
+
+export const NO_ACTIVITY: SoulActivity = { character: null, founder: null, tribe: null };
+
+export function createSoulRoutes(deps: SoulRoutesDeps) {
+  const app = new Hono();
+
+  const signedIn = signedInSoul(deps);
 
   app.post("/prepare", async (c) => {
     const soul = await signedIn(c);
