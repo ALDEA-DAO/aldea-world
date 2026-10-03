@@ -104,7 +104,7 @@ test("a born soul walks the village and is offered the door it stands at", async
   await expect(village(page)).toHaveAttribute("data-ready", "true");
   await page.screenshot({ path: "test-results/village-panel.png" });
 
-  // …and the entry reaches the chain in the background (the 3 s p95 target is for staging; a local anvil may be
+  // …and the entry reaches the chain in the background (the 3 s p95 target is for testnet; a local anvil may be
   // mining every 2 s, so here it gets one block more)
   const entered = parseAbiItem("event BuildingEntered(uint32 indexed characterId, bytes32 indexed buildingId, bytes32 indexed almaIdHash)");
   const left = parseAbiItem("event BuildingLeft(uint32 indexed characterId, bytes32 indexed buildingId)");

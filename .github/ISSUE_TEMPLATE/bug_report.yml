@@ -12,7 +12,7 @@ body:
     validations: { required: true }
   - type: input
     id: where
-    attributes: { label: Where, description: "aldea.world, staging, local; browser; transaction hash if relevant." }
+    attributes: { label: Where, description: "aldea.world, testnet, local; browser; transaction hash if relevant." }
   - type: markdown
     attributes:
       value: "Security issue? Please do not file it here — see SECURITY.md."

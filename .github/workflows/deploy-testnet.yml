@@ -1,7 +1,7 @@
-name: Deploy staging
+name: Deploy testnet
 
 # Manual: deploys the services to Fly.io and the client preview to Cloudflare Pages. The contracts are deployed once,
-# by hand, with scripts/deploy-staging.sh (see infra/README.md); this workflow needs their committed deployment file.
+# by hand, with scripts/deploy-testnet.sh (see infra/README.md); this workflow needs their committed deployment file.
 on:
   workflow_dispatch:
     inputs:
@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: deploy-staging
+  group: deploy-testnet
   cancel-in-progress: false
 
 jobs:
@@ -43,7 +43,7 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
   client:
-    name: client (staging.aldea.world)
+    name: client (testnet.aldea.world)
     if: inputs.target == 'all' || inputs.target == 'client'
     runs-on: ubuntu-latest
     steps:
@@ -60,10 +60,10 @@ jobs:
           VITE_ALMA_AUTH_ISSUER: https://auth.adasouls.io
           VITE_ALMA_AUTH_CLIENT_ID: aldea-world
           VITE_ALMA_API_URL: https://auth.adasouls.io
-          VITE_MUD_INDEXER_URL: https://aldea-staging-indexer.fly.dev
+          VITE_MUD_INDEXER_URL: https://aldea-testnet-indexer.fly.dev
           VITE_BUILD_GIT_COMMIT: ${{ github.sha }}
       - name: Publish to Cloudflare Pages
-        run: pnpm dlx wrangler pages deploy packages/client/dist --project-name aldea-world-staging --branch main
+        run: pnpm dlx wrangler pages deploy packages/client/dist --project-name aldea-world-testnet --branch develop
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

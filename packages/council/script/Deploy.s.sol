@@ -13,7 +13,7 @@ import { AldeaCouncilExecutor, IAtlasGovernable } from "../src/AldeaCouncilExecu
 ///      - PRIVATE_KEY (required): deployer only, never the Safe's key.
 ///      - ALDEA_SAFE_ADDRESS (default: deployer): controller of the orgs, issuer, admin, curator and guardian.
 ///      - RELAYER_ADDRESS (default: deployer): the only account allowed to queue Council results.
-///      - COUNCIL_DELAY (default: 86400): 86,400 s in production, 600 s in staging.
+///      - COUNCIL_DELAY (default: 86400): 86,400 s in production, 600 s in testnet.
 ///      - ORG_DOCS_CREATED_AT (default: 2026-09-27T00:00:00Z): createdAt of the org ALMA documents.
 ///      - DEPLOYMENTS_DIR (default: packages/shared/src/deployments): where <chainId>.json is written.
 contract Deploy is Script {

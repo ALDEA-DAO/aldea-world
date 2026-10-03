@@ -13,7 +13,7 @@
     "test": "vitest run",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:generate": "drizzle-kit generate",
-    "smoke:custody": "tsx --env-file=.env.staging scripts/smoke-custody.ts",
+    "smoke:custody": "tsx --env-file=.env.testnet scripts/smoke-custody.ts",
     "db:clients": "tsx src/db/clients.ts",
     "auth:keygen": "tsx scripts/auth-keygen.ts",
     "seed": "tsx src/seed/orgs.ts"

@@ -1,8 +1,8 @@
-# Relay worker, the Midwife (staging). No public service. Deploy from the repository root:
+# Relay worker, the Midwife (testnet). No public service. Deploy from the repository root:
 #   fly deploy . --config infra/fly/relay-worker.toml --dockerfile infra/docker/node-service.Dockerfile
 # Secrets: RELAYER_PRIVATE_KEY (pays gas for permissionless calls only; keep under 0.1 ETH),
 # DATABASE_URL (Effectstream's database, with a role that is read-only except INSERT on relay_attempts), SENTRY_DSN
-app = "aldea-staging-relay"
+app = "aldea-testnet-relay"
 primary_region = "gru"
 
 [build.args]

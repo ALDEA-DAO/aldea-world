@@ -1,8 +1,8 @@
-# Effectstream node (staging): read model, outbox, read API and MQTT. Deploy from the repository root:
+# Effectstream node (testnet): read model, outbox, read API and MQTT. Deploy from the repository root:
 #   fly deploy . --config infra/fly/effectstream-node.toml --dockerfile infra/docker/effectstream-node.Dockerfile
 # Secrets: DB_HOST, DB_PORT, DB_USER, DB_PW, DB_NAME (its own database, with the pg_ivm extension), SENTRY_DSN
 # The contract addresses come from packages/shared/src/deployments/84532.json (committed after the deploy).
-app = "aldea-staging-effectstream"
+app = "aldea-testnet-effectstream"
 primary_region = "gru"
 
 [env]

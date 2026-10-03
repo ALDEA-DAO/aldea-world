@@ -6,7 +6,7 @@
  *   4. the test sub-organization is deleted.
  * Real souls have no API key; this script adds a throwaway one to the root user so it can sign without an ID token.
  *
- *   pnpm --filter @aldea/alma-resolver smoke:custody          # reads .env.staging
+ *   pnpm --filter @aldea/alma-resolver smoke:custody          # reads .env.testnet
  *   SMOKE_TARGET=0x… pnpm --filter @aldea/alma-resolver smoke:custody   # call a contract instead of the account itself
  *   SMOKE_VIA_PROXY=1 pnpm --filter @aldea/alma-resolver smoke:custody  # go through the Resolver's /v1/aa/rpc proxy
  *

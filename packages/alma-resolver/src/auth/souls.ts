@@ -29,7 +29,7 @@ export interface ProvisionedCustody {
 
 export interface SoulDeps {
   db: AnyDb;
-  /** Base chain of the soul's controller (84532 on staging, 8453 in production, 31337 locally). */
+  /** Base chain of the soul's controller (84532 on testnet, 8453 in production, 31337 locally). */
   chainId: number;
   /** Creates the soul's custody, or undefined when custody is not configured (local development). */
   provisionCustody?: (almaId: string) => Promise<ProvisionedCustody | undefined>;

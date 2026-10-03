@@ -5,7 +5,7 @@ const hex32 = z.string().regex(/^0x[0-9a-fA-F]{64}$/) as unknown as z.ZodType<`0
 
 /**
  * Addresses per chain. packages/council/script/Deploy.s.sol writes the protocol part and scripts/dev-deploy.sh
- * (or the staging/production deploy workflows) merge the MUD World part.
+ * (or the testnet/production deploy workflows) merge the MUD World part.
  */
 export const deploymentSchema = z.object({
   chainId: z.number().int(),
@@ -31,8 +31,8 @@ export const deploymentSchema = z.object({
 });
 export type Deployment = z.infer<typeof deploymentSchema>;
 
-// Committed deployments (staging and production) are registered here once they exist:
-// 84532.json with the staging deploy and 8453.json with the mainnet deploy.
+// Committed deployments (testnet and production) are registered here once they exist:
+// 84532.json with the testnet deploy and 8453.json with the mainnet deploy.
 const committed: Record<number, unknown> = {};
 
 /**

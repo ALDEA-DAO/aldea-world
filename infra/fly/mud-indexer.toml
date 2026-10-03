@@ -1,7 +1,7 @@
-# MUD store indexer (staging): the client's fast initial sync. Deploy from the repository root:
+# MUD store indexer (testnet): the client's fast initial sync. Deploy from the repository root:
 #   fly deploy . --config infra/fly/mud-indexer.toml --dockerfile infra/docker/mud-indexer.Dockerfile
 # Secrets: DATABASE_URL (its own database). Set STORE_ADDRESS and START_BLOCK below after the World is deployed.
-app = "aldea-staging-indexer"
+app = "aldea-testnet-indexer"
 primary_region = "gru"
 
 [processes]

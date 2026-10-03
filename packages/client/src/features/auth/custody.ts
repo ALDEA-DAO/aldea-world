@@ -1,7 +1,7 @@
 /*
  * The key that owns the player's smart wallet.
  *
- * - With Turnkey (staging, production): before going to ALMA Auth, the browser creates a session key in IndexedDB
+ * - With Turnkey (testnet, production): before going to ALMA Auth, the browser creates a session key in IndexedDB
  *   (non-extractable) and sends `nonce = sha256(publicKey)`, which binds the ID token to that key. Back from ALMA
  *   Auth, the Resolver opens a Turnkey session for it, and the browser signs with the soul's EVM key through Turnkey.
  * - Locally (anvil): Turnkey cannot reach a localhost ALMA Auth, so each soul gets a development key kept in this

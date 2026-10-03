@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Deploys the contracts to Base Sepolia (staging) and writes packages/shared/src/deployments/84532.json:
+# Deploys the contracts to Base Sepolia (testnet) and writes packages/shared/src/deployments/84532.json:
 #   1. packages/council: the rails (AlmaAnchorRegistry, AtlasRegistry), the organizations and AldeaCouncilExecutor
-#      (COUNCIL_DELAY = 600 s on staging), verified on Basescan
+#      (COUNCIL_DELAY = 600 s on testnet), verified on Basescan
 #   2. the MUD World with ALMA_REGISTRY_ADDRESS (PostDeploy seeds Config, tribes and buildings)
 #   3. World and system addresses merged into the deployment file
 #
 # Required: PRIVATE_KEY (deployer with Base Sepolia ETH; never the Safe's key), BASESCAN_API_KEY
 # Optional: ALDEA_SAFE_ADDRESS (default: the deployer keeps the roles), RELAYER_ADDRESS, BASE_SEPOLIA_RPC_URL
-# Usage: CONFIRM=base-sepolia scripts/deploy-staging.sh
+# Usage: CONFIRM=base-sepolia scripts/deploy-testnet.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -26,7 +26,7 @@ if [ "$(cast chain-id --rpc-url "$RPC_URL")" != "$CHAIN_ID" ]; then
   exit 1
 fi
 if [ -f "$DEPLOYMENT" ]; then
-  echo "$DEPLOYMENT already exists: staging is deployed. Remove it only to redeploy from scratch." >&2
+  echo "$DEPLOYMENT already exists: testnet is deployed. Remove it only to redeploy from scratch." >&2
   exit 1
 fi
 

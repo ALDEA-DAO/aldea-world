@@ -1,9 +1,9 @@
-# ALMA Resolver + ALMA Auth (staging). Deploy from the repository root:
+# ALMA Resolver + ALMA Auth (testnet). Deploy from the repository root:
 #   fly deploy . --config infra/fly/alma-resolver.toml --dockerfile infra/docker/node-service.Dockerfile
 # Secrets (fly secrets set -c infra/fly/alma-resolver.toml …): DATABASE_URL, ALMA_AUTH_JWKS, ALMA_AUTH_COOKIE_KEYS,
 # ALMA_AUTH_PAIRWISE_SALT, EMAIL_HMAC_KEY, RESEND_API_KEY, TURNKEY_ORG_ID, TURNKEY_API_PUBLIC_KEY,
 # TURNKEY_API_PRIVATE_KEY, CDP_PAYMASTER_URL, ALMA_AUTH_CLIENTS, SENTRY_DSN
-app = "aldea-staging-resolver"
+app = "aldea-testnet-resolver"
 primary_region = "gru"
 
 [build.args]
@@ -22,9 +22,9 @@ primary_region = "gru"
   ALMA_API_RESOURCE = "https://auth.adasouls.io/v1"
   WEBAUTHN_RP_ID = "auth.adasouls.io"
   RESEND_FROM = "ALMA <login@adasouls.io>"
-  CORS_ORIGINS = "https://staging.aldea.world"
+  CORS_ORIGINS = "https://testnet.aldea.world"
   TURNKEY_OIDC_AUDIENCE = "aldea-world"
-  EFFECTSTREAM_API_URL = "http://aldea-staging-effectstream.internal:9999"
+  EFFECTSTREAM_API_URL = "http://aldea-testnet-effectstream.internal:9999"
   # WORLD_ADDRESS and ALMA_REGISTRY_ADDRESS (sponsored-gas allowlist): set after the contracts are deployed
 
 [http_service]
