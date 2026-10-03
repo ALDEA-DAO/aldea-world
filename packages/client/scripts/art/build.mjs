@@ -6,7 +6,8 @@
  * 1. downloads the kits into .art-cache/ (not committed);
  * 2. renders buildings, scenery and character sheets as isometric sprites (studio.mjs: three.js in headless Chromium);
  * 3. draws the ground tileset and generates the Tiled map (map.mjs);
- * 4. writes everything to src/game/assets/ with manifest.json (sizes, anchors, footprints).
+ * 4. writes everything to src/game/assets/ with manifest.json (sizes, anchors, footprints);
+ * 5. re-encodes the sprites as WebP (webp.mjs).
  *
  * The artist's art replaces these files in the same formats; nothing else changes.
  */
@@ -19,6 +20,7 @@ import { buildings as catalog } from "@aldea/shared/catalog";
 import { buildings, characters, decorations, kits, tiles } from "./blueprints.mjs";
 import { generateMap, TILE_H, TILE_W } from "./map.mjs";
 import { openStudio, pngBuffer } from "./studio.mjs";
+import { spritesToWebp } from "./webp.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const cache = join(here, "../../.art-cache");
@@ -132,4 +134,5 @@ const map = generateMap({
 await mkdir(join(assets, "maps"), { recursive: true });
 await writeFile(join(assets, "maps/aldea.tmj"), `${JSON.stringify(map)}\n`);
 await writeFile(join(assets, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+await spritesToWebp();
 console.log(`done: ${Object.keys(manifest.buildings).length} buildings, ${Object.keys(manifest.decorations).length} scenery sprites, ${characters.length} character sheets`);

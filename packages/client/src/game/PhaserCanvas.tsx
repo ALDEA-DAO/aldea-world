@@ -104,6 +104,7 @@ export function PhaserCanvas({ onEnterDoor, children }: { onEnterDoor: (slug: st
       className="absolute inset-0 overflow-hidden bg-[#1d2b22]"
       data-testid="village"
       data-ready={state.ready}
+      data-lite={Boolean(state.lite)}
       data-door={state.door ?? ""}
       data-tile={state.playerTile ? `${state.playerTile.x},${state.playerTile.y}` : ""}
     >

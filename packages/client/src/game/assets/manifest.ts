@@ -42,9 +42,9 @@ export const manifest = manifestJson as unknown as {
   characters: Record<string, CharacterSheet>;
 };
 
-const urls = import.meta.glob("./**/*.png", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
+const urls = import.meta.glob("./**/*.{png,webp}", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
 
-/** URL of an image under src/game/assets, e.g. `assetUrl("buildings/town-center.png")`. */
+/** URL of an image under src/game/assets, e.g. `assetUrl("buildings/town-center.webp")` (sprites are WebP, the ground tileset PNG). */
 export function assetUrl(path: string): string {
   const url = urls[`./${path}`];
   if (!url) throw new Error(`Unknown asset ${path}`);

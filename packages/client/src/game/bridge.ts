@@ -27,6 +27,8 @@ export interface GameState {
   door?: string;
   playerTile?: Tile;
   fps: number;
+  /** The device could not keep 20 fps: particles and ambient animations are off. */
+  lite?: boolean;
 }
 
 type Listener = () => void;

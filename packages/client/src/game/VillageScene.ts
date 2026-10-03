@@ -7,6 +7,7 @@ import { buildingAt, doorAt, footprint } from "./doors";
 import { attachInput } from "./input";
 import { IsoMap, type Tile, type TiledMap } from "./IsoMap";
 import { Pathfinding } from "./Pathfinding";
+import { PerformanceWatch } from "./performance";
 
 const MAP_URL = new URL("./assets/maps/aldea.tmj", import.meta.url).href;
 const MIN_ZOOM = 0.5;
@@ -35,6 +36,9 @@ export class VillageScene extends Phaser.Scene {
   private focused = -1;
   private syncing = false;
   private syncAgain = false;
+  private emitters: Phaser.GameObjects.Particles.ParticleEmitter[] = [];
+  private performance?: PerformanceWatch;
+  private lite = false;
 
   constructor(private readonly bridge: GameBridge) {
     super("village");
@@ -43,8 +47,8 @@ export class VillageScene extends Phaser.Scene {
   preload() {
     this.load.json("map", MAP_URL);
     this.load.spritesheet("ground", assetUrl("tiles/ground.png"), { frameWidth: manifest.tile.width, frameHeight: manifest.tile.height });
-    for (const key of Object.keys(manifest.decorations)) this.load.image(`decor-${key}`, assetUrl(`decor/${key}.png`));
-    for (const key of Object.keys(manifest.buildings)) this.load.image(`building-${key}`, assetUrl(`buildings/${key}.png`));
+    for (const key of Object.keys(manifest.decorations)) this.load.image(`decor-${key}`, assetUrl(`decor/${key}.webp`));
+    for (const key of Object.keys(manifest.buildings)) this.load.image(`building-${key}`, assetUrl(`buildings/${key}.webp`));
     this.load.once(Phaser.Loader.Events.FILE_LOAD_ERROR, (file: { key: string }) => this.bridge.setState({ failed: `Could not load ${file.key}` }));
   }
 
@@ -75,11 +79,13 @@ export class VillageScene extends Phaser.Scene {
 
     const stop = this.bridge.onWorld(() => void this.sync());
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, stop);
-    void this.sync().then(() => this.bridge.setState({ ready: true }));
+    this.performance = new PerformanceWatch(this.game, () => this.goLite());
+    void this.sync();
   }
 
   update(_time: number, delta: number) {
     this.player?.update(delta);
+    this.performance?.update();
     this.bridge.state.fps = this.game.loop.actualFps;
   }
 
@@ -112,13 +118,22 @@ export class VillageScene extends Phaser.Scene {
     const door = this.map.doors.get("town-center");
     if (!door) return;
     const keep = this.map.project({ x: door.x, y: door.y - 2 });
-    this.add
+    const smoke = this.add
       .particles(keep.x, keep.y - 330, "dot", { speedY: { min: -30, max: -14 }, speedX: { min: -8, max: 12 }, scale: { start: 0.5, end: 1.6 }, alpha: { start: 0.35, end: 0 }, tint: 0xd8d2c8, lifespan: 4200, frequency: 420 })
       .setDepth(1e6);
     const plaza = this.map.project({ x: door.x, y: door.y + 3 });
-    this.add
+    const embers = this.add
       .particles(plaza.x, plaza.y - 20, "dot", { speedY: { min: -46, max: -22 }, speedX: { min: -14, max: 14 }, scale: { start: 0.22, end: 0 }, alpha: { start: 0.9, end: 0 }, tint: [0xffc56b, 0xff8a3c], lifespan: 2600, frequency: 300, blendMode: "ADD" })
       .setDepth(1e6);
+    this.emitters = [smoke, embers];
+  }
+
+  /** Lite mode: no particles and no ambient animation (the other souls stand still); the player still walks. */
+  private goLite() {
+    this.lite = true;
+    for (const emitter of this.emitters) emitter.stop(true).setVisible(false);
+    for (const other of this.others.values()) other.sprite.anims.pause();
+    this.bridge.setState({ lite: true });
   }
 
   // ----- the world from the chain
@@ -136,6 +151,8 @@ export class VillageScene extends Phaser.Scene {
         this.syncAgain = false;
         this.placeBuildings(this.bridge.buildings);
         await this.placePlayer();
+        // The village is shown as soon as the buildings and your character are there; the crowd loads after
+        if (!this.bridge.state.ready) this.bridge.setState({ ready: true });
         await this.placeOthers(this.bridge.others.slice(0, MAX_OTHERS));
       } while (this.syncAgain);
     } catch (err) {
@@ -218,7 +235,9 @@ export class VillageScene extends Phaser.Scene {
     for (const character of characters) {
       if (this.others.has(character.id)) continue;
       await loadCharacter(this, character.characterClass);
-      this.others.set(character.id, new CharacterSprite(this, this.map, character.characterClass, tribeColor(character.tribe), this.standingSpot(character)));
+      const sprite = new CharacterSprite(this, this.map, character.characterClass, tribeColor(character.tribe), this.standingSpot(character));
+      if (this.lite) sprite.sprite.anims.pause();
+      this.others.set(character.id, sprite);
     }
   }
 

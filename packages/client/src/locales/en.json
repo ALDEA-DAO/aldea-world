@@ -172,7 +172,7 @@
     "loading": "The path is opening…",
     "canvasLabel": "The village. Arrows or WASD to walk, Tab to move from door to door, Enter to go in.",
     "hint": "Tap the ground or a building to walk · arrows or WASD · wheel to zoom",
-    "guestHint": "Drag to look around · tap a building to go in",
+    "guestHint": "Drag to look around · be born at the Town Center to enter the buildings",
     "failed": "We could not open the village on this device.",
     "useList": "Open list mode",
     "enterBuilding": {
@@ -182,7 +182,9 @@
       "council": "Enter the Council",
       "velum-archive": "Enter the Velum Archive",
       "npc-forge": "Enter the NPC Forge"
-    }
+    },
+    "lite": "Lite mode",
+    "liteHint": "This device is running slow: smoke, embers and background animations are off."
   },
   "identity": {
     "copy": "Copy",

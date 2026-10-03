@@ -171,8 +171,8 @@
     "beBorn": "Nacer en ALDEA",
     "loading": "El camino se está abriendo…",
     "canvasLabel": "La aldea. Flechas o WASD para caminar, Tab para ir de puerta en puerta, Enter para entrar.",
-    "hint": "Tocá el suelo o un edificio para caminar · flechas o WASD · rueda para acercar",
-    "guestHint": "Arrastrá para mirar la aldea · tocá un edificio para entrar",
+    "hint": "Toca el suelo o un edificio para caminar · flechas o WASD · rueda para acercar",
+    "guestHint": "Arrastra para mirar la aldea · nace en el Centro Urbano para entrar a los edificios",
     "failed": "No pudimos abrir la aldea en este dispositivo.",
     "useList": "Abrir el modo lista",
     "enterBuilding": {
@@ -182,7 +182,9 @@
       "council": "Entrar al Consejo",
       "velum-archive": "Entrar al Archivo Velum",
       "npc-forge": "Entrar a la Forja de NPCs"
-    }
+    },
+    "lite": "Modo liviano",
+    "liteHint": "Este dispositivo va lento: apagamos el humo, las brasas y las animaciones de fondo."
   },
   "identity": {
     "copy": "Copiar",

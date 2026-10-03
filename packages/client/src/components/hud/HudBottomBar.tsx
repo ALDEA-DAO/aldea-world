@@ -43,6 +43,11 @@ export function HudBottomBar({ game, open, enterBlockedReason }: { game: GameSta
         ) : null}
         {game.ready && !open && !enterBlocked && <p className="hidden truncate text-sm opacity-80 lg:block">{t(hasCharacter ? "village.hint" : "village.guestHint")}</p>}
       </div>
+      {game.lite && (
+        <span role="status" title={t("village.liteHint")} className="hidden rounded-sm bg-black/25 px-2 py-1 text-xs whitespace-nowrap sm:inline">
+          {t("village.lite")}
+        </span>
+      )}
       <MiniCensus />
     </footer>
   );

@@ -31,7 +31,7 @@ export function loadCharacter(scene: Phaser.Scene, characterClass: number): Prom
     return Promise.resolve();
   }
   return new Promise((resolve, reject) => {
-    scene.load.spritesheet(key, assetUrl(`characters/${characterClass}.png`), { frameWidth: sheet.frameWidth, frameHeight: sheet.frameHeight });
+    scene.load.spritesheet(key, assetUrl(`characters/${characterClass}.webp`), { frameWidth: sheet.frameWidth, frameHeight: sheet.frameHeight });
     scene.load.once(`filecomplete-spritesheet-${key}`, () => {
       register();
       resolve();

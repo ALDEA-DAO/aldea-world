@@ -21,5 +21,7 @@ export function startGame(parent: HTMLElement, bridge: GameBridge, label: string
     game.canvas.setAttribute("aria-label", label);
     game.canvas.style.outlineOffset = "-3px";
   });
+  // Development and end-to-end tests read the frame rate from here
+  if (import.meta.env.DEV) (window as unknown as { __aldeaGame?: Phaser.Game }).__aldeaGame = game;
   return () => game.destroy(true);
 }
