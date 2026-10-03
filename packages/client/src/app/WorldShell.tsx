@@ -1,7 +1,7 @@
 import { buildingByRoute, buildings } from "@aldea/shared/catalog";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Outlet, useMatch, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useMatch, useNavigate } from "react-router-dom";
 import { HudBottomBar } from "../components/hud/HudBottomBar";
 import { PhaserCanvas } from "../game/PhaserCanvas";
 
@@ -22,9 +22,8 @@ export function WorldShell() {
         {(game) => (
           <>
             {game.failed ? (
-              <p role="alert" className="absolute inset-x-0 top-0 bottom-hud-bottom grid place-content-center bg-wood p-6 text-center text-lg text-on-wood">
-                {t("village.failed")}
-              </p>
+              // No WebGL, or the village failed to load: the same buildings and actions in List mode
+              <Navigate to={open ? `/lista/${open.routeSlug}` : "/lista"} replace state={{ fallback: true }} />
             ) : (
               !game.ready && (
                 <p role="status" className="absolute inset-x-0 top-0 bottom-hud-bottom grid place-content-center font-display text-2xl text-on-wood">

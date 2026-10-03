@@ -3,11 +3,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Panel } from "../../components/ui/Panel";
-import { Portal } from "../atlas/Portal";
-import { Council } from "./Council";
-import { SoulRegistryContent } from "./SoulRegistry";
-import { TownCenter } from "./TownCenter";
-import { UnderConstructionPanel } from "./UnderConstructionPanel";
+import { BuildingContent } from "./BuildingContent";
 import { useBuildingEntry } from "./useBuildingEntry";
 
 /**
@@ -34,19 +30,7 @@ export function BuildingPanel() {
   return (
     <Panel key={building.slug} title={building.name[i18n.language === "en" ? "en" : "es"]} onClose={close} className="z-30">
       <div data-testid="building-panel" data-building={building.slug}>
-        {building.kind === "TownCenter" ? (
-          <TownCenter onExplore={close} />
-        ) : building.kind === "SoulRegistry" ? (
-          <SoulRegistryContent />
-        ) : building.kind === "Council" ? (
-          <Council />
-        ) : building.kind === "Portal" ? (
-          <Portal layout="panel" />
-        ) : building.underConstruction ? (
-          <UnderConstructionPanel building={building} />
-        ) : (
-          <p>{t("common.comingSoon")}</p>
-        )}
+        <BuildingContent building={building} onExplore={close} />
       </div>
     </Panel>
   );

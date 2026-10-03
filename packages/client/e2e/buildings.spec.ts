@@ -44,7 +44,8 @@ test("a soul signs up once; signing up again says it already is", async ({ conte
   await archive.getByRole("button", { name: /^(Anotarme|Sign me up)$/ }).click();
   await expect(archive.getByText(/Ya estás anotada|You're already signed up/)).toBeVisible();
   await page.reload();
-  await expect(panel(page, /Archivo Velum|Velum Archive/).getByText(/Ya estás anotada|You're already signed up/)).toBeVisible();
+  // After a reload the session is renewed first, then the sign-ups are read
+  await expect(panel(page, /Archivo Velum|Velum Archive/).getByText(/Ya estás anotada|You're already signed up/)).toBeVisible({ timeout: 15_000 });
 
   // The second sign-up gets a 409 from the Resolver and shows the same state, not an error
   await otherSignUp.click();

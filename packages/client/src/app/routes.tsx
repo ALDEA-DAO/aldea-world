@@ -3,6 +3,7 @@ import { Layout } from "./Layout";
 import { DesignKitScreen } from "./screens/DesignKit";
 import { SettingsScreen } from "./screens/Settings";
 import { BuildingPanel } from "../features/buildings/BuildingPanel";
+import { ListMode } from "../features/list-mode/ListMode";
 import { PortalPage } from "./routes/PortalPage";
 import { SoulPublic } from "./routes/SoulPublic";
 import { NotFoundScreen, SimpleScreen, WorldScreen } from "./screens/screens";
@@ -24,7 +25,8 @@ export const router = createHashRouter([
           { path: "/b/:buildingSlug", element: <BuildingPanel /> },
         ],
       },
-      { path: "/lista", element: <SimpleScreen titleKey="screens.list" /> },
+      { path: "/lista", element: <ListMode /> },
+      { path: "/lista/:buildingSlug", element: <ListMode /> },
       { path: "/portal", element: <PortalPage /> },
       { path: "/portal/:worldId", element: <WorldScreen /> },
       { path: "/alma/:almaId", element: <SoulPublic /> },

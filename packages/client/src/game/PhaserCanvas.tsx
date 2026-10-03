@@ -4,21 +4,13 @@ import { useTranslation } from "react-i18next";
 import type { Hex } from "viem";
 import { useBirth } from "../features/birth/useBirth";
 import { useMud, useWorld, type WorldState } from "../mud/store";
+import { hasWebGL } from "./webglCheck";
 import { GameBridge, type GameState, type WorldBuilding, type WorldCharacter } from "./bridge";
 
 const BORN = 2;
 const NOWHERE = /^0x0+$/;
 const selectRecords = (state: WorldState) => state.records;
 const fallbackBuildings: WorldBuilding[] = catalog.map((b) => ({ slug: b.slug, door: b.door, underConstruction: b.underConstruction }));
-
-function hasWebGL() {
-  try {
-    const canvas = document.createElement("canvas");
-    return Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
-  } catch {
-    return false;
-  }
-}
 
 /** What the World says is in the village: buildings, the born characters and where each was last seen. */
 function useVillageWorld(ownId: number | undefined) {

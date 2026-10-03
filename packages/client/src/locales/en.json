@@ -269,5 +269,14 @@
     "opensOn": "The Council will open with the Genesis Charter on {{date}}.",
     "opensSoon": "The Council will open with the Genesis Charter. The date will be announced soon.",
     "whatItIs": "It ratifies the village's official version: approved unless there is a qualified objection from $ALDEA holders."
+  },
+  "list": {
+    "buildings": "Village buildings",
+    "open": "Open",
+    "underConstruction": "Under construction",
+    "leave": "Leave the building",
+    "yourSoul": "Your soul",
+    "signInAction": "be born and enter buildings",
+    "fallback": "This device cannot draw the village: you are in List mode, with the same buildings and actions."
   }
 }

@@ -19,11 +19,7 @@ export function HudBottomBar({ game, open }: { game: GameState; open?: BuildingI
   return (
     <footer aria-label={t("hud.bottomBar")} className="absolute inset-x-0 bottom-0 z-20 flex h-hud-bottom items-center gap-3 bg-wood px-3 text-on-wood shadow-raised sm:px-4">
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        {game.failed ? (
-          <Link to="/lista" className={action}>
-            {t("village.useList")}
-          </Link>
-        ) : door && door.slug !== open?.slug ? (
+        {door && door.slug !== open?.slug ? (
           <Link to={`/b/${door.routeSlug}`} data-testid="enter-building" className={action}>
             {t(`village.enterBuilding.${door.slug}`)}
           </Link>

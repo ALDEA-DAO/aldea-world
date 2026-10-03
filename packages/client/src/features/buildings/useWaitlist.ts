@@ -21,7 +21,8 @@ export function useWaitlist(building: WaitlistBuilding) {
     if (!signedIn) return;
     let current = true;
     almaApi<{ items: { building: string }[] }>("/v1/waitlist")
-      .then(({ items }) => current && setListed(new Set(items.map((i) => i.building))))
+      // Merged, not replaced: a read that started before a sign-up must not undo it
+      .then(({ items }) => current && setListed((known) => new Set([...items.map((i) => i.building), ...(known ?? [])])))
       .catch(() => current && setListed(new Set()));
     return () => {
       current = false;
