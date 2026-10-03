@@ -49,6 +49,76 @@ export const buildingEnteredGrammar = [["characterId", Type.Number()], ["buildin
 /** BuildingLeft(uint32 indexed characterId, bytes32 indexed buildingId) */
 export const buildingLeftGrammar = [["characterId", Type.Number()], ["buildingId", Type.String()], ...logCoordinates] as const;
 
+/** WorldRegistered(bytes32 indexed worldId, bytes32 indexed almaOrgIdHash, bytes32 indexed parentWorldId, address governor, Visibility visibility, string name, string metadataURI) */
+export const atlasWorldRegisteredGrammar = [
+  ["worldId", Type.String()],
+  ["almaOrgIdHash", Type.String()],
+  ["parentWorldId", Type.String()],
+  ["governor", Type.String()],
+  ["visibility", Type.Number()],
+  ["name", Type.String()],
+  ["metadataURI", Type.String()],
+  ...logCoordinates,
+] as const;
+
+/** VersionRegistered(bytes32 indexed versionId, bytes32 indexed worldId, bytes32 indexed parentVersionId, VersionInput version, address registeredBy) */
+export const atlasVersionRegisteredGrammar = [
+  ["versionId", Type.String()],
+  ["worldId", Type.String()],
+  ["parentVersionId", Type.String()],
+  [
+    "version",
+    Type.Object({
+      parentVersionId: Type.String(),
+      chainId: Type.String(),
+      worldAddress: Type.String(),
+      gitCommit: Type.String(),
+      engine: Type.String(),
+      semver: Type.String(),
+      clientCid: Type.String(),
+    }),
+  ],
+  ["registeredBy", Type.String()],
+  ...logCoordinates,
+] as const;
+
+/** ClientRegistered(bytes32 indexed clientId, bytes32 indexed versionId, bytes32 indexed operatorAlmaIdHash, ClientKind kind, string url) */
+export const atlasClientRegisteredGrammar = [
+  ["clientId", Type.String()],
+  ["versionId", Type.String()],
+  ["operatorAlmaIdHash", Type.String()],
+  ["kind", Type.Number()],
+  ["url", Type.String()],
+  ...logCoordinates,
+] as const;
+
+/** ClientDeactivated(bytes32 indexed clientId) */
+export const atlasClientDeactivatedGrammar = [["clientId", Type.String()], ...logCoordinates] as const;
+
+/** OfficialVersionSet(bytes32 indexed worldId, bytes32 indexed versionId, bytes32 previousVersionId, address by) */
+export const atlasOfficialVersionSetGrammar = [
+  ["worldId", Type.String()],
+  ["versionId", Type.String()],
+  ["previousVersionId", Type.String()],
+  ["by", Type.String()],
+  ...logCoordinates,
+] as const;
+
+/** VersionWithdrawn(bytes32 indexed versionId) */
+export const atlasVersionWithdrawnGrammar = [["versionId", Type.String()], ...logCoordinates] as const;
+
+/** GovernorChanged(bytes32 indexed worldId, address previousGovernor, address newGovernor) */
+export const atlasGovernorChangedGrammar = [["worldId", Type.String()], ["previousGovernor", Type.String()], ["newGovernor", Type.String()], ...logCoordinates] as const;
+
+/** VisibilityChanged(bytes32 indexed worldId, Visibility visibility) */
+export const atlasVisibilityChangedGrammar = [["worldId", Type.String()], ["visibility", Type.Number()], ...logCoordinates] as const;
+
+/** MetadataChanged(bytes32 indexed worldId, string metadataURI) */
+export const atlasMetadataChangedGrammar = [["worldId", Type.String()], ["metadataURI", Type.String()], ...logCoordinates] as const;
+
+/** VerifiedChanged(bytes32 indexed worldId, bool verified) */
+export const atlasVerifiedChangedGrammar = [["worldId", Type.String()], ["verified", Type.Boolean()], ...logCoordinates] as const;
+
 export const grammar = {
   birthRequested: birthRequestedGrammar,
   birthRescheduled: birthRescheduledGrammar,
@@ -56,4 +126,14 @@ export const grammar = {
   soulAnchored: soulAnchoredGrammar,
   buildingEntered: buildingEnteredGrammar,
   buildingLeft: buildingLeftGrammar,
+  atlasWorldRegistered: atlasWorldRegisteredGrammar,
+  atlasVersionRegistered: atlasVersionRegisteredGrammar,
+  atlasClientRegistered: atlasClientRegisteredGrammar,
+  atlasClientDeactivated: atlasClientDeactivatedGrammar,
+  atlasOfficialVersionSet: atlasOfficialVersionSetGrammar,
+  atlasVersionWithdrawn: atlasVersionWithdrawnGrammar,
+  atlasGovernorChanged: atlasGovernorChangedGrammar,
+  atlasVisibilityChanged: atlasVisibilityChangedGrammar,
+  atlasMetadataChanged: atlasMetadataChangedGrammar,
+  atlasVerifiedChanged: atlasVerifiedChangedGrammar,
 } as const satisfies GrammarDefinition;
