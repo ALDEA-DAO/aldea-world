@@ -8,6 +8,9 @@ coverage
 .env.*
 !.env.example
 
+# Cardano preprod test wallets (recovery phrases) and the minted test token's record
+.cardano-preprod/
+
 # foundry
 out/
 cache/
