@@ -25,3 +25,14 @@ export function worldDeployment(chainId: number): WorldDeployment {
     almaRegistry: (env.VITE_ALMA_REGISTRY_ADDRESS || deployment.protocol.almaAnchorRegistry) as Address,
   };
 }
+
+/** ALDEA World's id in the Atlas, once it is registered there. */
+export function aldeaWorldId(chainId: number): `0x${string}` | undefined {
+  const fromEnv = import.meta.env.VITE_ALDEA_WORLD_ID as `0x${string}` | undefined;
+  if (fromEnv) return fromEnv;
+  try {
+    return getDeployment(chainId, localDeployment).aldeaWorldId;
+  } catch {
+    return undefined;
+  }
+}

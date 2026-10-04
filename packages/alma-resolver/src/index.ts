@@ -15,6 +15,7 @@ import { initSentry } from "./lib/sentry";
 import { createSponsorshipPolicy } from "./lib/sponsorship";
 import { createSyncJob, effectstreamFeeds } from "./jobs/syncFromEffectstream";
 import { soulActivityFromDb } from "./routes/orgs";
+import { createPresenceStore } from "./routes/presence";
 import { loadDeployment } from "./seed/orgs";
 import { createTurnkeyClient, turnkeyConfigFromEnv, turnkeyCustodyProvisioner } from "./lib/turnkey";
 import { createResolverServer } from "./server";
@@ -126,6 +127,7 @@ const app = createApp({
     passkey: { db, challenges, passkey: interaction.passkey },
   },
   custody: turnkey ? { soul, turnkey, verifyAccessToken, issuer, jwks: publicJwks(signingKeys) } : undefined,
+  presence: { verifyAccessToken, store: createPresenceStore(), aldeaWorldId: () => env.ALDEA_WORLD_ID || loadDeployment(chainId)?.aldeaWorldId },
 });
 
 // Every 2 s: anchors and births from Effectstream into souls, bindings and tribe memberships

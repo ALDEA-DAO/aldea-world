@@ -9,6 +9,7 @@ import { createCustodyRoutes, type CustodyRoutesDeps } from "./routes/custody";
 import { createLinkPasskeyRoutes, type LinkPasskeyDeps } from "./routes/linkPasskey";
 import { createMeRoutes, type MeRoutesDeps } from "./routes/me";
 import { createOrgRoutes } from "./routes/orgs";
+import { createPresenceRoutes, type PresenceRoutesDeps } from "./routes/presence";
 import { createSoulRoutes, type SoulRoutesDeps } from "./routes/souls";
 import { createWaitlistRoutes } from "./routes/waitlist";
 import { createInteractionRoutes, type InteractionRoutesDeps } from "./routes/interaction";
@@ -29,6 +30,8 @@ export interface AppDeps {
   links?: { me: MeRoutesDeps; passkey: LinkPasskeyDeps };
   /** Souls: prepare before birth, the signed-in soul and public views. */
   souls?: SoulRoutesDeps;
+  /** Self-reported presence in ALDEA World. */
+  presence?: PresenceRoutesDeps;
 }
 
 const withTimeout = <T>(p: Promise<T>, ms: number) =>
@@ -62,6 +65,7 @@ export function createApp(deps: AppDeps) {
     app.route("/v1/orgs", createOrgRoutes(deps.souls.soul.db));
     app.route("/v1/waitlist", createWaitlistRoutes(deps.souls));
   }
+  if (deps.presence) app.route("/v1/presence", createPresenceRoutes(deps.presence));
   if (deps.links) {
     app.route("/v1/me", createMeRoutes(deps.links.me));
     app.route("/link", createLinkPasskeyRoutes(deps.links.passkey));
