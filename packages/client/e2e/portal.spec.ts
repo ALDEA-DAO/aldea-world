@@ -41,7 +41,7 @@ test("a new fork appears without reloading; the filters, the warning before trav
   // origin, so the client has to allow it (CORS).
   const plan = planFork();
   const manifest = {
-    schema: "aldea-world-client/v1",
+    schema: "alma-world-client/v1",
     worldId: `0x${"ab".repeat(32)}`,
     versionId: `0x${"cd".repeat(32)}`,
     name: plan.name,
@@ -54,7 +54,7 @@ test("a new fork appears without reloading; the filters, the warning before trav
   await context.route(`${plan.clientUrl}/**`, (route) => {
     const headers = { "access-control-allow-origin": "*" };
     const { pathname } = new URL(route.request().url());
-    if (pathname === "/.well-known/aldea-world.json") return route.fulfill({ headers, json: manifest });
+    if (pathname === "/.well-known/alma-world.json") return route.fulfill({ headers, json: manifest });
     if (pathname === "/presence") return route.fulfill({ headers, json: { online: 8, updatedAt: new Date().toISOString() } });
     return route.fulfill({ contentType: "text/html", body: `<title>${plan.name}</title>` });
   });

@@ -77,7 +77,7 @@ fk client register --version <versionId> --url https://your-domain.example \
 ```
 
 `publish` only writes `site/` if the files add up to the CID the Atlas holds for your official version, and adds
-`/version.json` and the client manifest (`/.well-known/aldea-world.json`) next to them. Deploy `site/` to your host,
+`/version.json` and the client manifest (`/.well-known/alma-world.json`) next to them. Deploy `site/` to your host,
 and serve the manifest and your presence URL with `Access-Control-Allow-Origin: *`: other worlds' Portals read them
 from the browser. `client register` is what puts the "Viajar" button on your card.
 
