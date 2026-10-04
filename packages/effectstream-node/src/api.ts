@@ -126,7 +126,7 @@ async function atlasClients(db: Db, worldIds: string[]) {
   const byWorld = new Map<string, unknown[]>();
   if (!worldIds.length) return byWorld;
   const { rows } = await db.query(
-    `SELECT v.world_id, c.client_id, c.version_id, c.url, c.kind, c.operator_alma_id_hash, op.alma_id AS operator_alma_id
+    `SELECT v.world_id, c.client_id, c.version_id, c.url, c.kind, c.operator_alma_id_hash, c.registered_tx, op.alma_id AS operator_alma_id
      FROM atlas_clients c JOIN atlas_versions v ON v.version_id = c.version_id
      LEFT JOIN souls_anchored op ON op.alma_id_hash = c.operator_alma_id_hash
      WHERE c.active AND v.status <> 4 AND v.world_id = ANY($1::text[])
@@ -142,6 +142,7 @@ async function atlasClients(db: Db, worldIds: string[]) {
       kind: CLIENT_KIND[row.kind] ?? "web",
       operatorAlmaIdHash: row.operator_alma_id_hash,
       operatorAlmaId: row.operator_alma_id ?? null,
+      registeredTx: row.registered_tx,
     });
     byWorld.set(row.world_id, clients);
   }
@@ -169,6 +170,8 @@ function worldView(row: Record<string, any>, clients: unknown[], measured: Measu
     governor: row.governor,
     metadataUri: row.metadata_uri,
     createdBlock: Number(row.created_block),
+    createdTx: row.created_tx,
+    createdTs: row.created_ts === null ? null : Number(row.created_ts),
     org: { almaIdHash: row.alma_org_id_hash, almaId: row.org_alma_id ?? null },
     official:
       row.o_version_id === null
@@ -228,6 +231,8 @@ export async function atlasWorld(db: Db, worldId: string, measured: MeasuredWorl
       chainId: Number(row.chain_id),
       worldAddress: row.world_address,
       registeredBlock: Number(row.registered_block),
+      registeredTx: row.registered_tx,
+      registeredTs: row.registered_ts === null ? null : Number(row.registered_ts),
     })),
     lineage: lineage.rows.map((row) => ({ worldId: row.world_id, name: row.name })),
   };

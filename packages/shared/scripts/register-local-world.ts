@@ -1,7 +1,7 @@
 /**
- * Local chains only: registers ALDEA World in the Atlas, as its organization's controller (the deployer, which stands
- * in for the ALDEA Safe locally), and writes its id to packages/shared/src/deployments/<chainId>.json as
- * `aldeaWorldId`. On public networks the Safe registers the world.
+ * Local chains only: registers ALDEA World in the Atlas and marks it verified, as its organization's controller and
+ * the Atlas curator (the deployer, which stands in for the ALDEA Safe locally), and writes its id to
+ * packages/shared/src/deployments/<chainId>.json as `aldeaWorldId`. On public networks the Safe registers the world.
  *
  *   PRIVATE_KEY=0x… pnpm --filter @aldea/shared register-local-world -- --chain-id 31337 --rpc-url http://127.0.0.1:8545
  */
@@ -43,6 +43,10 @@ const hash = await createWalletClient({ account, chain, transport: http() }).wri
 const receipt = await publicClient.waitForTransactionReceipt({ hash });
 const [registered] = parseEventLogs({ abi: atlasRegistryAbi, logs: receipt.logs, eventName: "WorldRegistered" });
 if (!registered) throw new Error("registerWorld did not emit WorldRegistered");
+
+// The deployer is also the Atlas curator locally: ALDEA World is the verified one, as on public networks
+const verify = await publicClient.simulateContract({ account, address: deployment.protocol.atlasRegistry, abi: atlasRegistryAbi, functionName: "setVerified", args: [registered.args.worldId, true] });
+await publicClient.waitForTransactionReceipt({ hash: await createWalletClient({ account, chain, transport: http() }).writeContract(verify.request) });
 
 deployment.aldeaWorldId = registered.args.worldId;
 writeFileSync(deploymentPath, `${JSON.stringify(deployment, null, 2)}\n`);

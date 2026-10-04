@@ -262,7 +262,39 @@
     "retry": "Reintentar",
     "youAreHere": "Estás aquí.",
     "onlyWorld": "Por ahora ALDEA es el único mundo del Atlas. ¿Quieres fundar el segundo?",
-    "forkGuide": "Cómo hacer un fork"
+    "forkGuide": "Cómo hacer un fork",
+    "anotherWorld": "otro mundo",
+    "officialVersion": "Versión oficial {{semver}} · {{cid}}",
+    "noOfficialVersion": "Sin versión oficial todavía",
+    "notMeasurable": "Actividad on-chain no medible",
+    "noClient": "Sin cliente registrado",
+    "updating": "Actualizando… Datos de las {{time}}.",
+    "filters": {
+      "label": "Filtrar mundos",
+      "verified": "Verificados",
+      "all": "Todos",
+      "forks": "Forks de ALDEA"
+    },
+    "empty": {
+      "verified": "Todavía no hay mundos verificados.",
+      "all": "El Atlas todavía no tiene mundos.",
+      "forks": "Todavía nadie hizo un fork de ALDEA."
+    },
+    "presence": {
+      "online_one": "~{{count}} en línea, autorreportado",
+      "online_other": "~{{count}} en línea, autorreportado",
+      "offline": "Cliente fuera de línea (autorreportado)",
+      "unavailable": "Presencia no disponible"
+    },
+    "travel": {
+      "button": "Viajar",
+      "warningTitle": "Mundo sin verificar",
+      "warning": "{{world}} no está verificado. Nadie revisó quién lo opera ni qué hace su sitio.",
+      "advice": "No firmes nada ni ingreses tus claves ahí si no confías en quien lo opera. ALDEA nunca te pedirá una firma para viajar.",
+      "understand": "Entiendo que salgo de ALDEA hacia un sitio sin verificar.",
+      "stay": "Quedarme",
+      "go": "Viajar igualmente"
+    }
   },
   "council": {
     "charter": "El Acta de Génesis",
@@ -285,5 +317,43 @@
     "pausedShort": "La aldea está en mantenimiento.",
     "offlineShort": "Estás sin conexión.",
     "bornFirst": "Primero tienes que nacer en el Centro Urbano."
+  },
+  "world": {
+    "backToPortal": "Portal de los Mundos",
+    "lineage": "Linaje",
+    "notFound": "No encontramos ese mundo en el Atlas.",
+    "unverified": "Sin verificar",
+    "organization": "Organización",
+    "id": "Mundo",
+    "governor": "Quién fija la versión oficial",
+    "registered": "Registro",
+    "versions": "Versiones",
+    "noVersions": "Este mundo todavía no publicó versiones.",
+    "clients": "Clientes",
+    "noClients": "Este mundo todavía no registró clientes.",
+    "operatedBy": "Operado por {{operator}}",
+    "columns": {
+      "status": "Estado",
+      "semver": "Versión",
+      "cid": "CID",
+      "commit": "Commit",
+      "chain": "Cadena",
+      "contract": "World",
+      "date": "Fecha",
+      "evidence": "En la cadena"
+    },
+    "status": {
+      "official": "Oficial",
+      "candidate": "Candidata",
+      "superseded": "Reemplazada",
+      "withdrawn": "Retirada",
+      "none": "Desconocida"
+    },
+    "clientKind": {
+      "web": "Web",
+      "mobile": "Móvil",
+      "desktop": "Escritorio",
+      "agent": "Agente"
+    }
   }
 }

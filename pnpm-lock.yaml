@@ -171,6 +171,9 @@ importers:
       lucide-react:
         specifier: ^1.48.0
         version: 1.48.0(react@19.3.0)
+      mqtt:
+        specifier: ^5.16.0
+        version: 5.16.0(bufferutil@4.0.8)(utf-8-validate@6.0.6)
       oidc-client-ts:
         specifier: 3.5.0
         version: 3.5.0

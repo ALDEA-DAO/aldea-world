@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "bun:test";
 import { PGlite } from "@electric-sql/pglite";
 import readModelSql from "../db/migrations/0001_read_model.sql" with { type: "text" };
 import visitExitsSql from "../db/migrations/0002_visit_exits.sql" with { type: "text" };
+import atlasEvidenceSql from "../db/migrations/0003_atlas_evidence.sql" with { type: "text" };
 import { atlasFilter, atlasWorld, atlasWorlds, type MeasuredWorld } from "../src/api.ts";
 import * as atlas from "../src/stf/atlas.ts";
 import type { Effect, StfContext } from "../src/stf/births.ts";
@@ -17,6 +18,7 @@ async function freshDb() {
   const db = new PGlite();
   await db.exec(readModelSql);
   await db.exec(visitExitsSql);
+  await db.exec(atlasEvidenceSql);
   return db;
 }
 
@@ -59,11 +61,14 @@ const version = (versionId: string, worldId: string, semver: string, block: numb
   registeredBy: SAFE,
   ...log(block),
 });
+/** Atlas events carry their own Base block; the main clock says when: block n at REGISTERED + n seconds. */
+const at = (block: number): StfContext => ({ height: block, timestampMs: (REGISTERED + block) * 1000, worldId: WORLD_ADDRESS });
 const anchor = (almaIdHash: string, almaId: string) => soulAnchored({ almaIdHash, almaId, subjectType: 2, controller: SAFE, txHash: almaIdHash, blockNumber: 1 });
 
 const MEASURED: MeasuredWorld = { worldId: WORLD_ADDRESS, chainId: 31337, worldAddress: WORLD_ADDRESS };
 // On an hour boundary
 const NOW = 1_790_002_800;
+const REGISTERED = NOW - 1_000;
 const everything = { verifiedOnly: false, limit: 50 };
 
 let db: PGlite;
@@ -74,7 +79,7 @@ beforeEach(async () => {
 
 describe("worlds", () => {
   it("lists a registered world with its organization, and nothing official yet", async () => {
-    expect(await apply(db, atlas.worldRegistered(world(ALDEA, "ALDEA World", ORG, ZERO, 10)))).toEqual([ALDEA]);
+    expect(await apply(db, atlas.worldRegistered(world(ALDEA, "ALDEA World", ORG, ZERO, 10), at(10)))).toEqual([ALDEA]);
     const { items, nextCursor } = await atlasWorlds(db as never, everything, MEASURED, NOW);
     expect(nextCursor).toBeNull();
     expect(items).toEqual([
@@ -87,6 +92,8 @@ describe("worlds", () => {
         governor: SAFE,
         metadataUri: "ipfs://meta",
         createdBlock: 10,
+        createdTx: log(10).txHash,
+        createdTs: REGISTERED + 10,
         org: { almaIdHash: ORG, almaId: "alma:main:org:aldea-world" },
         official: null,
         candidates: 0,
@@ -98,7 +105,7 @@ describe("worlds", () => {
   });
 
   it("follows governor, visibility, metadata and verification changes, once each", async () => {
-    await apply(db, atlas.worldRegistered(world(ALDEA, "ALDEA World", ORG, ZERO, 10)));
+    await apply(db, atlas.worldRegistered(world(ALDEA, "ALDEA World", ORG, ZERO, 10), at(10)));
     const governor = atlas.governorChanged({ worldId: ALDEA, newGovernor: "0x" + "9B".repeat(20), ...log(11) });
     expect(await apply(db, governor)).toEqual([ALDEA]);
     expect(await apply(db, governor)).toEqual([]);
@@ -113,15 +120,15 @@ describe("worlds", () => {
 
   it("ignores changes to a world it never saw", async () => {
     expect(await apply(db, atlas.verifiedChanged({ worldId: ALDEA, verified: true, ...log(12) }))).toEqual([]);
-    expect(await apply(db, atlas.versionRegistered(version(V1, ALDEA, "0.1.0", 12)))).toEqual([]);
+    expect(await apply(db, atlas.versionRegistered(version(V1, ALDEA, "0.1.0", 12), at(12)))).toEqual([]);
     expect(await apply(db, atlas.clientRegistered({ clientId: CLIENT, versionId: V1, operatorAlmaIdHash: OPERATOR, kind: 0, url: "https://aldea.world", ...log(13) }))).toEqual([]);
   });
 });
 
 describe("versions", () => {
   beforeEach(async () => {
-    await apply(db, atlas.worldRegistered(world(ALDEA, "ALDEA World", ORG, ZERO, 10)));
-    await apply(db, atlas.versionRegistered(version(V1, ALDEA, "0.1.0", 11)));
+    await apply(db, atlas.worldRegistered(world(ALDEA, "ALDEA World", ORG, ZERO, 10), at(10)));
+    await apply(db, atlas.versionRegistered(version(V1, ALDEA, "0.1.0", 11), at(11)));
   });
 
   it("counts candidates until one is set as official", async () => {
@@ -136,25 +143,25 @@ describe("versions", () => {
   it("supersedes the previous official version, and a replay of the older event does not bring it back", async () => {
     const first = atlas.officialVersionSet({ worldId: ALDEA, versionId: V1, previousVersionId: ZERO, ...log(12) });
     await apply(db, first);
-    await apply(db, atlas.versionRegistered(version(V2, ALDEA, "0.2.0", 13, V1)));
+    await apply(db, atlas.versionRegistered(version(V2, ALDEA, "0.2.0", 13, V1), at(13)));
     await apply(db, atlas.officialVersionSet({ worldId: ALDEA, versionId: V2, previousVersionId: V1, ...log(14) }));
     expect(await apply(db, first)).toEqual([]);
 
     const detail = await atlasWorld(db as never, ALDEA, MEASURED, NOW);
     expect(detail?.official?.versionId).toBe(V2);
-    expect(detail?.versions.map((v) => [v.semver, v.status, v.parentVersionId])).toEqual([
-      ["0.2.0", "official", V1],
-      ["0.1.0", "superseded", null],
+    expect(detail?.versions.map((v) => [v.semver, v.status, v.parentVersionId, v.registeredTx, v.registeredTs])).toEqual([
+      ["0.2.0", "official", V1, log(13).txHash, REGISTERED + 13],
+      ["0.1.0", "superseded", null, log(11).txHash, REGISTERED + 11],
     ]);
   });
 
   it("does not make official a version of another world", async () => {
-    await apply(db, atlas.worldRegistered(world(NOCTURNA, "ALDEA Nocturna", FORK_ORG, ALDEA, 12)));
+    await apply(db, atlas.worldRegistered(world(NOCTURNA, "ALDEA Nocturna", FORK_ORG, ALDEA, 12), at(12)));
     expect(await apply(db, atlas.officialVersionSet({ worldId: NOCTURNA, versionId: V1, previousVersionId: ZERO, ...log(13) }))).toEqual([]);
   });
 
   it("withdraws a candidate, but never an official version", async () => {
-    await apply(db, atlas.versionRegistered(version(V2, ALDEA, "0.2.0", 12)));
+    await apply(db, atlas.versionRegistered(version(V2, ALDEA, "0.2.0", 12), at(12)));
     await apply(db, atlas.officialVersionSet({ worldId: ALDEA, versionId: V1, previousVersionId: ZERO, ...log(13) }));
     expect(await apply(db, atlas.versionWithdrawn({ versionId: V2, ...log(14) }))).toEqual([ALDEA]);
     expect(await apply(db, atlas.versionWithdrawn({ versionId: V1, ...log(15) }))).toEqual([]);
@@ -170,13 +177,13 @@ describe("versions", () => {
 describe("clients", () => {
   it("lists a version's active clients with their operator, until they are deactivated", async () => {
     await apply(db, anchor(OPERATOR, "alma:main:org:operator"));
-    await apply(db, atlas.worldRegistered(world(ALDEA, "ALDEA World", ORG, ZERO, 10)));
-    await apply(db, atlas.versionRegistered(version(V1, ALDEA, "0.1.0", 11)));
+    await apply(db, atlas.worldRegistered(world(ALDEA, "ALDEA World", ORG, ZERO, 10), at(10)));
+    await apply(db, atlas.versionRegistered(version(V1, ALDEA, "0.1.0", 11), at(11)));
     const client = atlas.clientRegistered({ clientId: CLIENT, versionId: V1, operatorAlmaIdHash: OPERATOR, kind: 0, url: "https://aldea.world", ...log(12) });
     expect(await apply(db, client)).toEqual([ALDEA]);
     expect(await apply(db, client)).toEqual([]);
     expect((await atlasWorlds(db as never, everything, MEASURED, NOW)).items[0]?.clients).toEqual([
-      { clientId: CLIENT, versionId: V1, url: "https://aldea.world", kind: "web", operatorAlmaIdHash: OPERATOR, operatorAlmaId: "alma:main:org:operator" },
+      { clientId: CLIENT, versionId: V1, url: "https://aldea.world", kind: "web", operatorAlmaIdHash: OPERATOR, operatorAlmaId: "alma:main:org:operator", registeredTx: log(12).txHash },
     ]);
 
     expect(await apply(db, atlas.clientDeactivated({ clientId: CLIENT, ...log(13) }))).toEqual([ALDEA]);
@@ -187,8 +194,8 @@ describe("clients", () => {
 
 describe("forks and lineage", () => {
   beforeEach(async () => {
-    await apply(db, atlas.worldRegistered(world(ALDEA, "ALDEA World", ORG, ZERO, 10)));
-    await apply(db, atlas.worldRegistered(world(NOCTURNA, "ALDEA Nocturna", FORK_ORG, ALDEA, 20)));
+    await apply(db, atlas.worldRegistered(world(ALDEA, "ALDEA World", ORG, ZERO, 10), at(10)));
+    await apply(db, atlas.worldRegistered(world(NOCTURNA, "ALDEA Nocturna", FORK_ORG, ALDEA, 20), at(20)));
   });
 
   it("shows the lineage from the first ancestor down to the fork", async () => {
@@ -221,10 +228,10 @@ describe("activity in the last 24 h", () => {
   const ctx = (ts: number): StfContext => ({ height: 1, timestampMs: ts * 1000, worldId: WORLD_ADDRESS });
 
   it("is measured for the World this node follows and not measurable for any other", async () => {
-    await apply(db, atlas.worldRegistered(world(ALDEA, "ALDEA World", ORG, ZERO, 10)));
-    await apply(db, atlas.versionRegistered(version(V1, ALDEA, "0.1.0", 11)));
-    await apply(db, atlas.worldRegistered(world(NOCTURNA, "ALDEA Nocturna", FORK_ORG, ALDEA, 20)));
-    await apply(db, atlas.versionRegistered(version(V2, NOCTURNA, "0.1.0", 21, ZERO, "0x" + "ee".repeat(20))));
+    await apply(db, atlas.worldRegistered(world(ALDEA, "ALDEA World", ORG, ZERO, 10), at(10)));
+    await apply(db, atlas.versionRegistered(version(V1, ALDEA, "0.1.0", 11), at(11)));
+    await apply(db, atlas.worldRegistered(world(NOCTURNA, "ALDEA Nocturna", FORK_ORG, ALDEA, 20), at(20)));
+    await apply(db, atlas.versionRegistered(version(V2, NOCTURNA, "0.1.0", 21, ZERO, "0x" + "ee".repeat(20)), at(21)));
     await apply(db, atlas.officialVersionSet({ worldId: NOCTURNA, versionId: V2, previousVersionId: ZERO, ...log(22) }));
     await apply(db, buildingEntered({ characterId: 1, buildingId: id(0xb0), almaIdHash: id(1), ...log(30) }, ctx(NOW - 60)));
 

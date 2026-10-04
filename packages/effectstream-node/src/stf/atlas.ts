@@ -1,5 +1,5 @@
 import { sql } from "../sql.ts";
-import type { Effect } from "./births.ts";
+import type { Effect, StfContext } from "./births.ts";
 
 /**
  * The Atlas in the read model (AtlasRegistry's events): worlds, their versions and the clients that serve them.
@@ -55,9 +55,20 @@ export type VisibilityChanged = Log & { worldId: string; visibility: number };
 export type MetadataChanged = Log & { worldId: string; metadataURI: string };
 export type VerifiedChanged = Log & { worldId: string; verified: boolean };
 
-const insertWorld = sql<{ world_id: string; name: string; alma_org_id_hash: string; parent_world_id: string | null; governor: string; visibility: number; metadata_uri: string; created_block: number }>(
-  `INSERT INTO atlas_worlds (world_id, name, alma_org_id_hash, parent_world_id, governor, visibility, metadata_uri, created_block)
-VALUES (:world_id!, :name!, :alma_org_id_hash!, :parent_world_id, :governor!, :visibility!, :metadata_uri!, :created_block!)
+const insertWorld = sql<{
+  world_id: string;
+  name: string;
+  alma_org_id_hash: string;
+  parent_world_id: string | null;
+  governor: string;
+  visibility: number;
+  metadata_uri: string;
+  created_block: number;
+  created_tx: string;
+  created_ts: number;
+}>(
+  `INSERT INTO atlas_worlds (world_id, name, alma_org_id_hash, parent_world_id, governor, visibility, metadata_uri, created_block, created_tx, created_ts)
+VALUES (:world_id!, :name!, :alma_org_id_hash!, :parent_world_id, :governor!, :visibility!, :metadata_uri!, :created_block!, :created_tx!, :created_ts!)
 ON CONFLICT (world_id) DO NOTHING
 RETURNING world_id`,
 );
@@ -73,9 +84,11 @@ const insertVersion = sql<{
   git_commit: string;
   client_cid: string;
   registered_block: number;
+  registered_tx: string;
+  registered_ts: number;
 }>(
-  `INSERT INTO atlas_versions (version_id, world_id, parent_version_id, chain_id, world_address, engine, semver, git_commit, client_cid, status, registered_block)
-SELECT :version_id!::text, w.world_id, :parent_version_id::text, :chain_id!::bigint, :world_address!::text, :engine!::text, :semver!::text, :git_commit!::text, :client_cid!::text, ${VersionStatus.Candidate}, :registered_block!::bigint
+  `INSERT INTO atlas_versions (version_id, world_id, parent_version_id, chain_id, world_address, engine, semver, git_commit, client_cid, status, registered_block, registered_tx, registered_ts)
+SELECT :version_id!::text, w.world_id, :parent_version_id::text, :chain_id!::bigint, :world_address!::text, :engine!::text, :semver!::text, :git_commit!::text, :client_cid!::text, ${VersionStatus.Candidate}, :registered_block!::bigint, :registered_tx!::text, :registered_ts!::bigint
 FROM atlas_worlds w WHERE w.world_id = :world_id!
 ON CONFLICT (version_id) DO NOTHING
 RETURNING world_id`,
@@ -103,10 +116,10 @@ const withdrawVersion = sql<{ version_id: string }>(
   `UPDATE atlas_versions SET status = ${VersionStatus.Withdrawn} WHERE version_id = :version_id! AND status = ${VersionStatus.Candidate} RETURNING world_id`,
 );
 
-const insertClient = sql<{ client_id: string; version_id: string; url: string; kind: number; operator_alma_id_hash: string; registered_block: number }>(
+const insertClient = sql<{ client_id: string; version_id: string; url: string; kind: number; operator_alma_id_hash: string; registered_block: number; registered_tx: string }>(
   `WITH client AS (
-  INSERT INTO atlas_clients (client_id, version_id, url, kind, operator_alma_id_hash, registered_block)
-  SELECT :client_id!::text, v.version_id, :url!::text, :kind!::smallint, :operator_alma_id_hash!::text, :registered_block!::bigint
+  INSERT INTO atlas_clients (client_id, version_id, url, kind, operator_alma_id_hash, registered_block, registered_tx)
+  SELECT :client_id!::text, v.version_id, :url!::text, :kind!::smallint, :operator_alma_id_hash!::text, :registered_block!::bigint, :registered_tx!::text
   FROM atlas_versions v WHERE v.version_id = :version_id!
   ON CONFLICT (client_id) DO NOTHING
   RETURNING version_id
@@ -134,7 +147,7 @@ const setVerified = sql<{ world_id: string; verified: boolean }>(
   `UPDATE atlas_worlds SET verified = :verified! WHERE world_id = :world_id! AND verified <> :verified! RETURNING world_id`,
 );
 
-export function worldRegistered(input: WorldRegistered): Effect[] {
+export function worldRegistered(input: WorldRegistered, ctx: StfContext): Effect[] {
   return [
     [
       insertWorld,
@@ -147,12 +160,14 @@ export function worldRegistered(input: WorldRegistered): Effect[] {
         visibility: input.visibility,
         metadata_uri: input.metadataURI,
         created_block: input.blockNumber,
+        created_tx: input.txHash.toLowerCase(),
+        created_ts: Math.floor(ctx.timestampMs / 1000),
       },
     ],
   ];
 }
 
-export function versionRegistered(input: VersionRegistered): Effect[] {
+export function versionRegistered(input: VersionRegistered, ctx: StfContext): Effect[] {
   return [
     [
       insertVersion,
@@ -167,6 +182,8 @@ export function versionRegistered(input: VersionRegistered): Effect[] {
         git_commit: input.version.gitCommit.toLowerCase(),
         client_cid: input.version.clientCid,
         registered_block: input.blockNumber,
+        registered_tx: input.txHash.toLowerCase(),
+        registered_ts: Math.floor(ctx.timestampMs / 1000),
       },
     ],
   ];
@@ -191,6 +208,7 @@ export function clientRegistered(input: ClientRegistered): Effect[] {
         kind: input.kind,
         operator_alma_id_hash: input.operatorAlmaIdHash.toLowerCase(),
         registered_block: input.blockNumber,
+        registered_tx: input.txHash.toLowerCase(),
       },
     ],
   ];

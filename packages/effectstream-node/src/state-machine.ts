@@ -57,9 +57,9 @@ stm.addStateTransition("buildingLeft", function* (data) {
  * Atlas events: the statement returns the world it changed (nothing on a replay), and that world is announced as
  * `registered` or `updated` for the Portal to refresh its row.
  */
-function atlasTransition<Input>(prefix: keyof typeof grammar, effects: (input: Input) => Effect[], event: "registered" | "updated") {
+function atlasTransition<Input>(prefix: keyof typeof grammar, effects: (input: Input, ctx: StfContext) => Effect[], event: "registered" | "updated") {
   stm.addStateTransition(prefix as any, function* (data: any) {
-    for (const [query, params] of effects(data.parsedInput as Input)) {
+    for (const [query, params] of effects(data.parsedInput as Input, context(data))) {
       const rows = (yield* World.resolve(query, params)) as { world_id?: string }[];
       for (const row of rows ?? []) if (row.world_id) data.emit(AldeaEvents.AtlasWorldChanged, { worldId: row.world_id, event });
     }
