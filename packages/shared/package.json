@@ -16,7 +16,8 @@
     "typecheck": "tsc --noEmit",
     "abis": "tsx scripts/export-abis.ts",
     "test": "vitest run",
-    "merge-world": "tsx scripts/merge-world.ts"
+    "merge-world": "tsx scripts/merge-world.ts",
+    "register-local-world": "tsx scripts/register-local-world.ts"
   },
   "dependencies": {
     "canonicalize": "^5.1.0",
