@@ -5,6 +5,7 @@ import { captureError } from "./lib/sentry";
 import { logger } from "./lib/logger";
 import { problemResponse, toProblem } from "./lib/problem";
 import { createAaRoutes, type AaRoutesDeps } from "./routes/aa";
+import { createCardanoRoutes, type CardanoRoutesDeps } from "./routes/cardano";
 import { createCustodyRoutes, type CustodyRoutesDeps } from "./routes/custody";
 import { createLinkPasskeyRoutes, type LinkPasskeyDeps } from "./routes/linkPasskey";
 import { createMeRoutes, type MeRoutesDeps } from "./routes/me";
@@ -30,6 +31,8 @@ export interface AppDeps {
   links?: { me: MeRoutesDeps; passkey: LinkPasskeyDeps };
   /** Souls: prepare before birth, the signed-in soul and public views. */
   souls?: SoulRoutesDeps;
+  /** Linking Cardano wallets (the $ALDEA holders). */
+  cardano?: CardanoRoutesDeps;
   /** Self-reported presence in ALDEA World. */
   presence?: PresenceRoutesDeps;
 }
@@ -65,6 +68,7 @@ export function createApp(deps: AppDeps) {
     app.route("/v1/orgs", createOrgRoutes(deps.souls.soul.db));
     app.route("/v1/waitlist", createWaitlistRoutes(deps.souls));
   }
+  if (deps.cardano) app.route("/v1/cardano", createCardanoRoutes(deps.cardano));
   if (deps.presence) app.route("/v1/presence", createPresenceRoutes(deps.presence));
   if (deps.links) {
     app.route("/v1/me", createMeRoutes(deps.links.me));

@@ -21,11 +21,13 @@
   "dependencies": {
     "@adasouls/alma-core": "^0.3.0",
     "@aldea/shared": "workspace:^",
+    "@cardano-foundation/cardano-verify-datasignature": "^1.0.11",
     "@hono/node-server": "^2.1.1",
     "@hono/zod-validator": "^0.9.1",
     "@sentry/node": "^11.0.0",
     "@simplewebauthn/server": "14.0.3",
     "@turnkey/sdk-server": "8.6.0",
+    "bech32": "^2.0.0",
     "drizzle-orm": "^0.45.3",
     "hono": "^4.13.9",
     "jose": "6.2.12",
@@ -37,6 +39,7 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
+    "@meshsdk/core": "^1.9.1",
     "@turnkey/api-key-stamper": "0.6.17",
     "@turnkey/crypto": "2.13.2",
     "@turnkey/viem": "0.14.43",

@@ -40,6 +40,8 @@ export interface Stack {
   pg: PGlite;
   sentCodes: { to: string; code: string }[];
   custodies: ProvisionedCustody[];
+  /** $ALDEA the read model reports per Cardano credential, in base units (a credential not here cannot be read). */
+  holdings: Map<string, string>;
   close: () => Promise<void>;
 }
 
@@ -60,6 +62,7 @@ export async function startStack({ custody = true }: { custody?: boolean } = {})
   const verifyAccessToken = createAccessTokenVerifier({ issuer, audience: apiResource, jwks: publicJwks(signingKeys) });
 
   const sentCodes: Stack["sentCodes"] = [];
+  const holdings: Stack["holdings"] = new Map();
   const custodies: ProvisionedCustody[] = [];
   const sender: EmailCodeSender = { send: async (to, code) => void sentCodes.push({ to, code }) };
   const provisionCustody = async () => {
@@ -87,6 +90,7 @@ export async function startStack({ custody = true }: { custody?: boolean } = {})
     interaction: { auth, soul, passkey, wallet, email },
     souls: { soul, verifyAccessToken, activity: soulActivityFromDb(db), allowDevelopmentController: !custody },
     presence: { verifyAccessToken, store: createPresenceStore(), aldeaWorldId: () => ALDEA_WORLD_ID },
+    cardano: { db, challenges, verifyAccessToken, network: 0, worldOrigins: [WORLD], holdings: async (credential) => holdings.get(credential) },
     links: {
       me: { db, challenges, verifyAccessToken, wallet, email, worldOrigins: [WORLD], issuer },
       passkey: { db, challenges, passkey },
@@ -101,6 +105,7 @@ export async function startStack({ custody = true }: { custody?: boolean } = {})
     pg,
     sentCodes,
     custodies,
+    holdings,
     close: async () => {
       await new Promise((resolve) => server.close(resolve));
       await pg.close();

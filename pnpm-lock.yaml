@@ -56,6 +56,9 @@ importers:
       '@aldea/shared':
         specifier: workspace:^
         version: link:../shared
+      '@cardano-foundation/cardano-verify-datasignature':
+        specifier: ^1.0.11
+        version: 1.0.11
       '@hono/node-server':
         specifier: ^2.1.1
         version: 2.1.1(hono@4.13.9)
@@ -71,6 +74,9 @@ importers:
       '@turnkey/sdk-server':
         specifier: 8.6.0
         version: 8.6.0(bufferutil@4.0.8)(typescript@5.9.3)(zod@4.6.5)
+      bech32:
+        specifier: ^2.0.0
+        version: 2.0.0
       drizzle-orm:
         specifier: ^0.45.3
         version: 0.45.3(@electric-sql/pglite@0.5.8)(@opentelemetry/api@1.9.1)(@types/pg@8.6.1)(better-sqlite3@8.7.0)(bun-types@1.4.2)(kysely@0.26.3)(pg@8.23.0)(postgres@3.4.9)(sql.js@1.14.2)
@@ -99,6 +105,9 @@ importers:
       '@electric-sql/pglite':
         specifier: ^0.5.8
         version: 0.5.8
+      '@meshsdk/core':
+        specifier: ^1.9.1
+        version: 1.9.1(@bufbuild/protobuf@1.10.1)(@harmoniclabs/bytestring@1.0.0)(@harmoniclabs/crypto@0.2.5)(bufferutil@4.0.8)(rxjs@7.8.2)
       '@turnkey/api-key-stamper':
         specifier: 0.6.17
         version: 0.6.17

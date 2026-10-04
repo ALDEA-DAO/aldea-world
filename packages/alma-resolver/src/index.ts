@@ -107,6 +107,8 @@ const aa =
       }
     : undefined;
 
+const effectstreamUrl = env.EFFECTSTREAM_API_URL ?? "http://localhost:9999";
+
 const app = createApp({
   pingDb: async () => {
     await db.execute(sql`select 1`);
@@ -127,11 +129,23 @@ const app = createApp({
     passkey: { db, challenges, passkey: interaction.passkey },
   },
   custody: turnkey ? { soul, turnkey, verifyAccessToken, issuer, jwks: publicJwks(signingKeys) } : undefined,
+  cardano: {
+    db,
+    challenges,
+    verifyAccessToken,
+    // Mainnet only next to Base mainnet; every other chain goes with a Cardano test network
+    network: (env.CARDANO_NETWORK ?? (chainId === 8453 ? "mainnet" : "preprod")) === "mainnet" ? 1 : 0,
+    worldOrigins: corsOrigins,
+    holdings: async (credential) => {
+      const res = await fetch(`${effectstreamUrl}/api/v1/cardano/holdings/${credential}`, { signal: AbortSignal.timeout(5_000) });
+      return res.ok ? ((await res.json()) as { balance: string }).balance : undefined;
+    },
+  },
   presence: { verifyAccessToken, store: createPresenceStore(), aldeaWorldId: () => env.ALDEA_WORLD_ID || loadDeployment(chainId)?.aldeaWorldId },
 });
 
 // Every 2 s: anchors and births from Effectstream into souls, bindings and tribe memberships
-const sync = createSyncJob({ db, feeds: effectstreamFeeds(env.EFFECTSTREAM_API_URL ?? "http://localhost:9999"), deployment: () => loadDeployment(chainId) });
+const sync = createSyncJob({ db, feeds: effectstreamFeeds(effectstreamUrl), deployment: () => loadDeployment(chainId) });
 let syncDown = false;
 setInterval(() => {
   sync.tick().then(
