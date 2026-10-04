@@ -70,3 +70,32 @@ export async function registerFork(plan: ForkPlan = planFork()): Promise<Fork> {
 
 /** The curator vouches for a world. */
 export const verifyWorld = (worldId: Hex) => send(DEPLOYER_KEY, deployment.protocol.atlasRegistry, atlasRegistryAbi, "setVerified", [worldId, true]);
+
+/**
+ * A new version of ALDEA World, registered by its organization's controller and, with `official`, set as the official
+ * one by its governor (both are the deployer locally). Every call is a different build.
+ */
+export async function registerAldeaVersion({ official }: { official: boolean }) {
+  const suffix = randomBytes(4).toString("hex");
+  const version = { clientCid: `bafyaldea${suffix}`, gitCommit: randomBytes(20).toString("hex"), semver: `0.1.0-e2e.${suffix}` };
+  const receipt = await send(DEPLOYER_KEY, deployment.protocol.atlasRegistry, atlasRegistryAbi, "registerVersion", [
+    ALDEA_WORLD_ID,
+    { parentVersionId: zeroHash, chainId: 31337n, worldAddress: `0x${"ad".repeat(20)}`, gitCommit: `0x${version.gitCommit}`, engine: "mud@2.2.23", semver: version.semver, clientCid: version.clientCid },
+  ]);
+  const [{ args }] = parseEventLogs({ abi: atlasRegistryAbi, logs: receipt.logs, eventName: "VersionRegistered" }) as [{ args: { versionId: Hex } }];
+  if (official) await send(DEPLOYER_KEY, deployment.protocol.atlasRegistry, atlasRegistryAbi, "setOfficialVersion", [ALDEA_WORLD_ID, args.versionId]);
+  return { versionId: args.versionId, ...version };
+}
+
+/** A world with nothing but its registration: no versions, no clients. */
+export async function registerBareWorld(): Promise<{ worldId: Hex; name: string }> {
+  const plan = planFork();
+  const { almaAnchorRegistry, atlasRegistry } = deployment.protocol;
+  const docHash = keccak256(toHex(plan.name));
+  await publicClient.request({ method: "anvil_setBalance" as never, params: [privateKeyToAccount(plan.key).address, toHex(10n ** 18n)] as never });
+  await send(plan.key, almaAnchorRegistry, almaAnchorRegistryAbi, "anchorHuman", [`alma:main:human:${randomBytes(16).toString("hex")}`, docHash]);
+  await send(plan.key, almaAnchorRegistry, almaAnchorRegistryAbi, "anchorOrg", [plan.org, docHash]);
+  const world = await send(plan.key, atlasRegistry, atlasRegistryAbi, "registerWorld", [plan.name, almaIdHash(plan.org), zeroHash, 0, "", zeroAddress]);
+  const [{ args }] = parseEventLogs({ abi: atlasRegistryAbi, logs: world.logs, eventName: "WorldRegistered" }) as [{ args: { worldId: Hex } }];
+  return { worldId: args.worldId, name: plan.name };
+}

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ALDEA_WORLD_ID, planFork, registerFork, verifyWorld } from "./atlas";
+import { ALDEA_WORLD_ID, planFork, registerBareWorld, registerFork, verifyWorld } from "./atlas";
 
 /**
  * The Portal of Worlds over the real Atlas: ALDEA World as registered by the local deploy, a fork that appears while
@@ -121,9 +121,14 @@ test("a world the Atlas does not know, and one without versions", async ({ page 
   await page.goto(`/#/portal/0x${"ee".repeat(32)}`);
   await expect(page.getByRole("status")).toHaveText(/No encontramos ese mundo en el Atlas|We couldn't find that world in the Atlas/);
 
-  await page.goto(`/#/portal/${ALDEA_WORLD_ID}`);
-  await expect(page.getByRole("heading", { level: 1, name: "ALDEA World" })).toBeVisible();
+  const bare = await registerBareWorld();
+  await expect(async () => {
+    await page.goto(`/#/portal/${bare.worldId}`);
+    await page.reload();
+    await expect(page.getByRole("heading", { level: 1, name: bare.name })).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 30_000 });
   await expect(page.getByText(/todavía no publicó versiones|hasn't published any versions yet/)).toBeVisible();
+  await expect(page.getByText(/todavía no registró clientes|hasn't registered any clients yet/)).toBeVisible();
 });
 
 test("without Effectstream the Portal says so, offers to retry, and keeps the list it already had", async ({ page }) => {

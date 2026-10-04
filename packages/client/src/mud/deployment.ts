@@ -36,3 +36,8 @@ export function aldeaWorldId(chainId: number): `0x${string}` | undefined {
     return undefined;
   }
 }
+
+/** The Atlas of the build's chain. */
+export function atlasAddress(chainId: number): Address {
+  return (import.meta.env.VITE_ATLAS_ADDRESS || getDeployment(chainId, localDeployment).protocol.atlasRegistry) as Address;
+}

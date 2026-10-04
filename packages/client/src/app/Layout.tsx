@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { HudTopBar } from "../components/hud/HudTopBar";
 import { StatusBanners } from "../components/hud/StatusBanners";
+import { VersionBadge } from "../components/hud/VersionBadge";
 import { AuthReturnState } from "../features/auth/SignInWithAlma";
 import { usePresence } from "../lib/presence";
 
@@ -9,7 +10,7 @@ export function Layout() {
   usePresence();
   return (
     <div className="flex min-h-dvh flex-col">
-      <HudTopBar />
+      <HudTopBar versionBadge={<VersionBadge />} />
       <StatusBanners />
       <AuthReturnState />
       <main className="flex flex-1 flex-col">

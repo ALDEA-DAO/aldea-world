@@ -355,5 +355,29 @@
       "desktop": "Escritorio",
       "agent": "Agente"
     }
+  },
+  "version": {
+    "about": "Acerca de esta versión",
+    "goToOfficial": "Ir a la versión oficial",
+    "semver": "Versión",
+    "versionId": "Id de versión",
+    "cid": "CID",
+    "commit": "Commit",
+    "state": {
+      "official": "Versión oficial ✓",
+      "candidate": "Candidata",
+      "fork": "Versión de un fork",
+      "unofficial": "Versión no oficial",
+      "development": "Versión de desarrollo",
+      "unknown": "Sin comprobar"
+    },
+    "explain": {
+      "official": "El Atlas confirma que esta es la versión oficial de este mundo.",
+      "candidate": "Está registrada en el Atlas, pero todavía no es la oficial.",
+      "fork": "Este cliente es de un fork: no es el mundo original.",
+      "unofficial": "El Atlas no reconoce este cliente como una versión vigente de este mundo.",
+      "development": "Es un servidor de desarrollo: no viene de una publicación.",
+      "unknown": "No pudimos consultar el Atlas para comprobar esta versión."
+    }
   }
 }

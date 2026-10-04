@@ -355,5 +355,29 @@
       "desktop": "Desktop",
       "agent": "Agent"
     }
+  },
+  "version": {
+    "about": "About this version",
+    "goToOfficial": "Go to the official version",
+    "semver": "Version",
+    "versionId": "Version id",
+    "cid": "CID",
+    "commit": "Commit",
+    "state": {
+      "official": "Official version ✓",
+      "candidate": "Candidate",
+      "fork": "Fork version",
+      "unofficial": "Unofficial version",
+      "development": "Development version",
+      "unknown": "Not checked"
+    },
+    "explain": {
+      "official": "The Atlas confirms this is this world's official version.",
+      "candidate": "It is registered in the Atlas, but it is not the official one yet.",
+      "fork": "This client belongs to a fork: it is not the original world.",
+      "unofficial": "The Atlas does not recognize this client as a current version of this world.",
+      "development": "This is a development server: it does not come from a release.",
+      "unknown": "We couldn't reach the Atlas to check this version."
+    }
   }
 }
