@@ -2,7 +2,7 @@ import { isAlmaId } from "@aldea/shared/alma";
 import { Hono, type Context } from "hono";
 import { isAddress, type Address } from "viem";
 import { bearerToken, type AlmaAccess } from "../auth/accessToken";
-import { ensureCustody, ensureDevelopmentController, type SoulDeps } from "../auth/souls";
+import { ensureCustody, ensureDevelopmentController, ensureWalletController, isLoginWallet, type SoulDeps } from "../auth/souls";
 import { almaDocument, anchorMaterial, findSoul } from "../lib/almaDoc";
 import { ProblemError } from "../lib/problem";
 
@@ -59,6 +59,11 @@ export function createSoulRoutes(deps: SoulRoutesDeps) {
     if (soul.status !== "prepared") throw new ProblemError(409, "soul_already_anchored", "This soul is already anchored", soul.almaId);
 
     const { controller } = (await c.req.json().catch(() => ({}))) as { controller?: string };
+    // Naming the wallet the soul signs in with asks for that wallet to control it (no custody)
+    if (controller && isAddress(controller) && (await isLoginWallet(deps.soul, soul.almaId, controller))) {
+      await ensureWalletController(deps.soul, soul.almaId, controller);
+      return c.json(anchorMaterial((await findSoul(deps.soul.db, soul.almaId))!));
+    }
     const custody = await ensureCustody(deps.soul, soul.almaId);
     if (!custody) {
       if (!deps.allowDevelopmentController) throw new ProblemError(503, "custody_unavailable", "Your keys are not ready yet", "Try again in a moment.");
