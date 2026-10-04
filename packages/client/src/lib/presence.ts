@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { authConfig } from "../features/auth/config";
 import { isSignedIn } from "../features/auth/AlmaAuthProvider";
 import { useAlmaSession } from "../features/auth/useAlmaSession";
-import { aldeaWorldId } from "../mud/deployment";
 
 /**
  * Self-reported presence: while this tab is visible and signed in, it tells the Resolver every 30 s that someone is
@@ -41,8 +40,16 @@ export function usePresence() {
   useEffect(() => {
     if (!signedIn) return;
     const { apiUrl, chain } = authConfig();
-    const worldId = aldeaWorldId(chain.id);
-    if (!worldId) return;
-    return startPresence({ apiUrl, worldId, accessToken });
+    let stop: (() => void) | undefined;
+    let current = true;
+    // The deployment (and its schema) is not needed for the first screen
+    void import("../mud/deployment").then(({ aldeaWorldId }) => {
+      const worldId = aldeaWorldId(chain.id);
+      if (current && worldId) stop = startPresence({ apiUrl, worldId, accessToken });
+    });
+    return () => {
+      current = false;
+      stop?.();
+    };
   }, [signedIn, accessToken]);
 }

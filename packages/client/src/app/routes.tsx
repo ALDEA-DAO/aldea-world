@@ -6,7 +6,6 @@ import { BuildingPanel } from "../features/buildings/BuildingPanel";
 import { ListMode } from "../features/list-mode/ListMode";
 import { PortalPage } from "./routes/PortalPage";
 import { SoulPublic } from "./routes/SoulPublic";
-import { WorldDetail } from "../features/atlas/WorldDetail";
 import { NotFoundScreen, SimpleScreen } from "./screens/screens";
 import { WorldShell } from "./WorldShell";
 
@@ -29,7 +28,7 @@ export const router = createHashRouter([
       { path: "/lista", element: <ListMode /> },
       { path: "/lista/:buildingSlug", element: <ListMode /> },
       { path: "/portal", element: <PortalPage /> },
-      { path: "/portal/:worldId", element: <WorldDetail /> },
+      { path: "/portal/:worldId", lazy: () => import("../features/atlas/WorldDetail").then((m) => ({ Component: m.WorldDetail })) },
       { path: "/alma/:almaId", element: <SoulPublic /> },
       { path: "/ajustes", element: <SettingsScreen /> },
       { path: "/acerca", element: <SimpleScreen titleKey="screens.about" /> },
