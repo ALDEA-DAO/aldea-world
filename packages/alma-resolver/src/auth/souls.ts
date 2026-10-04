@@ -8,8 +8,14 @@ import type { AnyDb } from "./adapter";
 
 /**
  * The soul behind a login key. A key already linked with the `login` role signs in to its soul; an unknown key
- * creates a new soul (`prepared`), links the key with its proof and provisions the soul's custody: the Turnkey
- * sub-organization and the Coinbase Smart Wallet, linked as its `controller`. A key never moves between souls.
+ * creates a new soul (`prepared`) and links the key with its proof. A key never moves between souls.
+ *
+ * Who controls the soul on-chain depends on what the person arrived with:
+ * - without a key of their own (passkey, email code): the soul gets custody, a Turnkey sub-organization and a
+ *   Coinbase Smart Wallet linked as its `controller`;
+ * - with their own EVM wallet: nothing is provisioned at sign-in. That wallet becomes the controller if they ask for it
+ *   (`ensureWalletController`, what a command-line tool does), and custody is provisioned only if they play from the
+ *   browser first. A soul keeps the first controller it gets.
  */
 
 export interface LoginKey {
@@ -79,8 +85,9 @@ export async function loginWithKey(deps: SoulDeps, key: LoginKey): Promise<{ alm
   });
 
   // Custody is provisioned after the soul exists; if Turnkey is down, the soul is still usable and custody is retried
-  // when the player prepares their birth.
-  await ensureCustody(deps, almaId).catch((err: unknown) => logger.error({ err, almaId }, "custody provisioning failed"));
+  // when the player prepares their birth. Someone who brings their own wallet may want it to control the soul: no
+  // custody until they need it.
+  if (key.kind !== "evm") await ensureCustody(deps, almaId).catch((err: unknown) => logger.error({ err, almaId }, "custody provisioning failed"));
   return { almaId, created: true };
 }
 
@@ -95,7 +102,10 @@ export async function ensureCustody(deps: SoulDeps, almaId: string): Promise<Pro
       smartAccountAddress: getAddress(current.smartAccountAddress),
     };
   }
-  const provisioned = await deps.provisionCustody?.(almaId);
+  if (!deps.provisionCustody) return undefined;
+  // A soul controlled by its own wallet stays that way: custody would give it a second controller
+  if (await controllerOf(deps.db, almaId)) throw new ProblemError(409, "self_custody", "This soul is controlled by its own wallet", "Its keys are not held for it, so there is no session to open.");
+  const provisioned = await deps.provisionCustody(almaId);
   if (!provisioned) return undefined;
 
   await deps.db.transaction(async (tx) => {
@@ -108,19 +118,47 @@ export async function ensureCustody(deps: SoulDeps, almaId: string): Promise<Pro
   return provisioned;
 }
 
+/** The soul's controller link, if it has one (CAIP-10 value). */
+async function controllerOf(db: AnyDb, almaId: string): Promise<string | undefined> {
+  const [link] = await db
+    .select({ value: links.value })
+    .from(links)
+    .where(and(eq(links.almaId, almaId), eq(links.kind, "evm"), isNull(links.revokedAt), arrayContains(links.roles, ["controller"])))
+    .limit(1);
+  return link?.value;
+}
+
+/** Whether `address` is a wallet this soul signs in with (proved with a signature when it was linked). */
+export async function isLoginWallet(deps: SoulDeps, almaId: string, address: Address): Promise<boolean> {
+  const [link] = await deps.db
+    .select({ id: links.id })
+    .from(links)
+    .where(and(eq(links.almaId, almaId), eq(links.kind, "evm"), eq(links.value, `eip155:${deps.chainId}:${getAddress(address)}`), isNull(links.revokedAt), arrayContains(links.roles, ["login"])))
+    .limit(1);
+  return link !== undefined;
+}
+
+/**
+ * The person's own wallet becomes the soul's controller: they hold its key, so nothing is held for them. Only for a
+ * wallet the soul signs in with, and only while the soul has no controller yet (a soul keeps the first one it gets).
+ */
+export async function ensureWalletController(deps: SoulDeps, almaId: string, wallet: Address) {
+  const value = `eip155:${deps.chainId}:${getAddress(wallet)}`;
+  const current = await controllerOf(deps.db, almaId);
+  if (current === value) return;
+  if (current) throw new ProblemError(409, "controller_mismatch", "This soul already has another controller");
+  await deps.db.transaction((tx) => setController(tx, deps.chainId, almaId, getAddress(wallet), { label: "Wallet", proof: { type: "self-custody", verifiedAt: new Date().toISOString() } }));
+}
+
 /**
  * Local development only (no custody provider): the browser's development key becomes the soul's controller. A soul
  * keeps the first controller it gets.
  */
 export async function ensureDevelopmentController(deps: SoulDeps, almaId: string, controller: Address) {
-  const [existing] = await deps.db
-    .select({ value: links.value })
-    .from(links)
-    .where(and(eq(links.almaId, almaId), eq(links.kind, "evm"), isNull(links.revokedAt), arrayContains(links.roles, ["controller"])))
-    .limit(1);
+  const existing = await controllerOf(deps.db, almaId);
   const value = `eip155:${deps.chainId}:${getAddress(controller)}`;
   if (existing) {
-    if (existing.value !== value) throw new ProblemError(409, "controller_mismatch", "This soul already has another controller");
+    if (existing !== value) throw new ProblemError(409, "controller_mismatch", "This soul already has another controller");
     return;
   }
   await deps.db.transaction((tx) => setController(tx, deps.chainId, almaId, getAddress(controller), { label: "Development key", proof: { type: "development", verifiedAt: new Date().toISOString() } }));

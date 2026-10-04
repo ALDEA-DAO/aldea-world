@@ -10,9 +10,10 @@ import { VirtualAuthenticator } from "./helpers/virtualAuthenticator";
 
 let stack: Stack;
 let local: Stack;
+// Two stacks: more than the default 10 s when every test file starts at once
 beforeAll(async () => {
   [stack, local] = await Promise.all([startStack(), startStack({ custody: false })]);
-});
+}, 30_000);
 afterAll(() => Promise.all([stack.close(), local.close()]));
 
 const newEmail = () => `soul-${randomBytes(4).toString("hex")}@example.com`;
@@ -61,6 +62,59 @@ describe("POST /v1/souls/prepare", () => {
     expect((await me.post("/v1/souls/prepare", { controller: key.address })).status).toBe(200);
     const other = privateKeyToAccount(`0x${randomBytes(32).toString("hex")}` as Hex);
     expect(await (await me.post("/v1/souls/prepare", { controller: other.address })).json()).toMatchObject({ code: "controller_mismatch" });
+  });
+
+  it("lets a wallet that signs in control its own soul: no custody, and it stays so", async () => {
+    const wallet = privateKeyToAccount(`0x${randomBytes(32).toString("hex")}` as Hex);
+    const tokens = await signInWithWallet(stack, wallet);
+    // Signing in with a wallet holds nothing for the person yet
+    expect(await stack.db.select().from(schema.custody).where(eq(schema.custody.almaId, tokens.almaId))).toEqual([]);
+
+    const me = api(stack, tokens.accessToken);
+    const res = await me.post("/v1/souls/prepare", { controller: wallet.address });
+    expect(res.status).toBe(200);
+    const prepared = (await res.json()) as Prepared;
+    expect(prepared.doc.controllers).toEqual([{ id: `did:pkh:eip155:${CHAIN_ID}:${wallet.address}`, kind: "evm", primary: true }]);
+    expect(prepared.docHash).toBe(docHash(prepared.doc));
+    expect(await (await me.post("/v1/souls/prepare", { controller: wallet.address })).json()).toEqual(prepared);
+    const links = await stack.db.select().from(schema.links).where(eq(schema.links.almaId, tokens.almaId));
+    expect(links.map((l) => l.roles)).toEqual([["login", "controller"]]);
+
+    // Playing from the browser later does not hand the soul to custody
+    const fromBrowser = await me.post("/v1/souls/prepare");
+    expect(fromBrowser.status).toBe(409);
+    expect(await fromBrowser.json()).toMatchObject({ code: "self_custody" });
+    expect(await stack.db.select().from(schema.custody).where(eq(schema.custody.almaId, tokens.almaId))).toEqual([]);
+    expect(((await (await me.get("/v1/souls/me")).json()) as Prepared["doc"]).controllers[0]?.id).toBe(`did:pkh:eip155:${CHAIN_ID}:${wallet.address}`);
+  });
+
+  it("gives a wallet soul custody if it plays from the browser first, and then keeps that controller", async () => {
+    const wallet = privateKeyToAccount(`0x${randomBytes(32).toString("hex")}` as Hex);
+    const tokens = await signInWithWallet(stack, wallet);
+    const me = api(stack, tokens.accessToken);
+    const prepared = (await (await me.post("/v1/souls/prepare")).json()) as Prepared;
+    const [custody] = await stack.db.select().from(schema.custody).where(eq(schema.custody.almaId, tokens.almaId));
+    expect(prepared.doc.controllers[0]?.id).toBe(`did:pkh:eip155:${CHAIN_ID}:${custody!.smartAccountAddress}`);
+
+    const late = await me.post("/v1/souls/prepare", { controller: wallet.address });
+    expect(late.status).toBe(409);
+    expect(await late.json()).toMatchObject({ code: "controller_mismatch" });
+  });
+
+  it("only takes as controller a wallet the soul signs in with", async () => {
+    // A passkey or email soul naming any address still gets custody: the address is ignored
+    const tokens = await signInWithEmail(stack, newEmail());
+    const stranger = privateKeyToAccount(`0x${randomBytes(32).toString("hex")}` as Hex);
+    const prepared = (await (await api(stack, tokens.accessToken).post("/v1/souls/prepare", { controller: stranger.address })).json()) as Prepared;
+    const [custody] = await stack.db.select().from(schema.custody).where(eq(schema.custody.almaId, tokens.almaId));
+    expect(prepared.doc.controllers[0]?.id).toBe(`did:pkh:eip155:${CHAIN_ID}:${custody!.smartAccountAddress}`);
+
+    // Nor another soul's sign-in wallet
+    const owner = privateKeyToAccount(`0x${randomBytes(32).toString("hex")}` as Hex);
+    await signInWithWallet(stack, owner);
+    const other = await signInWithWallet(stack, privateKeyToAccount(`0x${randomBytes(32).toString("hex")}` as Hex));
+    const taken = (await (await api(stack, other.accessToken).post("/v1/souls/prepare", { controller: owner.address })).json()) as Prepared;
+    expect(taken.doc.controllers[0]?.id).not.toBe(`did:pkh:eip155:${CHAIN_ID}:${owner.address}`);
   });
 
   it("locally, lets the wallet that signed in control its own soul, and no other soul take it", async () => {
