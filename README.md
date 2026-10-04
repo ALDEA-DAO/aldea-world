@@ -104,8 +104,9 @@ CI runs the same checks plus Slither and gitleaks on every pull request.
 ## Forking ALDEA World
 
 ALDEA World is designed to be forked: register your organization and world in the Atlas, deploy your own World and
-publish your client, with the [fork kit CLI](https://github.com/AdaSouls/fork-kit) (its README walks through the steps). Code is MIT; the ALDEA name, lore
-and art are not part of the code license — **you fork the world, not the brand** (see [Licensing](#licensing)).
+publish your client, with the [fork kit CLI](https://github.com/AdaSouls/fork-kit). [FORKING.md](FORKING.md) walks
+through it. Code is MIT; the ALDEA name, lore and art are not part of the code license — **you fork the world, not
+the brand** (see [Licensing](#licensing)).
 
 ## Governance and trust
 

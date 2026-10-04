@@ -147,7 +147,7 @@ export const buildings: readonly BuildingInfo[] = [
 ];
 
 /** Where a would-be founder of the second world starts. */
-export const FORK_GUIDE_URL = "https://github.com/ALDEA-DAO/aldea-world#forking-aldea-world";
+export const FORK_GUIDE_URL = "https://github.com/ALDEA-DAO/aldea-world/blob/develop/FORKING.md";
 
 // TODO(founder): set the Genesis Charter opening date ; the Council panel reads it.
 export const COUNCIL_OPENS_AT: string | null = null;

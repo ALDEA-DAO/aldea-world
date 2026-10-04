@@ -8,6 +8,7 @@ import "@fontsource/alegreya-sans/700.css";
 import "@fontsource/jetbrains-mono/400.css";
 import "@fontsource/jetbrains-mono/600.css";
 import "./styles/globals.css";
+import "./styles/themes/nocturna.css";
 import "./lib/i18n";
 
 import { StrictMode } from "react";
@@ -18,8 +19,10 @@ import { ToastProvider } from "./components/ui/Toast";
 import { AlmaAuthProvider } from "./features/auth/AlmaAuthProvider";
 import { MudProvider } from "./mud/store";
 import { applyTheme, getThemePreference } from "./lib/theme";
+import { applyWorld } from "./theme/worldConfig";
 
 applyTheme(getThemePreference());
+applyWorld();
 
 const root = document.getElementById("root");
 if (!root) throw new Error("Missing #root element");

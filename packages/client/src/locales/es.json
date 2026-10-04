@@ -228,7 +228,7 @@
     "menu": "Menú",
     "closeMenu": "Cerrar menú",
     "bottomBar": "Acciones de la aldea",
-    "home": "ALDEA World: volver a la aldea"
+    "home": "{{world}}: volver a la aldea"
   },
   "building": {
     "notFound": "Ese edificio no existe",

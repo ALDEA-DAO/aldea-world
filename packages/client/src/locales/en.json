@@ -228,7 +228,7 @@
     "menu": "Menu",
     "closeMenu": "Close menu",
     "bottomBar": "Village actions",
-    "home": "ALDEA World: back to the village"
+    "home": "{{world}}: back to the village"
   },
   "building": {
     "notFound": "That building does not exist",

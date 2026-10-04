@@ -1,0 +1,38 @@
+/*
+ * "ALDEA Nocturna", the demo fork: the village at night. A world's palette (VITE_WORLD_THEME) replaces the tokens for
+ * both light and dark, since night has no daytime variant. Contrast pairs follow the dark theme's (WCAG AA).
+ */
+:root[data-world="nocturna"],
+:root[data-world="nocturna"][data-theme="light"],
+:root[data-world="nocturna"][data-theme="dark"] {
+  color-scheme: dark;
+  --color-background: #0E1424;
+  --color-surface: #151D33;
+  --color-surface-raised: #1E2946;
+  --color-text: #E6ECFA;
+  --color-text-muted: #A9B4D0;
+  --color-border: #33426A;
+  --color-border-strong: #7384B5;
+  --color-primary: #8FA8FF;
+  --color-primary-hover: #A9BCFF;
+  --color-on-primary: #0E1424;
+  --color-secondary: #7FD1C4;
+  --color-on-secondary: #0E1424;
+  --color-accent: #E5C76B;
+  --color-on-accent: #0E1424;
+  --color-wood: #26335A;
+  --color-on-wood: #E6ECFA;
+  --color-success: #7CC47A;
+  --color-warning: #E3A64A;
+  --color-error: #EE7B6A;
+  --color-info: #7DB3DE;
+  --color-focus: #B7CBFF;
+  --color-backdrop: rgb(0 0 0 / 0.7);
+
+  --tribe-amazonians: #6CC08A;
+  --tribe-himalayans: #A3B0E0;
+  --tribe-poseidons: #6FC0DB;
+  --tribe-raes: #F0B65A;
+  --tribe-tropicals: #F08A9C;
+  --on-tribe: #0E1424;
+}
