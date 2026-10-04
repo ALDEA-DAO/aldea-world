@@ -8,26 +8,26 @@
  *   pnpm cardano:wallets     once, then fund the minter from the faucet
  *   pnpm cardano:mint        mints and distributes; prints the policy id to put in packages/shared/src/constants.ts
  *   pnpm cardano:mint --dry  only shows what it would do
+ *   pnpm cardano:balances    compares each wallet's on-chain balance with what it should hold
  */
-import { writeFileSync } from "node:fs";
+import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { deserializeAddress, ForgeScript, MeshTxBuilder, resolveScriptHash, resolveSlotNo, type Asset, type NativeScript } from "@meshsdk/core";
+import { ALDEA_ASSET_NAME_HEX as ASSET_NAME_HEX, ALDEA_DECIMALS as DECIMALS } from "../../packages/shared/src/constants.ts";
+import { toBaseUnits } from "./amounts.ts";
 import { openWallet, provider, readWallets, WALLETS_FILE, type TestWallet } from "./wallets.ts";
 
-const ASSET_NAME_HEX = "414c444541"; // "ALDEA"
-const DECIMALS = 6;
 /** ADA sent with each wallet's tALDEA: above the minimum a token output needs, and enough to pay a few fees. */
 const ADA_PER_WALLET = 5_000_000n;
 const POLICY_OPEN_HOURS = 6;
 
-/** "1000.000001" → 1000000001n base units. */
-export function toBaseUnits(amount: string): bigint {
-  const [whole = "0", fraction = ""] = amount.split(".");
-  if (!/^\d+$/.test(whole) || !/^\d*$/.test(fraction) || fraction.length > DECIMALS) throw new Error(`Not a tALDEA amount: ${amount}`);
-  return BigInt(whole) * 10n ** BigInt(DECIMALS) + BigInt(fraction.padEnd(DECIMALS, "0"));
-}
-
 const dry = process.argv.includes("--dry");
+const record = join(WALLETS_FILE, "../taldea.json");
+// Each run makes a different token (the policy's expiry is part of its id): one is enough
+if (existsSync(record) && !dry && !process.argv.includes("--again")) {
+  console.error(`tALDEA was already minted (${record}). Pass --again to mint another token under a new policy.`);
+  process.exit(1);
+}
 const wallets = readWallets();
 const recipients: TestWallet[] = [wallets.treasury, ...wallets.holders];
 const supply = recipients.reduce((sum, wallet) => sum + toBaseUnits(wallet.taldea), 0n);
@@ -73,7 +73,6 @@ for (const wallet of recipients) {
 const unsigned = await tx.requiredSignerHash(pubKeyHash).invalidHereafter(expiry).changeAddress(minterAddress).selectUtxosFrom(utxos).complete();
 const txHash = await minter.submitTx(await minter.signTx(unsigned));
 
-const record = join(WALLETS_FILE, "../taldea.json");
 writeFileSync(record, `${JSON.stringify({ network: "preprod", policyId, assetNameHex: ASSET_NAME_HEX, decimals: DECIMALS, policy, supply: supply.toString(), txHash }, null, 2)}\n`);
 console.log(`\nminted     https://preprod.cardanoscan.io/transaction/${txHash}`);
 console.log(`token      https://preprod.cardanoscan.io/token/${unit}`);

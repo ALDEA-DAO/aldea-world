@@ -19,7 +19,8 @@
     "dev:health": "scripts/dev-health.sh",
     "check:bundle": "node --experimental-strip-types scripts/check-bundle.ts",
     "cardano:wallets": "tsx scripts/cardano/wallets.ts",
-    "cardano:mint": "tsx scripts/cardano/mint-taldea.ts"
+    "cardano:mint": "tsx scripts/cardano/mint-taldea.ts",
+    "cardano:balances": "tsx scripts/cardano/balances.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

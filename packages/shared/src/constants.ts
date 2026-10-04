@@ -24,8 +24,9 @@ export const ALDEA_ASSETS: Record<CardanoNetwork, AldeaAsset> = {
     decimals: ALDEA_DECIMALS,
   },
   preprod: {
-    // TODO: $ALDEA does not exist on preprod; fill in the tALDEA test policy once it is minted.
-    policyId: "",
+    // tALDEA: $ALDEA does not exist on preprod, so this is a test token minted for it (scripts/cardano/mint-taldea.ts),
+    // under a native-script policy that closed after its single mint of 11,133,510 tALDEA.
+    policyId: "e40d3a848fd97bb489c5c9faea52c0609a9e3dab67f735fcc977dac1",
     assetNameHex: ALDEA_ASSET_NAME_HEX,
     decimals: ALDEA_DECIMALS,
   },

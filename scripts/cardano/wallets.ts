@@ -11,7 +11,6 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { KoiosProvider, MeshWallet } from "@meshsdk/core";
 
-export const PREPROD_KOIOS = "https://preprod.koios.rest/api/v1";
 export const WALLETS_FILE = join(import.meta.dirname, "../../.cardano-preprod/wallets.json");
 const TESTNET = 0;
 
@@ -36,7 +35,12 @@ export interface WalletsFile {
   holders: TestWallet[];
 }
 
-export const provider = () => new KoiosProvider(PREPROD_KOIOS);
+/**
+ * Koios' public preprod API, which needs no key. No token is passed on purpose: given one (even an empty one), or a
+ * base URL, MeshJS sends an `Authorization: Bearer …` header that Koios rejects, and the provider then answers with
+ * empty results instead of the error.
+ */
+export const provider = () => new KoiosProvider("preprod", undefined as unknown as string);
 
 export async function openWallet(mnemonic: string[]): Promise<MeshWallet> {
   const koios = provider();
