@@ -90,6 +90,22 @@ deploys again and empties the read models (Effectstream and the MUD indexer).
 | Relay worker | 8788 |
 | Effectstream API / MQTT (TCP, WS) | 9999 / 8883, 9883 |
 
+### $ALDEA on Cardano (optional)
+
+The stack runs without Cardano. To read $ALDEA holdings locally (tALDEA, its stand-in on preprod), run a light Cardano
+node next to it and point Effectstream at it:
+
+```bash
+scripts/cardano/dolos.sh mithril      # once: about 18 GB and a long import; or `download` + `import` (3 GB, months behind)
+scripts/cardano/dolos.sh up           # serves UTxO RPC on localhost:50051; `status`, `logs`, `down`
+CARDANO_UTXORPC_URL=http://localhost:50051 pnpm dev
+```
+
+Nothing is downloaded twice: downloads resume, their files are kept, and the node's data stays in `.cardano-preprod/`
+when it stops. Turning Cardano on needs a fresh read model (`REDEPLOY=1 pnpm dev:deploy`), since Effectstream's set of
+chains is fixed when its database is created. `pnpm cardano:balances` and `pnpm cardano:transfer` work with the test
+wallets created by `pnpm cardano:wallets`.
+
 ### Tests
 
 ```bash

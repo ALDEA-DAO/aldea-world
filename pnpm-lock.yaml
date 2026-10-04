@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@effectstream/sync@0.200.6':
+    hash: 6i6ooephlel62lt6pk2ys7abum
+    path: patches/@effectstream__sync@0.200.6.patch
+
 importers:
 
   .:
@@ -8460,7 +8465,7 @@ snapshots:
       '@effectstream/coroutine': 0.200.6(typescript@5.9.3)
       '@effectstream/log': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@effectstream/runtime': 0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
-      '@effectstream/sync': 0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
+      '@effectstream/sync': 0.200.6(patch_hash=6i6ooephlel62lt6pk2ys7abum)(@bufbuild/protobuf@1.10.1)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
       '@effectstream/utils': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@electric-sql/pglite': 0.3.16
       '@pgtyped/parser': 2.4.2
@@ -8558,8 +8563,8 @@ snapshots:
       '@effectstream/event-server': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@effectstream/precompile': 0.200.6
       '@effectstream/runtime': 0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
-      '@effectstream/sm': 0.200.6(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
-      '@effectstream/sync': 0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
+      '@effectstream/sm': 0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
+      '@effectstream/sync': 0.200.6(patch_hash=6i6ooephlel62lt6pk2ys7abum)(@bufbuild/protobuf@1.10.1)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
       '@effectstream/utils': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       effection: 3.6.1
     transitivePeerDependencies:
@@ -8600,8 +8605,8 @@ snapshots:
       '@effectstream/event-client': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@effectstream/event-server': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@effectstream/log': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
-      '@effectstream/sm': 0.200.6(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
-      '@effectstream/sync': 0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
+      '@effectstream/sm': 0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
+      '@effectstream/sync': 0.200.6(patch_hash=6i6ooephlel62lt6pk2ys7abum)(@bufbuild/protobuf@1.10.1)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)
       '@effectstream/utils': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@fastify/cors': 11.3.0
       '@fastify/swagger': 9.9.0
@@ -8642,7 +8647,7 @@ snapshots:
       - ws
       - zod
 
-  '@effectstream/sm@0.200.6(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)':
+  '@effectstream/sm@0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)':
     dependencies:
       '@effectstream/concise': 0.200.6(@midnightntwrk/ledger-v9@1.0.0-rc.3)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
       '@effectstream/config': 0.200.6(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
@@ -8661,19 +8666,30 @@ snapshots:
       pg-tx: 1.0.1
       viem: 2.37.3(bufferutil@4.0.8)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.6.5)
     transitivePeerDependencies:
+      - '@bufbuild/protobuf'
+      - '@dcspark/cardano-multiplatform-lib-asmjs'
+      - '@dcspark/cardano-multiplatform-lib-browser'
+      - '@dcspark/cardano-multiplatform-lib-nodejs'
+      - '@fastify/websocket'
       - '@midnightntwrk/ledger-v9'
       - '@midnightntwrk/wallet-sdk-address-format'
       - bufferutil
+      - crossws
       - debug
       - encoding
+      - graphql
       - pg-native
+      - react
+      - react-dom
       - react-native-b4a
+      - subscriptions-transport-ws
       - supports-color
       - typescript
       - utf-8-validate
+      - ws
       - zod
 
-  '@effectstream/sync@0.200.6(@bufbuild/protobuf@1.10.1)(@midnightntwrk/wallet-sdk-address-format@4.0.0-beta.2)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)':
+  '@effectstream/sync@0.200.6(patch_hash=6i6ooephlel62lt6pk2ys7abum)(@bufbuild/protobuf@1.10.1)(bufferutil@4.0.8)(crossws@0.3.5)(graphql@17.0.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.21.0(bufferutil@4.0.8)(utf-8-validate@6.0.6))(zod@4.6.5)':
     dependencies:
       '@cardano-sdk/core': 0.46.15
       '@cardano-sdk/util': 0.17.2
@@ -8702,7 +8718,6 @@ snapshots:
       - '@dcspark/cardano-multiplatform-lib-browser'
       - '@dcspark/cardano-multiplatform-lib-nodejs'
       - '@fastify/websocket'
-      - '@midnightntwrk/wallet-sdk-address-format'
       - bufferutil
       - crossws
       - debug

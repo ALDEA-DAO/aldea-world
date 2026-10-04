@@ -20,7 +20,8 @@
     "check:bundle": "node --experimental-strip-types scripts/check-bundle.ts",
     "cardano:wallets": "tsx scripts/cardano/wallets.ts",
     "cardano:mint": "tsx scripts/cardano/mint-taldea.ts",
-    "cardano:balances": "tsx scripts/cardano/balances.ts"
+    "cardano:balances": "tsx scripts/cardano/balances.ts",
+    "cardano:transfer": "tsx scripts/cardano/transfer.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -44,7 +45,10 @@
   "pnpm": {
     "neverBuiltDependencies": [
       "better-sqlite3"
-    ]
+    ],
+    "patchedDependencies": {
+      "@effectstream/sync@0.200.6": "patches/@effectstream__sync@0.200.6.patch"
+    }
   },
   "repository": {
     "type": "git",

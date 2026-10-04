@@ -266,9 +266,24 @@ export function atlasFilter(query: AtlasQuery): AtlasFilter | undefined {
   return { visibility: visibility === "any" ? undefined : VISIBILITY.indexOf(visibility as never), verifiedOnly: verified === "true", parentWorldId, cursor, limit };
 }
 
-/** The last Cardano slot the node has folded in, or null before the first one. */
-async function cardanoTipSlot(db: Db): Promise<number | null> {
-  return null;
+/**
+ * How far the node has read Cardano. A main-clock block is only applied once Cardano has been read up to that block's
+ * time, so holdings are complete as of `asOfMs`. `cardanoTipSlot` is the slot of the latest Cardano block in which the
+ * asset moved (the sync only records blocks that carry one of its transactions), null before the first.
+ */
+async function cardanoReadState(db: Db): Promise<{ cardanoTipSlot: number | null; asOfMs: number | null }> {
+  const { rows } = await db.query(
+    `SELECT
+       (SELECT (page->'own'->>'slot')::bigint FROM effectstream.sync_protocol_pagination WHERE protocol_name = 'cardanoUtxoRpc') AS slot,
+       (SELECT max(block_height) FROM effectstream.effectstream_blocks) AS height,
+       (SELECT (immutable_config->>'startTime')::bigint FROM effectstream.sync_protocol_config_snapshot WHERE protocol_name = 'mainNtp') AS start_time`,
+  );
+  const { slot, height, start_time: startTime } = rows[0] ?? {};
+  return {
+    cardanoTipSlot: slot === null || slot === undefined ? null : Number(slot),
+    // The main clock ticks every second from its start time
+    asOfMs: height === null || height === undefined || startTime === null || startTime === undefined ? null : Number(startTime) + Number(height) * 1000,
+  };
 }
 
 /** What a credential holds of $ALDEA, in base units: "0" for a credential the asset never reached. */
@@ -328,7 +343,7 @@ export const apiRouter: StartConfigApiRouter = async (server, dbConn) => {
     const credential = parseCredential(request.params.credential);
     if (!credential) return reply.code(400).send({ error: "invalid_credential", hint: "stake:<56 hex> or pay:<56 hex>" });
     if (!env.cardano) return reply.code(503).send({ error: "cardano_not_configured" });
-    return { ...(await aldeaHolding(dbConn, credential)), cardanoTipSlot: await cardanoTipSlot(dbConn) };
+    return { ...(await aldeaHolding(dbConn, credential)), ...(await cardanoReadState(dbConn)) };
   });
 
   /** The Atlas: worlds by registration order (public ones unless asked otherwise), `parent` narrows to a world's forks. */

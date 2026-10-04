@@ -56,7 +56,9 @@ function atlasRegistryAddress(): Address {
  * The sync starts at a block just before the asset's first UTxO. On preprod that is the block before the tALDEA mint;
  * on mainnet it has to be given (CARDANO_START_SLOT and CARDANO_START_HASH).
  */
-const PREPROD_START = { slot: 135417364, hash: "25f5f3fc114a6d03d6ed856926a9fa538a126260d71fbc7f602017b25464f8c9" };
+// Keys in alphabetical order (hash, slot): Effectstream stores the start point as immutable config and compares it as
+// serialized JSON on the next start, after Postgres has sorted the keys; any other order hangs every restart silently.
+const PREPROD_START = { hash: "25f5f3fc114a6d03d6ed856926a9fa538a126260d71fbc7f602017b25464f8c9", slot: 135417364 };
 
 function cardanoConfig() {
   const rpcUrl = process.env.CARDANO_UTXORPC_URL;
@@ -64,7 +66,7 @@ function cardanoConfig() {
   const network = (process.env.CARDANO_NETWORK ?? "preprod") as CardanoNetwork;
   const asset = ALDEA_ASSETS[network];
   if (!asset) throw new Error(`CARDANO_NETWORK must be one of ${Object.keys(ALDEA_ASSETS).join(", ")}`);
-  const start = process.env.CARDANO_START_SLOT && process.env.CARDANO_START_HASH ? { slot: Number(process.env.CARDANO_START_SLOT), hash: process.env.CARDANO_START_HASH } : network === "preprod" ? PREPROD_START : undefined;
+  const start = process.env.CARDANO_START_SLOT && process.env.CARDANO_START_HASH ? { hash: process.env.CARDANO_START_HASH, slot: Number(process.env.CARDANO_START_SLOT) } : network === "preprod" ? PREPROD_START : undefined;
   if (!start) throw new Error("Set CARDANO_START_SLOT and CARDANO_START_HASH: a block just before the asset's first UTxO");
   const apiKey = process.env.CARDANO_UTXORPC_API_KEY;
   return {

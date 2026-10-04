@@ -1,0 +1,53 @@
+diff --git a/src/sync-protocols/utxorpc/WatchMultiplexer.ts b/src/sync-protocols/utxorpc/WatchMultiplexer.ts
+index 117a84aee63af51eb602970bcc892e08bc817fcf..82027ac1d4efbb53403b6b8c7a2c892ba78ecc60 100644
+--- a/src/sync-protocols/utxorpc/WatchMultiplexer.ts
++++ b/src/sync-protocols/utxorpc/WatchMultiplexer.ts
+@@ -24,6 +24,9 @@ type WatcherState = {
+   highestSeenHeight: number;
+ };
+ 
++/** Dolos 1.x reports block timestamps in milliseconds, earlier ones in seconds: the slot arithmetic is in seconds. */
++const timestampSeconds = (timestamp: bigint): bigint => (timestamp > 100_000_000_000n ? timestamp / 1000n : timestamp);
++
+ export class WatchMultiplexer {
+   private readonly watchers: Map<string, WatcherState> = new Map();
+   private readonly completedBuffer: Deque<OutputAndCleanup<CompletedBlock>> = new Deque();
+@@ -91,11 +94,13 @@ export class WatchMultiplexer {
+ 
+     if (this.slotOriginTimestamp === undefined) {
+       try {
+-        const blocks = await this.syncClient.fetchHistory(undefined, 1);
++        // From the start point, not from the chain's first block: Byron-era slots were 20 s long, so an origin taken
++        // there puts every later block weeks in the past (19 days on preprod).
++        const blocks = await this.syncClient.fetchHistory(point ? { slot: point.slot, hash: point.hash } : undefined, 1);
+         if (blocks.length > 0) {
+           const blk = blocks[0].parsedBlock;
+           if (blk.timestamp && blk.header?.slot != null) {
+-            this.slotOriginTimestamp = blk.timestamp - blk.header.slot;
++            this.slotOriginTimestamp = timestampSeconds(blk.timestamp) - blk.header.slot;
+           }
+         }
+       } catch {
+@@ -179,7 +184,7 @@ export class WatchMultiplexer {
+       pending.idle = false;
+       if (this.slotOriginTimestamp === undefined) {
+         const blk = event.Block;
+-        this.slotOriginTimestamp = blk.timestamp - blk.header!.slot;
++        this.slotOriginTimestamp = timestampSeconds(blk.timestamp) - blk.header!.slot;
+       }
+       if (height > watcher.highestSeenHeight) {
+         watcher.highestSeenHeight = height;
+diff --git a/src/sync-protocols/utxorpc/state.ts b/src/sync-protocols/utxorpc/state.ts
+index 46b61c62ed9c6e827486f6b495bb065d30a555d0..ed2994a58414876621594996782974468b73664e 100644
+--- a/src/sync-protocols/utxorpc/state.ts
++++ b/src/sync-protocols/utxorpc/state.ts
+@@ -68,7 +68,8 @@ export class UtxoRpcSyncState extends SyncState<
+   @bound
+   override toRootPage(data: Output): RootPage {
+     return applyDelay(
+-      Number(data.raw.timestamp * 1000n),
++      // Dolos 1.x reports block timestamps in milliseconds, earlier ones in seconds
++      Number(data.raw.timestamp > 100_000_000_000n ? data.raw.timestamp : data.raw.timestamp * 1000n),
+       this.config.syncProtocol.delayMs,
+     );
+   }
