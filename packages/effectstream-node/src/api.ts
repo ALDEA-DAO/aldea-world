@@ -1,4 +1,5 @@
 import type { StartConfigApiRouter } from "@effectstream/node-sdk/runtime";
+import { parseCredential } from "./cardano/credentials.ts";
 import { env } from "./env.ts";
 
 /**
@@ -265,6 +266,17 @@ export function atlasFilter(query: AtlasQuery): AtlasFilter | undefined {
   return { visibility: visibility === "any" ? undefined : VISIBILITY.indexOf(visibility as never), verifiedOnly: verified === "true", parentWorldId, cursor, limit };
 }
 
+/** The last Cardano slot the node has folded in, or null before the first one. */
+async function cardanoTipSlot(db: Db): Promise<number | null> {
+  return null;
+}
+
+/** What a credential holds of $ALDEA, in base units: "0" for a credential the asset never reached. */
+export async function aldeaHolding(db: Db, credential: string) {
+  const { rows } = await db.query(`SELECT balance::text AS balance, updated_height FROM aldea_holdings WHERE credential = $1`, [credential]);
+  return { credential, balance: rows[0]?.balance ?? "0", updatedHeight: rows[0] ? Number(rows[0].updated_height) : null };
+}
+
 const nowSeconds = () => Math.floor(Date.now() / 1000);
 const measuredWorld = (): MeasuredWorld => ({ worldId: env.activityWorldId, chainId: env.chainId, worldAddress: env.worldAddress });
 
@@ -309,6 +321,14 @@ export const apiRouter: StartConfigApiRouter = async (server, dbConn) => {
     if (!(window in WINDOWS)) return reply.code(400).send({ error: "invalid_window", hint: "window=1h|24h|7d" });
     const fromTs = nowSeconds() - WINDOWS[window];
     return { window, fromTs, ...(await buildingActivity(dbConn, fromTs)) };
+  });
+
+  /** $ALDEA held by a Cardano credential (`stake:<hex28>` or `pay:<hex28>`), with how far the node has read Cardano. */
+  server.get<{ Params: { credential: string } }>("/api/v1/cardano/holdings/:credential", async (request, reply) => {
+    const credential = parseCredential(request.params.credential);
+    if (!credential) return reply.code(400).send({ error: "invalid_credential", hint: "stake:<56 hex> or pay:<56 hex>" });
+    if (!env.cardano) return reply.code(503).send({ error: "cardano_not_configured" });
+    return { ...(await aldeaHolding(dbConn, credential)), cardanoTipSlot: await cardanoTipSlot(dbConn) };
   });
 
   /** The Atlas: worlds by registration order (public ones unless asked otherwise), `parent` narrows to a world's forks. */

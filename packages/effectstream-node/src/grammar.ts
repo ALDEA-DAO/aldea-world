@@ -119,6 +119,20 @@ export const atlasMetadataChangedGrammar = [["worldId", Type.String()], ["metada
 /** VerifiedChanged(bytes32 indexed worldId, bool verified) */
 export const atlasVerifiedChangedGrammar = [["worldId", Type.String()], ["verified", Type.Boolean()], ...logCoordinates] as const;
 
+/**
+ * A UTxO of the $ALDEA asset created or spent on Cardano, as Effectstream's delayed-asset primitive reports it:
+ * `amount` is the quantity for a new output and "" for a spent one (`txId`/`outputIndex` then name the spent output).
+ */
+export const aldeaUtxoGrammar = [
+  ["address", Type.String()],
+  ["txId", Type.String()],
+  ["outputIndex", Type.String()],
+  ["cip14Fingerprint", Type.String()],
+  ["amount", Type.String()],
+  ["policyId", Type.String()],
+  ["assetName", Type.String()],
+] as const;
+
 export const grammar = {
   birthRequested: birthRequestedGrammar,
   birthRescheduled: birthRescheduledGrammar,
@@ -136,4 +150,5 @@ export const grammar = {
   atlasVisibilityChanged: atlasVisibilityChangedGrammar,
   atlasMetadataChanged: atlasMetadataChangedGrammar,
   atlasVerifiedChanged: atlasVerifiedChangedGrammar,
+  aldeaUtxo: aldeaUtxoGrammar,
 } as const satisfies GrammarDefinition;

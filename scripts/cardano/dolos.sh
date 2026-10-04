@@ -3,7 +3,8 @@
 #
 #   scripts/cardano/dolos.sh download   downloads the snapshot to start from (about 3 GB); run it again to resume
 #   scripts/cardano/dolos.sh import     unpacks the downloaded snapshot into the node's data (replaces it)
-#   scripts/cardano/dolos.sh mithril    instead of download + import: starts next to the chain's tip (about 20 GB)
+#   scripts/cardano/dolos.sh mithril    instead of download + import: starts next to the chain's tip (about 18 GB)
+#   scripts/cardano/dolos.sh mithril-import   rebuilds the data from the Mithril files already downloaded
 #   scripts/cardano/dolos.sh up         starts the node in the background; it catches up with the chain from its data
 #   scripts/cardano/dolos.sh status     whether it runs, its last log lines and the space it uses
 #   scripts/cardano/dolos.sh logs       follows its log
@@ -23,6 +24,7 @@ NAME="aldea-dolos-preprod"
 # just enough history to keep syncing: the node fetches every later block itself.
 SNAPSHOT_URL="https://dolos-snapshots.txpipe.cloud/v3/1/ledger/latest.tar.gz"
 SNAPSHOT="$HOME_DIR/snapshots/preprod-ledger.tar.gz"
+MITHRIL_REDO=32
 
 if command -v podman >/dev/null 2>&1; then engine=podman; else engine=docker; fi
 
@@ -57,12 +59,28 @@ case "${1:-}" in
     ;;
   mithril)
     # The other way to start: every block up to a few hours ago, from Mithril's certified copy of the chain. A much
-    # bigger download (about 20 GB on disk, kept in snapshots/mithril) but the node then starts next to the tip
-    # instead of months behind. Interrupted, it continues from the files already there when run again.
+    # bigger download (about 18 GB, kept in snapshots/mithril) and a long import, but the node then starts next to
+    # the tip instead of months behind. Interrupted, it continues from the files already there when run again, and
+    # Mithril verifies every file before anything is imported.
     prepare
-    "$engine" rm -f "$NAME" >/dev/null 2>&1 || true
+    "$engine" rm -f "$NAME" "$NAME-bootstrap" >/dev/null 2>&1 || true
+    # Files are downloaded several at a time, so an interrupted run leaves the newest ones cut short, and Dolos
+    # resumes after the highest one it finds. Dropping the newest $MITHRIL_REDO makes it fetch those again.
+    if [ -d "$HOME_DIR/snapshots/mithril/immutable" ]; then
+      "$engine" run --rm -v "$HOME_DIR":/data:Z --entrypoint "" "$IMAGE" sh -c \
+        "cd /data/snapshots/mithril/immutable && ls | sed 's/\\..*//' | sort -u | tail -n $MITHRIL_REDO | while read n; do rm -f \$n.chunk \$n.primary \$n.secondary; done" 2>/dev/null ||
+        "$engine" unshare sh -c "cd '$HOME_DIR/snapshots/mithril/immutable' && ls | sed 's/\\..*//' | sort -u | tail -n $MITHRIL_REDO | while read n; do rm -f \$n.chunk \$n.primary \$n.secondary; done"
+    fi
     "$engine" run --rm --name "$NAME-bootstrap" -v "$HOME_DIR":/data:Z -w /data "$IMAGE" bootstrap --force mithril --download-dir /data/snapshots/mithril --retain-snapshot
     echo "✓ bootstrapped from Mithril; start the node with '$0 up'"
+    ;;
+  mithril-import)
+    # Rebuilds the node's data from the Mithril files already downloaded, without the network
+    prepare
+    [ -d "$HOME_DIR/snapshots/mithril/immutable" ] || { echo "No Mithril files yet: run '$0 mithril' first." >&2; exit 1; }
+    "$engine" rm -f "$NAME" "$NAME-bootstrap" >/dev/null 2>&1 || true
+    "$engine" run --rm --name "$NAME-bootstrap" -v "$HOME_DIR":/data:Z -w /data "$IMAGE" bootstrap --force mithril --download-dir /data/snapshots/mithril --retain-snapshot --skip-download
+    echo "✓ imported from the Mithril files; start the node with '$0 up'"
     ;;
   up)
     prepare
@@ -84,7 +102,7 @@ case "${1:-}" in
     if "$engine" container exists "$NAME" 2>/dev/null; then "$engine" logs --tail 5 "$NAME" 2>&1 | sed 's/\x1b\[[0-9;?]*[a-zA-Z]//g'; fi
     ;;
   *)
-    sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'
     exit 1
     ;;
 esac

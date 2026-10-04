@@ -1,5 +1,6 @@
 import { ConfigBuilder, ConfigNetworkType, ConfigSyncProtocolType, getEvmEvent } from "@effectstream/node-sdk/config";
 import { getConnection } from "@effectstream/node-sdk/db";
+import { PrimitiveTypeCardanoDelayedAsset } from "@effectstream/node-sdk/sm/builtin";
 import { almaAnchorRegistryAbi, atlasRegistryAbi, characterSystemAbi, movementSystemAbi } from "@aldea/shared/abis";
 import { defineChain } from "viem";
 import { env } from "./env.ts";
@@ -28,6 +29,8 @@ const atlasEvents = [
 const eventPrimitive = (name: string, contractAddress: string, abi: readonly unknown[], signature: string, grammar: unknown, prefix: string, startBlockHeight: number) =>
   ({ name, type: PrimitiveTypeAldeaEvmEvent, startBlockHeight, contractAddress, abi: getEvmEvent(abi as any, signature), grammar, stateMachinePrefix: prefix }) as any;
 const MAIN_SYNC_PROTOCOL = "mainNtp";
+export const CARDANO_SYNC_PROTOCOL = "cardanoUtxoRpc";
+const cardano = env.cardano;
 
 /**
  * The NTP main clock maps Base blocks by time, and Effectstream stores `startTime` (and each chain's
@@ -57,19 +60,19 @@ const base = defineChain({
 
 /**
  * Networks and primitives: births (CharacterSystem), building visits (MovementSystem), soul anchors
- * (AlmaAnchorRegistry) and the Atlas (AtlasRegistry). The remaining World, Council and Cardano primitives are added
- * with their STFs in later phases.
+ * (AlmaAnchorRegistry), the Atlas (AtlasRegistry) and, when a Cardano endpoint is configured, the $ALDEA asset's
+ * UTxOs. The remaining World and Council primitives are added with their STFs.
  */
 export const config = new ConfigBuilder()
   .setNamespace((b) => b.setSecurityNamespace("aldea-world"))
-  .buildNetworks((b) =>
-    b
-      .addNetwork({ name: "ntp", type: ConfigNetworkType.NTP, startTime, blockTimeMS: 1000 })
-      .addViemNetwork({ ...base, name: "base" } as any),
-  )
+  .buildNetworks((b) => {
+    const networks: any = b.addNetwork({ name: "ntp", type: ConfigNetworkType.NTP, startTime, blockTimeMS: 1000 }).addViemNetwork({ ...base, name: "base" } as any);
+    return cardano ? networks.addNetwork({ name: "cardano", type: ConfigNetworkType.CARDANO, network: cardano.network }) : networks;
+  })
   .buildDeployments((b) => b)
-  .buildSyncProtocols((b) =>
-    b
+  .buildSyncProtocols((b) => {
+    // The networks are only known at runtime (Cardano is optional), so the builder's types cannot follow them
+    const protocols: any = (b as any)
       .addMain(
         (n: any) => n.ntp,
         () => ({ name: MAIN_SYNC_PROTOCOL, type: ConfigSyncProtocolType.NTP_MAIN, chainUri: "", startBlockHeight: 1, pollingInterval: 1000 }),
@@ -84,8 +87,20 @@ export const config = new ConfigBuilder()
           pollingInterval: 500,
           confirmationDepth: env.confirmations,
         }),
-      ),
-  )
+      );
+    if (!cardano) return protocols;
+    return protocols.addParallel(
+      (n: any) => n.cardano,
+      () => ({
+        name: CARDANO_SYNC_PROTOCOL,
+        type: ConfigSyncProtocolType.CARDANO_UTXORPC_PARALLEL,
+        rpcUrl: cardano.rpcUrl,
+        ...(cardano.headers ? { headers: cardano.headers } : {}),
+        startChainPoint: cardano.start,
+        pollingInterval: 2_000,
+      }),
+    );
+  })
   .buildPrimitives((b) => {
     let primitives: any = b
       // Systems in the aldea namespace emit from their own address, not the World's
@@ -120,6 +135,20 @@ export const config = new ConfigBuilder()
       primitives = primitives.addPrimitive(
         (s: any) => s.baseRpc,
         () => eventPrimitive(name, atlasRegistry, atlasRegistryAbi, signature, grammar[prefix], prefix, env.startBlock),
+      );
+    }
+    // Every UTxO of the $ALDEA asset, created or spent (tALDEA on preprod)
+    if (cardano) {
+      primitives = primitives.addPrimitive(
+        (s: any) => s[CARDANO_SYNC_PROTOCOL],
+        () => ({
+          name: "AldeaUtxo",
+          type: PrimitiveTypeCardanoDelayedAsset,
+          startBlockHeight: 0,
+          policyIds: [cardano.policyId],
+          fingerprints: [`${cardano.policyId}.${cardano.assetNameHex}`],
+          stateMachinePrefix: "aldeaUtxo",
+        }),
       );
     }
     return primitives;

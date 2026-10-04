@@ -4,6 +4,7 @@ import { main, suspend } from "effection";
 import readModelSql from "../db/migrations/0001_read_model.sql" with { type: "text" };
 import visitExitsSql from "../db/migrations/0002_visit_exits.sql" with { type: "text" };
 import atlasEvidenceSql from "../db/migrations/0003_atlas_evidence.sql" with { type: "text" };
+import aldeaUtxosSql from "../db/migrations/0004_aldea_utxos.sql" with { type: "text" };
 import { apiRouter } from "./api.ts";
 import { config } from "./config.ts";
 import { grammar } from "./grammar.ts";
@@ -14,6 +15,7 @@ const migrations: DBMigrations[] = [
   { name: "0001_read_model.sql", sql: readModelSql },
   { name: "0002_visit_exits.sql", sql: visitExitsSql },
   { name: "0003_atlas_evidence.sql", sql: atlasEvidenceSql },
+  { name: "0004_aldea_utxos.sql", sql: aldeaUtxosSql },
 ];
 
 /**

@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { ALDEA_ASSETS, type CardanoNetwork } from "@aldea/shared/constants";
 import { getAddress, type Address } from "viem";
 
 /**
@@ -48,6 +49,34 @@ function atlasRegistryAddress(): Address {
   return getAddress(value);
 }
 
+/**
+ * Where $ALDEA is read from: a UTxO RPC endpoint (a local Dolos, or a hosted one with an API key). Without
+ * CARDANO_UTXORPC_URL the node runs without Cardano and aldea_holdings stays empty.
+ *
+ * The sync starts at a block just before the asset's first UTxO. On preprod that is the block before the tALDEA mint;
+ * on mainnet it has to be given (CARDANO_START_SLOT and CARDANO_START_HASH).
+ */
+const PREPROD_START = { slot: 135417364, hash: "25f5f3fc114a6d03d6ed856926a9fa538a126260d71fbc7f602017b25464f8c9" };
+
+function cardanoConfig() {
+  const rpcUrl = process.env.CARDANO_UTXORPC_URL;
+  if (!rpcUrl) return undefined;
+  const network = (process.env.CARDANO_NETWORK ?? "preprod") as CardanoNetwork;
+  const asset = ALDEA_ASSETS[network];
+  if (!asset) throw new Error(`CARDANO_NETWORK must be one of ${Object.keys(ALDEA_ASSETS).join(", ")}`);
+  const start = process.env.CARDANO_START_SLOT && process.env.CARDANO_START_HASH ? { slot: Number(process.env.CARDANO_START_SLOT), hash: process.env.CARDANO_START_HASH } : network === "preprod" ? PREPROD_START : undefined;
+  if (!start) throw new Error("Set CARDANO_START_SLOT and CARDANO_START_HASH: a block just before the asset's first UTxO");
+  const apiKey = process.env.CARDANO_UTXORPC_API_KEY;
+  return {
+    rpcUrl,
+    headers: apiKey ? { "dmtr-api-key": apiKey } : undefined,
+    network,
+    policyId: (process.env.ALDEA_POLICY_ID || asset.policyId).toLowerCase(),
+    assetNameHex: (process.env.ALDEA_ASSET_NAME_HEX || asset.assetNameHex).toLowerCase(),
+    start,
+  };
+}
+
 const deployment = readDeployment();
 
 export const env = {
@@ -69,6 +98,7 @@ export const env = {
   atlasRegistry: atlasRegistryAddress,
   /** The World this node measures, as the Atlas versions name it. */
   worldAddress: (process.env.WORLD_ADDRESS || deployment?.world?.address || "").toLowerCase(),
+  cardano: cardanoConfig(),
   /** Key of this world in world_activity_hourly: its Atlas worldId, or the World address until it is registered. */
   activityWorldId: (process.env.ALDEA_WORLD_ID || deployment?.aldeaWorldId || process.env.WORLD_ADDRESS || deployment?.world?.address || "aldea").toLowerCase(),
 };
