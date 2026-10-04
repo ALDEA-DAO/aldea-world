@@ -3,7 +3,7 @@ import { clientManifestSchema } from "../src/manifest";
 
 describe("clientManifestSchema", () => {
   const manifest = {
-    schema: "aldea-world-client/v1",
+    schema: "alma-world-client/v1",
     worldId: `0x${"ab".repeat(32)}`,
     versionId: `0x${"cd".repeat(32)}`,
     name: "ALDEA World",

@@ -1,13 +1,28 @@
 import { ConfigBuilder, ConfigNetworkType, ConfigSyncProtocolType, getEvmEvent } from "@effectstream/node-sdk/config";
 import { getConnection } from "@effectstream/node-sdk/db";
-import { almaAnchorRegistryAbi, characterSystemAbi, movementSystemAbi } from "@aldea/shared/abis";
+import { almaAnchorRegistryAbi, atlasRegistryAbi, characterSystemAbi, movementSystemAbi } from "@aldea/shared/abis";
 import { defineChain } from "viem";
 import { env } from "./env.ts";
-import { birthCompletedGrammar, birthRequestedGrammar, birthRescheduledGrammar, buildingEnteredGrammar, buildingLeftGrammar, soulAnchoredGrammar } from "./grammar.ts";
+import { birthCompletedGrammar, birthRequestedGrammar, birthRescheduledGrammar, buildingEnteredGrammar, buildingLeftGrammar, grammar, soulAnchoredGrammar } from "./grammar.ts";
 import { PrimitiveTypeAldeaEvmEvent } from "./primitives/evmEvent.ts";
 
 const systems = env.systems();
 const almaRegistry = env.almaRegistry();
+const atlasRegistry = env.atlasRegistry();
+
+/** AtlasRegistry's events and the state transition each one feeds. One contract holds every world, version and client. */
+const atlasEvents = [
+  ["WorldRegistered(bytes32,bytes32,bytes32,address,uint8,string,string)", "atlasWorldRegistered"],
+  ["VersionRegistered(bytes32,bytes32,bytes32,(bytes32,uint256,address,bytes20,string,string,string),address)", "atlasVersionRegistered"],
+  ["ClientRegistered(bytes32,bytes32,bytes32,uint8,string)", "atlasClientRegistered"],
+  ["ClientDeactivated(bytes32)", "atlasClientDeactivated"],
+  ["OfficialVersionSet(bytes32,bytes32,bytes32,address)", "atlasOfficialVersionSet"],
+  ["VersionWithdrawn(bytes32)", "atlasVersionWithdrawn"],
+  ["GovernorChanged(bytes32,address,address)", "atlasGovernorChanged"],
+  ["VisibilityChanged(bytes32,uint8)", "atlasVisibilityChanged"],
+  ["MetadataChanged(bytes32,string)", "atlasMetadataChanged"],
+  ["VerifiedChanged(bytes32,bool)", "atlasVerifiedChanged"],
+] as const;
 
 /** An on-chain event folded into the state machine under `prefix` (see AldeaEvmEventPrimitive). */
 const eventPrimitive = (name: string, contractAddress: string, abi: readonly unknown[], signature: string, grammar: unknown, prefix: string, startBlockHeight: number) =>
@@ -41,9 +56,9 @@ const base = defineChain({
 });
 
 /**
- * Networks and primitives: births (CharacterSystem), building visits (MovementSystem) and soul anchors
- * (AlmaAnchorRegistry). The remaining World,
- * Atlas, Council and Cardano primitives are added with their STFs in later phases.
+ * Networks and primitives: births (CharacterSystem), building visits (MovementSystem), soul anchors
+ * (AlmaAnchorRegistry) and the Atlas (AtlasRegistry). The remaining World, Council and Cardano primitives are added
+ * with their STFs in later phases.
  */
 export const config = new ConfigBuilder()
   .setNamespace((b) => b.setSecurityNamespace("aldea-world"))
@@ -71,8 +86,8 @@ export const config = new ConfigBuilder()
         }),
       ),
   )
-  .buildPrimitives((b) =>
-    b
+  .buildPrimitives((b) => {
+    let primitives: any = b
       // Systems in the aldea namespace emit from their own address, not the World's
       .addPrimitive(
         (s) => s.baseRpc,
@@ -99,6 +114,14 @@ export const config = new ConfigBuilder()
         (s) => s.baseRpc,
         () =>
           eventPrimitive("SubjectAnchored", almaRegistry, almaAnchorRegistryAbi, "SubjectAnchored(bytes32,string,uint8,address,bytes32,bytes32)", soulAnchoredGrammar, "soulAnchored", env.startBlock),
-      ),
-  )
+      );
+    for (const [signature, prefix] of atlasEvents) {
+      const name = `Atlas${signature.slice(0, signature.indexOf("("))}`;
+      primitives = primitives.addPrimitive(
+        (s: any) => s.baseRpc,
+        () => eventPrimitive(name, atlasRegistry, atlasRegistryAbi, signature, grammar[prefix], prefix, env.startBlock),
+      );
+    }
+    return primitives;
+  })
   .build();

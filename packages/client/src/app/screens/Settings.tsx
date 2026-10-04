@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
 import { isSignedIn } from "../../features/auth/AlmaAuthProvider";
 import { useAlmaSession } from "../../features/auth/useAlmaSession";
+import { AboutVersion } from "../../features/settings/AboutVersion";
 import { LOCALES, setLocale, type Locale } from "../../lib/i18n";
 import { getThemePreference, setThemePreference, type ThemePreference } from "../../lib/theme";
 
@@ -54,6 +55,7 @@ export function SettingsScreen() {
           ))}
         </div>
       </fieldset>
+      <AboutVersion />
       {isSignedIn(status) && almaId && (
         <p className="mt-8">
           <Link className="underline" to="/b/registro-de-almas">

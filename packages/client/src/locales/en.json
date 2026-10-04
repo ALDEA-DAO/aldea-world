@@ -228,7 +228,7 @@
     "menu": "Menu",
     "closeMenu": "Close menu",
     "bottomBar": "Village actions",
-    "home": "ALDEA World: back to the village"
+    "home": "{{world}}: back to the village"
   },
   "building": {
     "notFound": "That building does not exist",
@@ -262,7 +262,39 @@
     "retry": "Retry",
     "youAreHere": "You are here.",
     "onlyWorld": "For now, ALDEA is the only world in the Atlas. Want to found the second one?",
-    "forkGuide": "How to fork it"
+    "forkGuide": "How to fork it",
+    "anotherWorld": "another world",
+    "officialVersion": "Official version {{semver}} · {{cid}}",
+    "noOfficialVersion": "No official version yet",
+    "notMeasurable": "On-chain activity not measurable",
+    "noClient": "No client registered",
+    "updating": "Updating… Data from {{time}}.",
+    "filters": {
+      "label": "Filter worlds",
+      "verified": "Verified",
+      "all": "All",
+      "forks": "ALDEA forks"
+    },
+    "empty": {
+      "verified": "There are no verified worlds yet.",
+      "all": "The Atlas has no worlds yet.",
+      "forks": "Nobody has forked ALDEA yet."
+    },
+    "presence": {
+      "online_one": "~{{count}} online, self-reported",
+      "online_other": "~{{count}} online, self-reported",
+      "offline": "Client offline (self-reported)",
+      "unavailable": "Presence unavailable"
+    },
+    "travel": {
+      "button": "Travel",
+      "warningTitle": "Unverified world",
+      "warning": "{{world}} is not verified. Nobody has checked who runs it or what its site does.",
+      "advice": "Do not sign anything or enter your keys there unless you trust whoever runs it. ALDEA will never ask you for a signature to travel.",
+      "understand": "I understand I am leaving ALDEA for an unverified site.",
+      "stay": "Stay here",
+      "go": "Travel anyway"
+    }
   },
   "council": {
     "charter": "The Genesis Charter",
@@ -285,5 +317,67 @@
     "pausedShort": "The village is under maintenance.",
     "offlineShort": "You're offline.",
     "bornFirst": "First you need to be born at the Town Center."
+  },
+  "world": {
+    "backToPortal": "Portal of Worlds",
+    "lineage": "Lineage",
+    "notFound": "We couldn't find that world in the Atlas.",
+    "unverified": "Unverified",
+    "organization": "Organization",
+    "id": "World",
+    "governor": "Who sets the official version",
+    "registered": "Registration",
+    "versions": "Versions",
+    "noVersions": "This world hasn't published any versions yet.",
+    "clients": "Clients",
+    "noClients": "This world hasn't registered any clients yet.",
+    "operatedBy": "Operated by {{operator}}",
+    "columns": {
+      "status": "Status",
+      "semver": "Version",
+      "cid": "CID",
+      "commit": "Commit",
+      "chain": "Chain",
+      "contract": "World",
+      "date": "Date",
+      "evidence": "On-chain"
+    },
+    "status": {
+      "official": "Official",
+      "candidate": "Candidate",
+      "superseded": "Superseded",
+      "withdrawn": "Withdrawn",
+      "none": "Unknown"
+    },
+    "clientKind": {
+      "web": "Web",
+      "mobile": "Mobile",
+      "desktop": "Desktop",
+      "agent": "Agent"
+    }
+  },
+  "version": {
+    "about": "About this version",
+    "goToOfficial": "Go to the official version",
+    "semver": "Version",
+    "versionId": "Version id",
+    "cid": "CID",
+    "commit": "Commit",
+    "state": {
+      "official": "Official version ✓",
+      "candidate": "Candidate",
+      "fork": "Fork version",
+      "unofficial": "Unofficial version",
+      "development": "Development version",
+      "unknown": "Not checked"
+    },
+    "explain": {
+      "official": "The Atlas confirms this is this world's official version.",
+      "candidate": "It is registered in the Atlas, but it is not the official one yet.",
+      "fork": "This client belongs to a fork: it is not the original world.",
+      "unofficial": "The Atlas does not recognize this client as a current version of this world.",
+      "development": "This is a development server: it does not come from a release.",
+      "unknown": "We couldn't reach the Atlas to check this version."
+    }
   }
 }

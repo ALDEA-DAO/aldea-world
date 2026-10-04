@@ -27,6 +27,8 @@ const LOCAL_CLIENTS: OidcClientInput[] = [
     redirectUris: ["http://localhost:3000/"],
     postLogoutRedirectUris: ["http://localhost:3000/"],
   },
+  // The fork kit CLI signs in from a terminal with a wallet key: its redirect URI is never opened
+  { clientId: "fork-kit", name: "Fork kit", redirectUris: ["http://127.0.0.1/fork-kit/callback"] },
 ];
 
 export async function upsertOidcClients(db: AnyDb, input: OidcClientInput[]) {

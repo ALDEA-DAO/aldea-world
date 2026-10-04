@@ -131,7 +131,12 @@ async function setController(db: AnyDb, chainId: number, almaId: string, control
   const [soul] = await db.select({ doc: souls.doc }).from(souls).where(eq(souls.almaId, almaId)).limit(1);
   if (!soul) throw new Error(`soul ${almaId} not found`);
   const doc = coreDoc(almaId, (soul.doc as AlmaCoreDoc).createdAt, chainId, controller);
-  await db.insert(links).values({ almaId, kind: "evm", value: `eip155:${chainId}:${controller}`, roles: ["controller"], ...link });
+  const value = `eip155:${chainId}:${controller}`;
+  // A wallet that signs in can also be the controller (a key that keeps its own soul): the link it already has gains the role
+  const [linked] = await db.select({ id: links.id, almaId: links.almaId, roles: links.roles }).from(links).where(and(eq(links.kind, "evm"), eq(links.value, value))).limit(1);
+  if (linked && linked.almaId !== almaId) throw new ProblemError(409, "link_belongs_to_other_soul", "This account belongs to another soul");
+  if (linked) await db.update(links).set({ roles: [...linked.roles, "controller"] }).where(eq(links.id, linked.id));
+  else await db.insert(links).values({ almaId, kind: "evm", value, roles: ["controller"], ...link });
   await db
     .update(souls)
     .set({ doc, docHash: Buffer.from(hexToBytes(docHash(doc))), updatedAt: sql`now()` })

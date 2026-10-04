@@ -3,7 +3,8 @@
 #   1. packages/council: the shared rails (AlmaAnchorRegistry, AtlasRegistry), the orgs and AldeaCouncilExecutor
 #      → deployments/31337.json
 #   2. the MUD World with ALMA_REGISTRY_ADDRESS (PostDeploy seeds Config, tribes and buildings)
-#   3. World and system addresses merged into packages/shared/src/deployments/31337.json
+#   3. ALDEA World registered in the Atlas (its id goes to the deployment file as aldeaWorldId)
+#   4. World and system addresses merged into packages/shared/src/deployments/31337.json
 # Services wait for the "world" key in that file (scripts/wait-for-deploy.sh).
 #
 # If that deployment is already on the running chain (`pnpm dev` started again over the same anvil), it is kept, so the
@@ -42,6 +43,10 @@ if (echo >"/dev/tcp/127.0.0.1/$PG_PORT") 2>/dev/null; then
       -c "DROP DATABASE IF EXISTS $db WITH (FORCE)" -c "CREATE DATABASE $db OWNER aldea"
   done
 fi
+
+# Before the World's addresses: services start as soon as those are written, and read the world's Atlas id then
+echo "▸ ALDEA World in the Atlas"
+pnpm --dir "$ROOT/packages/shared" register-local-world --chain-id 31337 --rpc-url "$RPC_URL"
 
 echo "▸ addresses"
 pnpm --dir "$ROOT/packages/shared" merge-world --chain-id 31337 --rpc-url "$RPC_URL"

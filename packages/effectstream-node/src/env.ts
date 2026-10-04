@@ -17,7 +17,7 @@ const isLocal = chainId === 31337;
 
 /** packages/shared/src/deployments/<chainId>.json, written by Deploy.s.sol and merge-world.ts. */
 function readDeployment():
-  | { world?: { address: string; blockNumber: number; systems: Record<string, string> }; protocol?: { almaAnchorRegistry: string; deployBlock: number }; aldeaWorldId?: string }
+  | { world?: { address: string; blockNumber: number; systems: Record<string, string> }; protocol?: { almaAnchorRegistry: string; atlasRegistry?: string; deployBlock: number }; aldeaWorldId?: string }
   | undefined {
   const path = join(import.meta.dir, `../../shared/src/deployments/${chainId}.json`);
   return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : undefined;
@@ -42,6 +42,12 @@ function almaRegistryAddress(): Address {
   return getAddress(value);
 }
 
+function atlasRegistryAddress(): Address {
+  const value = process.env.ATLAS_ADDRESS || readDeployment()?.protocol?.atlasRegistry;
+  if (!value) throw new Error(`No AtlasRegistry address: set ATLAS_ADDRESS or deploy to chain ${chainId} first`);
+  return getAddress(value);
+}
+
 const deployment = readDeployment();
 
 export const env = {
@@ -60,6 +66,9 @@ export const env = {
   genesisMs: process.env.EFFECTSTREAM_GENESIS_MS ? Number(process.env.EFFECTSTREAM_GENESIS_MS) : undefined,
   systems: systemAddresses,
   almaRegistry: almaRegistryAddress,
+  atlasRegistry: atlasRegistryAddress,
+  /** The World this node measures, as the Atlas versions name it. */
+  worldAddress: (process.env.WORLD_ADDRESS || deployment?.world?.address || "").toLowerCase(),
   /** Key of this world in world_activity_hourly: its Atlas worldId, or the World address until it is registered. */
   activityWorldId: (process.env.ALDEA_WORLD_ID || deployment?.aldeaWorldId || process.env.WORLD_ADDRESS || deployment?.world?.address || "aldea").toLowerCase(),
 };

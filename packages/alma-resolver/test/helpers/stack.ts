@@ -19,6 +19,7 @@ import type { ProvisionedCustody } from "../../src/auth/souls";
 import { upsertOidcClients } from "../../src/db/clients";
 import * as schema from "../../src/db/schema";
 import { soulActivityFromDb } from "../../src/routes/orgs";
+import { createPresenceStore } from "../../src/routes/presence";
 import { createRequestHandler } from "../../src/server";
 import type { VirtualAuthenticator } from "./virtualAuthenticator";
 
@@ -30,6 +31,7 @@ import type { VirtualAuthenticator } from "./virtualAuthenticator";
 export const WORLD = "http://localhost:3000";
 export const REDIRECT = `${WORLD}/`;
 export const CHAIN_ID = 31337;
+export const ALDEA_WORLD_ID = `0x${"a1".repeat(32)}`;
 
 export interface Stack {
   issuer: string;
@@ -84,6 +86,7 @@ export async function startStack({ custody = true }: { custody?: boolean } = {})
     corsOrigins: [WORLD],
     interaction: { auth, soul, passkey, wallet, email },
     souls: { soul, verifyAccessToken, activity: soulActivityFromDb(db), allowDevelopmentController: !custody },
+    presence: { verifyAccessToken, store: createPresenceStore(), aldeaWorldId: () => ALDEA_WORLD_ID },
     links: {
       me: { db, challenges, verifyAccessToken, wallet, email, worldOrigins: [WORLD], issuer },
       passkey: { db, challenges, passkey },

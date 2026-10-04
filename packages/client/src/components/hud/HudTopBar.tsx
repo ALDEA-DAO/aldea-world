@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink } from "react-router-dom";
 import { SignInWithAlma } from "../../features/auth/SignInWithAlma";
+import { worldConfig } from "../../theme/worldConfig";
 
 const menu = [
   { to: "/", key: "nav.village", end: true },
@@ -23,8 +24,8 @@ export function HudTopBar({ versionBadge }: { versionBadge?: ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <header className="relative z-30 flex h-hud-top shrink-0 items-center gap-2 bg-wood px-3 text-on-wood shadow-paper sm:gap-3 sm:px-4">
-      <Link to="/" aria-label={t("hud.home")} className="inline-flex min-h-11 items-center font-display text-xl whitespace-nowrap">
-        {t("app.name")}
+      <Link to="/" aria-label={t("hud.home", { world: worldConfig.name })} className="inline-flex min-h-11 items-center font-display text-xl whitespace-nowrap">
+        {worldConfig.name}
       </Link>
       {versionBadge}
       <span className="flex-1" />

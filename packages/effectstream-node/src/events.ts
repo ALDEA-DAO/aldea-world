@@ -7,7 +7,8 @@ import { genEvent, registerEvents } from "@effectstream/event-client";
  *
  * Effectstream builds the MQTT topic as `app/<signatureHash>/blockHeight/<n>/<indexedField>/<value>…`, so the
  * logical topics map onto indexed fields: `aldea/v1/births/{characterId}` is BirthUpdated filtered by
- * characterId, and `aldea/v1/buildings/{id}/activity` is BuildingActivity filtered by buildingId. Clients subscribe with @effectstream/event-client's EventManager (see SPIKE.md).
+ * characterId, `aldea/v1/buildings/{id}/activity` is BuildingActivity filtered by buildingId, and `atlas/v1/worlds` is
+ * AtlasWorldChanged (every world, or one by worldId). Clients subscribe with @effectstream/event-client's EventManager (see SPIKE.md).
  */
 export const AldeaEvents = registerEvents({
   BirthUpdated: genEvent({
@@ -27,6 +28,14 @@ export const AldeaEvents = registerEvents({
       { name: "characterId", type: Type.Number() },
       // "entered" or "left"
       { name: "kind", type: Type.String() },
+    ],
+  }),
+  AtlasWorldChanged: genEvent({
+    name: "AtlasWorldChanged",
+    fields: [
+      { name: "worldId", type: Type.String(), indexed: true },
+      // "registered" or "updated" (a version, a client or any of the world's own fields)
+      { name: "event", type: Type.String() },
     ],
   }),
 });

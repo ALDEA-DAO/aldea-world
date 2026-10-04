@@ -1,10 +1,11 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type BrowserContext, type Page } from "@playwright/test";
+import { registerFork } from "./atlas";
 
 /**
  * Accessibility with axe (WCAG 2.1 A and AA rules): no serious or critical violations on the village, List mode,
- * the Soul Registry and a soul's public view. The canvas itself is one labelled, focusable application; everything
- * it offers is also in List mode. Needs the local stack (`pnpm dev`).
+ * the Soul Registry, a soul's public view and the Portal of Worlds. The canvas itself is one labelled, focusable
+ * application; everything it offers is also in List mode. Needs the local stack (`pnpm dev`).
  */
 
 async function passkeyDevice(context: BrowserContext, page: Page) {
@@ -49,4 +50,21 @@ test("your own Soul Registry and a soul's public view", async ({ browser, contex
   await visitor.goto(`/#/alma/${encodeURIComponent(almaId)}`);
   await expect(visitor.getByTestId("soul-registry")).toBeVisible();
   await expectNoSeriousViolations(visitor, "#/alma/:almaId");
+});
+
+test("the Portal of Worlds, a world's detail and the warning before traveling", async ({ page }) => {
+  const fork = await registerFork();
+  await page.goto("/#/portal");
+  await page.getByRole("tab", { name: /^(Todos|All)$/ }).click();
+  const nocturna = page.getByRole("article", { name: fork.name });
+  await expect(nocturna.getByRole("button", { name: /^(Viajar|Travel)$/ })).toBeVisible({ timeout: 30_000 });
+  await expectNoSeriousViolations(page, "#/portal");
+
+  await nocturna.getByRole("button", { name: /^(Viajar|Travel)$/ }).click();
+  await expect(page.getByRole("dialog", { name: /Mundo sin verificar|Unverified world/ })).toBeVisible();
+  await expectNoSeriousViolations(page, "#/portal (travel warning)");
+
+  await page.goto(`/#/portal/${fork.worldId}`);
+  await expect(page.getByRole("row", { name: /0\.1\.0/ })).toBeVisible();
+  await expectNoSeriousViolations(page, "#/portal/:worldId");
 });
