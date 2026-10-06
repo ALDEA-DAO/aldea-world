@@ -16,7 +16,7 @@ procs:
     shell: scripts/wait-for-deploy.sh && sleep 3 && pnpm exec postgres-frontend
     env:
       DATABASE_URL: postgres://aldea:aldea@127.0.0.1:5442/mud_indexer
-      PORT: "3001"
+      PORT: "3101"
   alma-resolver:
     shell: scripts/wait-for.sh 5442 && pnpm --filter @aldea/alma-resolver db:migrate && pnpm --filter @aldea/alma-resolver db:clients && pnpm --filter @aldea/alma-resolver dev
     env:

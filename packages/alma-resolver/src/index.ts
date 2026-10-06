@@ -74,7 +74,7 @@ const soul = {
     : undefined,
 };
 
-const corsOrigins = (env.CORS_ORIGINS ?? "http://localhost:3000").split(",").map((o) => o.trim());
+const corsOrigins = (env.CORS_ORIGINS ?? "http://localhost:3100").split(",").map((o) => o.trim());
 const challenges = createChallengeStore(db);
 
 // Login methods on the hosted pages

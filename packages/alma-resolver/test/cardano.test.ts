@@ -47,7 +47,7 @@ describe("POST /v1/cardano/link/challenge", () => {
     const res = await me.post("/v1/cardano/link/challenge");
     expect(res.status).toBe(200);
     const c = (await res.json()) as Challenge;
-    expect(c.payload).toMatch(new RegExp(`^ALDEA World · vincular Cardano\\nalma: ${almaId}\\ndominio: localhost:3000\\nnonce: [0-9a-f]{16}\\nvence: ${c.expiresAt}$`));
+    expect(c.payload).toMatch(new RegExp(`^ALDEA World · vincular Cardano\\nalma: ${almaId}\\ndominio: localhost:3100\\nnonce: [0-9a-f]{16}\\nvence: ${c.expiresAt}$`));
     expect(Buffer.from(c.payloadHex, "hex").toString("utf8")).toBe(c.payload);
     expect(Date.parse(c.expiresAt) - Date.now()).toBeGreaterThan(4 * 60 * 1000);
   });

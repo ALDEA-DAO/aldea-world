@@ -146,8 +146,8 @@ Only a naming helper exists (`generateDynamicPrimitiveName`); there is no API to
 ```bash
 anvil --block-time 2
 # deploy protocol + World and export addresses (scripts/dev-deploy.sh wraps this)
-bun node_modules/@effectstream/node-sdk/../db/scripts/start-pglite.ts --port 5433   # or a real Postgres
-cd packages/effectstream-node && CHAIN_ID=31337 START_BLOCK=<world block> DB_PORT=5433 bun src/index.ts
+bun node_modules/@effectstream/node-sdk/../db/scripts/start-pglite.ts --port 5443   # or a real Postgres
+cd packages/effectstream-node && CHAIN_ID=31337 START_BLOCK=<world block> DB_PORT=5443 bun src/index.ts
 bun scripts/mqtt-probe.ts                                                           # in another terminal
 cast send $WORLD 'aldea__requestBirth(uint8,bytes32)' 0 $SOUL_HASH --private-key …
 curl localhost:9999/api/v1/births/1

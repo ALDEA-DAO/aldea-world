@@ -72,7 +72,7 @@ test("a second passkey is added on ALMA Auth's page and the first one can then b
   await expect(page.getByRole("status")).toContainText(/ya tiene una passkey|already has a passkey/);
   await device.swap();
   await page.getByRole("button", { name: /Crear passkey|Create passkey/ }).click();
-  await expect(page).toHaveURL(/localhost:3000\/#\/b\/registro-de-almas$/);
+  await expect(page).toHaveURL(/localhost:3100\/#\/b\/registro-de-almas$/);
   await expect(keyRows(page)).toHaveCount(2);
 
   await keyRows(page).first().getByRole("button", { name: /Quitar|Remove/ }).click();

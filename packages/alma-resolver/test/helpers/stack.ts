@@ -28,7 +28,7 @@ import type { VirtualAuthenticator } from "./virtualAuthenticator";
  * Postgres, a fake custody provider and an email sender that records codes.
  */
 
-export const WORLD = "http://localhost:3000";
+export const WORLD = "http://localhost:3100";
 export const REDIRECT = `${WORLD}/`;
 export const CHAIN_ID = 31337;
 export const ALDEA_WORLD_ID = `0x${"a1".repeat(32)}`;

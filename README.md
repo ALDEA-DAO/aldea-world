@@ -76,7 +76,7 @@ pnpm dev:health     # checks anvil, Resolver, Effectstream, relay, MUD indexer a
 ```
 
 `pnpm dev` deploys the protocol contracts and the World to a fresh local anvil (`scripts/dev-deploy.sh`) and writes the
-addresses to `packages/shared/src/deployments/31337.json`. The client runs on <http://localhost:3000> (design kit at
+addresses to `packages/shared/src/deployments/31337.json`. The client runs on <http://localhost:3100> (design kit at
 `#/ui`). Starting `pnpm dev` again over an anvil that is still running keeps that deployment; `REDEPLOY=1 pnpm dev:deploy`
 deploys again and empties the read models (Effectstream and the MUD indexer).
 
@@ -84,8 +84,8 @@ deploys again and empties the read models (Effectstream and the MUD indexer).
 |---|---|
 | anvil | 8545 |
 | Postgres (containers) | 5442 |
-| Client | 3000 |
-| MUD indexer API | 3001 |
+| Client | 3100 |
+| MUD indexer API | 3101 |
 | ALMA Resolver | 8787 |
 | Relay worker | 8788 |
 | Effectstream API / MQTT (TCP, WS) | 9999 / 8883, 9883 |

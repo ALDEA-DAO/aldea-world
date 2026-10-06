@@ -17,7 +17,7 @@ import { upsertOidcClients } from "../src/db/clients";
 import * as schema from "../src/db/schema";
 import { createRequestHandler } from "../src/server";
 
-const ALDEA_REDIRECT = "http://localhost:3000/auth/callback";
+const ALDEA_REDIRECT = "http://localhost:3100/auth/callback";
 const VELUM_REDIRECT = "https://velum.example/auth/callback";
 const SOUL = "alma:main:human:0123456789abcdef0123456789abcdef";
 

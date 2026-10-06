@@ -11,7 +11,7 @@
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
     "test": "bun test",
-    "db:local": "bun scripts/pglite.ts --port 5433"
+    "db:local": "bun scripts/pglite.ts --port 5443"
   },
   "dependencies": {
     "@aldea/shared": "workspace:^",
