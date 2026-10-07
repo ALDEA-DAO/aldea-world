@@ -1,5 +1,6 @@
+import { almaIdHash } from "@aldea/shared/alma";
 import { classByIndex, tribeByIndex } from "@aldea/shared/catalog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
@@ -13,6 +14,7 @@ import { isSignedIn } from "../auth/AlmaAuthProvider";
 import { RequireSession } from "../auth/RequireSession";
 import { useAlmaSession } from "../auth/useAlmaSession";
 import { useBirth } from "../birth/useBirth";
+import { fetchParticipations } from "../council/participations";
 import { FounderSeal, useIsFounder } from "../founders/FounderSeal";
 import { TribeMembers } from "../soul/TribeMembers";
 import { founderClaimed, useSoul, type SoulView } from "../soul/useSoul";
@@ -158,11 +160,31 @@ function Ties({ soul, tribe, own, born }: { soul: SoulView; tribe: ReturnType<ty
   );
 }
 
-/** Founder and Charter Signatory. Signing the Charter arrives with the Council. */
+/**
+ * The vote with which a soul took part in the Genesis Charter, if it did: the same seal for whoever signed and
+ * whoever objected, with the transaction that carried the vote as its evidence.
+ */
+function useCharterVote(almaId: string): string | undefined {
+  const [inputTx, setInputTx] = useState<string>();
+  useEffect(() => {
+    let current = true;
+    fetchParticipations(almaIdHash(almaId))
+      .then((items) => current && setInputTx(items.find((item) => item.kind === "GenesisRatification")?.inputTx))
+      // Without the read model the seal is simply not shown yet
+      .catch(() => undefined);
+    return () => {
+      current = false;
+    };
+  }, [almaId]);
+  return inputTx;
+}
+
+/** Founder and Charter Signatory. */
 function Seals({ soul, own }: { soul: SoulView; own: boolean }) {
   const { t } = useTranslation();
   // The World is the source; the Resolver's copy covers a client that has not synced yet
   const founder = useIsFounder(soul.id) || founderClaimed(soul);
+  const charterVote = useCharterVote(soul.id);
   return (
     <section aria-labelledby="seals">
       <h2 id="seals" className="text-2xl">
@@ -186,7 +208,16 @@ function Seals({ soul, own }: { soul: SoulView; own: boolean }) {
         <li>
           <span className="font-medium">{t("registry.charterSignatory")}</span>
           {" · "}
-          {own ? t("registry.charterNotYet") : t("registry.sealNone")}
+          {charterVote ? (
+            <span className="inline-flex flex-wrap items-center gap-2" data-testid="charter-signatory">
+              {t("registry.sealHeld")}
+              <VerifyOnChain txHash={charterVote} />
+            </span>
+          ) : own ? (
+            t("registry.charterNotYet")
+          ) : (
+            t("registry.sealNone")
+          )}
         </li>
       </ul>
     </section>

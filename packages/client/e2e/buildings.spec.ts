@@ -64,9 +64,11 @@ test("a soul signs up once; signing up again says it already is", async ({ conte
   await expect(forgeSignUp).toBeEnabled();
 });
 
-test("the Council says when it opens", async ({ page }) => {
+test("the Council says when it opens, or where its Charter stands once one has been opened", async ({ page }) => {
   await page.goto("/#/b/consejo");
   const council = panel(page, /^(Consejo|Council)$/);
   await expect(council.getByRole("heading", { name: /El Acta de Génesis|The Genesis Charter/ })).toBeVisible();
-  await expect(council.getByRole("status")).toHaveText(/El Consejo abrirá con el Acta de Génesis|The Council will open with the Genesis Charter/);
+  // The chain is shared with council.spec.ts: before it has run there is no Charter yet
+  const opens = council.getByText(/El Consejo abrirá con el Acta de Génesis|The Council will open with the Genesis Charter/);
+  await expect(opens.or(council.getByTestId("council-status"))).toBeVisible();
 });

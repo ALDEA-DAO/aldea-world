@@ -125,5 +125,6 @@ test("a born soul walks the village and is offered the door it stands at", async
   await page.keyboard.press("Enter");
   await expect(village(page)).toHaveAttribute("data-door", "council", { timeout: 20_000 });
   await enter.click();
-  await expect(page.getByRole("region", { name: /^(Consejo|Council)$/ }).getByText(/abrirá con el Acta de Génesis|will open with the Genesis Charter/)).toBeVisible();
+  // Inside: the Genesis Charter (when it opens, or where it stands if one has been opened on this chain)
+  await expect(page.getByRole("region", { name: /^(Consejo|Council)$/ }).getByRole("heading", { name: /El Acta de Génesis|The Genesis Charter/ })).toBeVisible();
 });

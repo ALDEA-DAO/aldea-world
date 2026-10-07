@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "chainId": "84532",
+  "createdAt": 0,
+  "meta": {
+    "name": "ALDEA World: the Council governs the official version",
+    "description": "Hands ALDEA World's governor in the Atlas to AldeaCouncilExecutor. From then on only a Council result that passed its delay without a veto can set the official version; the Safe keeps the veto (it is the executor's guardian). There is no way back through the executor: do this when the Charter is about to open. Replace every <PLACEHOLDER>."
+  },
+  "transactions": [
+    {
+      "to": "<ATLAS_REGISTRY_ADDRESS>",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "setGovernor",
+        "payable": false,
+        "inputs": [
+          { "name": "worldId", "type": "bytes32", "internalType": "bytes32" },
+          { "name": "newGovernor", "type": "address", "internalType": "address" }
+        ]
+      },
+      "contractInputsValues": {
+        "worldId": "<ALDEA_WORLD_ID>",
+        "newGovernor": "<ALDEA_COUNCIL_EXECUTOR_ADDRESS>"
+      }
+    }
+  ]
+}

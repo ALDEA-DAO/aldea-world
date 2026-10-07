@@ -25,6 +25,14 @@ These roles are operated by AdaSouls today. Each one is limited and publicly ver
   account and one soul). Rotatable by the Safe through `AdminSystem.setConfig`.
 - **Relayer** — completes births (permissionless anyway) and queues Charter results; a wrong tally does not match the
   published one and can be vetoed during the 24 h delay.
+- **Vote batcher** — publishes Founders' signed Charter votes on Base and pays their gas. It cannot forge or change a
+  vote (each one carries its Cardano wallet's signature, which every node verifies again). It could delay one, or
+  hold back a voter's earlier vote and publish it after a later one (the last vote published is the one that counts);
+  a voter sees their counted vote in the Council and can vote again, and anyone can run another batcher or publish a
+  signed vote in `CouncilInputs` themselves.
+- **Charter rules for the read model** — the read model cannot fetch the rules at a proposal's `paramsURI`, so the
+  guardian (the Safe) publishes them in `CouncilInputs` when it opens the proposal. They are part of the public tally,
+  with their hash, for anyone to compare with the published ones.
 - **Repository administration** — whoever administers the GitHub organization can change the code that gets published
   as a candidate. The goal is that the `ALDEA-DAO` organization has **several administrators who are Safe signers**,
   never a single person. Until then, the current administrators are listed below and on aldea.world under

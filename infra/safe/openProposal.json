@@ -1,0 +1,53 @@
+{
+  "version": "1.0",
+  "chainId": "84532",
+  "createdAt": 0,
+  "meta": {
+    "name": "ALDEA World: open the Genesis Charter",
+    "description": "Opens the Genesis Charter on a candidate version and publishes its rules for the read model, in one batch. kind 0 is GenesisRatification. The times are unix seconds with snapshotAt <= startsAt < endsAt; the read model takes the snapshot at the first block at or after snapshotAt, so set it in the future. The second transaction's `data` is the hex of the UTF-8 text [\"cp\",\"<PROPOSAL_ID in lowercase>\",\"<the rules as canonical JSON>\"]: the same JSON published at paramsURI. Only rules posted by the executor's guardian (this Safe) are taken, once, and only before the Charter starts. Replace every <PLACEHOLDER>."
+  },
+  "transactions": [
+    {
+      "to": "<ALDEA_COUNCIL_EXECUTOR_ADDRESS>",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "openProposal",
+        "payable": false,
+        "inputs": [
+          { "name": "proposalId", "type": "bytes32", "internalType": "bytes32" },
+          { "name": "kind", "type": "uint8", "internalType": "enum AldeaCouncilExecutor.ProposalKind" },
+          { "name": "worldId", "type": "bytes32", "internalType": "bytes32" },
+          { "name": "versionId", "type": "bytes32", "internalType": "bytes32" },
+          { "name": "snapshotAt", "type": "uint64", "internalType": "uint64" },
+          { "name": "startsAt", "type": "uint64", "internalType": "uint64" },
+          { "name": "endsAt", "type": "uint64", "internalType": "uint64" },
+          { "name": "paramsURI", "type": "string", "internalType": "string" }
+        ]
+      },
+      "contractInputsValues": {
+        "proposalId": "<PROPOSAL_ID: e.g. keccak256(\"aldea-world/genesis-charter\")>",
+        "kind": "0",
+        "worldId": "<ALDEA_WORLD_ID>",
+        "versionId": "<CANDIDATE_VERSION_ID>",
+        "snapshotAt": "<UNIX_SECONDS: 48 h before startsAt>",
+        "startsAt": "<UNIX_SECONDS>",
+        "endsAt": "<UNIX_SECONDS: startsAt + 7 days>",
+        "paramsURI": "<ipfs://… of the rules JSON>"
+      }
+    },
+    {
+      "to": "<COUNCIL_INPUTS_ADDRESS>",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "effectstreamSubmitGameInput",
+        "payable": true,
+        "inputs": [{ "name": "data", "type": "bytes", "internalType": "bytes" }]
+      },
+      "contractInputsValues": {
+        "data": "<0x… hex of [\"cp\",\"<proposalId>\",\"<rules JSON>\"]>"
+      }
+    }
+  ]
+}
