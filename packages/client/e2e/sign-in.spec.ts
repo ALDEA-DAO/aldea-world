@@ -20,7 +20,7 @@ test("guests browse every read-only screen without being asked to sign in", asyn
   for (const route of ["#/", "#/portal", "#/lista"]) {
     await page.goto(`/${route}`);
     await expect(signIn(page)).toBeVisible();
-    expect(new URL(page.url()).port).toBe("3000");
+    expect(new URL(page.url()).port).toBe("3100");
   }
 });
 
@@ -34,7 +34,7 @@ test("a passkey creates the soul, survives a reload and signing out ends it in e
   await page.getByRole("button", { name: /Crear mi alma|Create my soul/ }).click();
 
   await expect(signOut(page)).toBeVisible();
-  await expect(page).toHaveURL(/localhost:3000\/#\/portal$/);
+  await expect(page).toHaveURL(/localhost:3100\/#\/portal$/);
   await expect(page.getByTitle(/^alma:main:human:[0-9a-f]{32}$/).first()).toBeAttached();
 
   // A reload renews the session from the refresh token: no trip to ALMA Auth

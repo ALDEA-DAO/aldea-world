@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "chainId": "84532",
+  "createdAt": 0,
+  "meta": {
+    "name": "ALDEA World: veto a Council proposal",
+    "description": "The guardian stops a proposal that is open or queued: it can no longer be queued or executed. The reason is public and the Council shows it as written. Use it when the tally published at tallyURI does not hash to the queued tallyHash, when its result is not what its snapshot and votes give, or when the relayer key is compromised. Replace every <PLACEHOLDER>."
+  },
+  "transactions": [
+    {
+      "to": "<ALDEA_COUNCIL_EXECUTOR_ADDRESS>",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "veto",
+        "payable": false,
+        "inputs": [
+          { "name": "proposalId", "type": "bytes32", "internalType": "bytes32" },
+          { "name": "reason", "type": "string", "internalType": "string" }
+        ]
+      },
+      "contractInputsValues": {
+        "proposalId": "<PROPOSAL_ID>",
+        "reason": "<the reason, as the Council will show it>"
+      }
+    }
+  ]
+}

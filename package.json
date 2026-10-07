@@ -17,11 +17,16 @@
     "dev:lite": "mprocs --config mprocs.lite.yaml",
     "dev:deploy": "scripts/dev-deploy.sh",
     "dev:health": "scripts/dev-health.sh",
-    "check:bundle": "node --experimental-strip-types scripts/check-bundle.ts"
+    "check:bundle": "node --experimental-strip-types scripts/check-bundle.ts",
+    "cardano:wallets": "tsx scripts/cardano/wallets.ts",
+    "cardano:mint": "tsx scripts/cardano/mint-taldea.ts",
+    "cardano:balances": "tsx scripts/cardano/balances.ts",
+    "cardano:transfer": "tsx scripts/cardano/transfer.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@latticexyz/store-indexer": "2.2.23",
+    "@meshsdk/core": "^1.9.1",
     "@types/node": "^22.0.0",
     "eslint": "^10.11.0",
     "eslint-plugin-react-hooks": "^7.1.1",
@@ -29,6 +34,7 @@
     "mprocs": "^0.7.3",
     "prettier": "3.2.5",
     "prettier-plugin-solidity": "1.3.1",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.0",
     "typescript-eslint": "^8.70.1"
   },
@@ -39,7 +45,10 @@
   "pnpm": {
     "neverBuiltDependencies": [
       "better-sqlite3"
-    ]
+    ],
+    "patchedDependencies": {
+      "@effectstream/sync@0.200.6": "patches/@effectstream__sync@0.200.6.patch"
+    }
   },
   "repository": {
     "type": "git",

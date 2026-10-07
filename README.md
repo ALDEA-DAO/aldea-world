@@ -31,7 +31,11 @@ flowchart LR
   ES -->|events| Atlas["AtlasRegistry"]
   Relay["Relay worker"] -->|completeBirth| World
   Relay --> ES
-  Council["AldeaCouncilExecutor"] -->|official version| Atlas
+  Client -->|signed votes| Batcher["Vote batcher"]
+  Batcher -->|batches| Inputs["CouncilInputs"]
+  ES -->|votes| Inputs
+  Relay -->|queue, execute| Council["AldeaCouncilExecutor"]
+  Council -->|official version| Atlas
 ```
 
 - **On-chain (Base):** the MUD World holds the game state; `AlmaAnchorRegistry` anchors souls and organizations;
@@ -44,7 +48,12 @@ flowchart LR
   user, and passkeys, email, social accounts and wallets on every chain are keys linked to it. Turnkey holds the keys of
   players without a wallet; a Coinbase Smart Wallet on Base owns each character.
 - **ALMA Resolver** stores ALMA documents and links, and signs Founder attestations.
-- **Relay worker** executes the read model's write intents (for example, completing births).
+- **Relay worker** executes the read model's write intents: it completes births, and it queues and executes the
+  Council's results after recomputing their tally.
+- **The Council** founds the world on a version of its code with the Genesis Charter. Founders sign or object with
+  their Cardano wallet and no gas: the **vote batcher** publishes the signed votes in `CouncilInputs` on Base, where
+  they stay as evidence; Effectstream weighs them with a snapshot of $ALDEA holdings and publishes a tally anyone can
+  recompute; the executor applies an approved result after a delay in which the guardian can veto.
 
 Each package documents its own design in code comments; the Effectstream integration notes are in
 [`packages/effectstream-node/SPIKE.md`](packages/effectstream-node/SPIKE.md).
@@ -54,13 +63,13 @@ Each package documents its own design in code comments; the Effectstream integra
 | Path | What it is |
 |---|---|
 | `packages/contracts` | MUD World (`aldea` namespace): Character, Movement, Founder and Admin systems |
-| `packages/council` | `AldeaCouncilExecutor` and ALDEA's deploy script (Foundry): the rails from `@adasouls/protocol`, the world's ALMA organizations and the Council |
+| `packages/council` | `AldeaCouncilExecutor`, `CouncilInputs` and ALDEA's deploy script (Foundry): the rails from `@adasouls/protocol`, the world's ALMA organizations and the Council |
 | `packages/shared` | Shared TypeScript: catalogs, ALMA helpers, EIP-712 types, ABIs, deployments |
 | `packages/client` | Web client (Vite, React, Tailwind, Phaser) |
 | `packages/alma-resolver` | ALMA Resolver (Hono, Drizzle, Postgres) |
-| `packages/effectstream-node` | Effectstream node (Bun): read model, STFs, API, MQTT |
-| `packages/relay-worker` | Relay worker ("the Midwife") |
-| `infra/`, `scripts/` | Local orchestration and deployment scripts |
+| `packages/effectstream-node` | Effectstream node (Bun): read model, STFs, API, MQTT; and the vote batcher (`pnpm batcher`) |
+| `packages/relay-worker` | Relay worker: completes births ("the Midwife"), queues and executes Council results |
+| `infra/`, `scripts/` | Local orchestration, deployment scripts and the Safe's transaction templates (`infra/safe`) |
 | `reference/` | The verified reference contracts the packages were migrated from |
 
 ## Getting started
@@ -72,11 +81,11 @@ Each package documents its own design in code comments; the Effectstream integra
 pnpm install
 pnpm dev            # Postgres + anvil in containers, then every service (mprocs)
 pnpm dev:lite       # same stack without containers (anvil + embedded PGlite, in memory)
-pnpm dev:health     # checks anvil, Resolver, Effectstream, relay, MUD indexer and client
+pnpm dev:health     # checks anvil, Resolver, Effectstream, relay, vote batcher, MUD indexer and client
 ```
 
 `pnpm dev` deploys the protocol contracts and the World to a fresh local anvil (`scripts/dev-deploy.sh`) and writes the
-addresses to `packages/shared/src/deployments/31337.json`. The client runs on <http://localhost:3000> (design kit at
+addresses to `packages/shared/src/deployments/31337.json`. The client runs on <http://localhost:3100> (design kit at
 `#/ui`). Starting `pnpm dev` again over an anvil that is still running keeps that deployment; `REDEPLOY=1 pnpm dev:deploy`
 deploys again and empties the read models (Effectstream and the MUD indexer).
 
@@ -84,11 +93,28 @@ deploys again and empties the read models (Effectstream and the MUD indexer).
 |---|---|
 | anvil | 8545 |
 | Postgres (containers) | 5442 |
-| Client | 3000 |
-| MUD indexer API | 3001 |
+| Client | 3100 |
+| MUD indexer API | 3101 |
 | ALMA Resolver | 8787 |
 | Relay worker | 8788 |
+| Vote batcher | 3334 |
 | Effectstream API / MQTT (TCP, WS) | 9999 / 8883, 9883 |
+
+### $ALDEA on Cardano (optional)
+
+The stack runs without Cardano. To read $ALDEA holdings locally (tALDEA, its stand-in on preprod), run a light Cardano
+node next to it and point Effectstream at it:
+
+```bash
+scripts/cardano/dolos.sh mithril      # once: about 18 GB and a long import; or `download` + `import` (3 GB, months behind)
+scripts/cardano/dolos.sh up           # serves UTxO RPC on localhost:50051; `status`, `logs`, `down`
+CARDANO_UTXORPC_URL=http://localhost:50051 pnpm dev
+```
+
+Nothing is downloaded twice: downloads resume, their files are kept, and the node's data stays in `.cardano-preprod/`
+when it stops. Turning Cardano on needs a fresh read model (`REDEPLOY=1 pnpm dev:deploy`), since Effectstream's set of
+chains is fixed when its database is created. `pnpm cardano:balances` and `pnpm cardano:transfer` work with the test
+wallets created by `pnpm cardano:wallets`.
 
 ### Tests
 

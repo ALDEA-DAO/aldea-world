@@ -36,7 +36,7 @@ fk world register --name "ALDEA Nocturna" --org alma:main:org:nocturna \
   --parent <aldeaWorldId from 31337.json>        # prints your worldId
 ```
 
-Open <http://localhost:3000/#/portal>, tab "Todos": your world is there, as a fork of ALDEA World, within seconds.
+Open <http://localhost:3100/#/portal>, tab "Todos": your world is there, as a fork of ALDEA World, within seconds.
 It is not under "Verificados": only the Atlas curator verifies a world, and visitors get a warning before traveling
 to an unverified one.
 

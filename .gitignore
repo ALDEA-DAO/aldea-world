@@ -8,6 +8,12 @@ coverage
 .env.*
 !.env.example
 
+# Cardano preprod test wallets (recovery phrases) and the minted test token's record
+.cardano-preprod/
+
+# the vote batcher keeps the inputs it has not published yet
+.batcher-data/
+
 # foundry
 out/
 cache/
@@ -36,3 +42,6 @@ packages/shared/src/deployments/31337.json
 
 # Kenney packs downloaded by `pnpm --filter client art`
 packages/client/.art-cache/
+
+# written by the vote batcher next to where it runs
+batcher-debug.log

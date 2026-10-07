@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { ALDEA_ASSETS, type CardanoNetwork } from "@aldea/shared/constants";
 import { getAddress, type Address } from "viem";
 
 /**
@@ -17,7 +18,7 @@ const isLocal = chainId === 31337;
 
 /** packages/shared/src/deployments/<chainId>.json, written by Deploy.s.sol and merge-world.ts. */
 function readDeployment():
-  | { world?: { address: string; blockNumber: number; systems: Record<string, string> }; protocol?: { almaAnchorRegistry: string; atlasRegistry?: string; deployBlock: number }; aldeaWorldId?: string }
+  | { world?: { address: string; blockNumber: number; systems: Record<string, string> }; protocol?: { almaAnchorRegistry: string; atlasRegistry?: string; aldeaCouncilExecutor?: string; councilInputs?: string; deployBlock: number }; aldeaWorldId?: string; safe?: string }
   | undefined {
   const path = join(import.meta.dir, `../../shared/src/deployments/${chainId}.json`);
   return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : undefined;
@@ -48,7 +49,49 @@ function atlasRegistryAddress(): Address {
   return getAddress(value);
 }
 
+/**
+ * Where $ALDEA is read from: a UTxO RPC endpoint (a local Dolos, or a hosted one with an API key). Without
+ * CARDANO_UTXORPC_URL the node runs without Cardano and aldea_holdings stays empty.
+ *
+ * The sync starts at a block just before the asset's first UTxO. On preprod that is the block before the tALDEA mint;
+ * on mainnet it has to be given (CARDANO_START_SLOT and CARDANO_START_HASH).
+ */
+// Keys in alphabetical order (hash, slot): Effectstream stores the start point as immutable config and compares it as
+// serialized JSON on the next start, after Postgres has sorted the keys; any other order hangs every restart silently.
+const PREPROD_START = { hash: "25f5f3fc114a6d03d6ed856926a9fa538a126260d71fbc7f602017b25464f8c9", slot: 135417364 };
+
+function cardanoConfig() {
+  const rpcUrl = process.env.CARDANO_UTXORPC_URL;
+  if (!rpcUrl) return undefined;
+  const network = (process.env.CARDANO_NETWORK ?? "preprod") as CardanoNetwork;
+  const asset = ALDEA_ASSETS[network];
+  if (!asset) throw new Error(`CARDANO_NETWORK must be one of ${Object.keys(ALDEA_ASSETS).join(", ")}`);
+  const start = process.env.CARDANO_START_SLOT && process.env.CARDANO_START_HASH ? { hash: process.env.CARDANO_START_HASH, slot: Number(process.env.CARDANO_START_SLOT) } : network === "preprod" ? PREPROD_START : undefined;
+  if (!start) throw new Error("Set CARDANO_START_SLOT and CARDANO_START_HASH: a block just before the asset's first UTxO");
+  const apiKey = process.env.CARDANO_UTXORPC_API_KEY;
+  return {
+    rpcUrl,
+    headers: apiKey ? { "dmtr-api-key": apiKey } : undefined,
+    network,
+    policyId: (process.env.ALDEA_POLICY_ID || asset.policyId).toLowerCase(),
+    assetNameHex: (process.env.ALDEA_ASSET_NAME_HEX || asset.assetNameHex).toLowerCase(),
+    start,
+  };
+}
+
 const deployment = readDeployment();
+
+/**
+ * The Council: its executor, the contract its inputs are published in, and who may post a proposal's rules there
+ * (the guardian that opens proposals). Undefined for a deployment without it: the node then runs without the Council.
+ */
+function councilConfig() {
+  const executor = process.env.COUNCIL_ADDRESS || deployment?.protocol?.aldeaCouncilExecutor;
+  const inputs = process.env.COUNCIL_INPUTS_ADDRESS || deployment?.protocol?.councilInputs;
+  const operator = process.env.COUNCIL_OPERATOR_ADDRESS || deployment?.safe;
+  if (!executor || !inputs || !operator) return undefined;
+  return { executor: getAddress(executor), inputs: getAddress(inputs), operator: operator.toLowerCase() };
+}
 
 export const env = {
   chainId,
@@ -69,6 +112,8 @@ export const env = {
   atlasRegistry: atlasRegistryAddress,
   /** The World this node measures, as the Atlas versions name it. */
   worldAddress: (process.env.WORLD_ADDRESS || deployment?.world?.address || "").toLowerCase(),
+  cardano: cardanoConfig(),
+  council: councilConfig(),
   /** Key of this world in world_activity_hourly: its Atlas worldId, or the World address until it is registered. */
   activityWorldId: (process.env.ALDEA_WORLD_ID || deployment?.aldeaWorldId || process.env.WORLD_ADDRESS || deployment?.world?.address || "aldea").toLowerCase(),
 };

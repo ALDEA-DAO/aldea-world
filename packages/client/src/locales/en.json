@@ -300,7 +300,92 @@
     "charter": "The Genesis Charter",
     "opensOn": "The Council will open with the Genesis Charter on {{date}}.",
     "opensSoon": "The Council will open with the Genesis Charter. The date will be announced soon.",
-    "whatItIs": "It ratifies the village's official version: approved unless there is a qualified objection from $ALDEA holders."
+    "whatItIs": "It ratifies the village's official version: approved unless there is a qualified objection from $ALDEA holders.",
+    "unavailable": "We couldn't read the Council. We'll try again in a moment.",
+    "what": {
+      "title": "What is being ratified",
+      "version": "Version",
+      "cid": "Content (CID)",
+      "commit": "Commit",
+      "unknownVersion": "The proposed version is not in the Atlas yet."
+    },
+    "rule": {
+      "title": "The rule",
+      "text": "The Charter is approved unless there is a qualified objection: it is rejected only if the objections outweigh the signatures and also reach {{threshold}}% of the $ALDEA with a voice.",
+      "diagram": "When it is rejected",
+      "moreObjections": "More objections than signatures",
+      "reachThreshold": "Objections ≥ {{threshold}}% of the total",
+      "rejected": "Rejected",
+      "otherwise": "In any other case it is approved: staying silent is not objecting.",
+      "weight": "Each voice weighs the $ALDEA its wallet held on {{date}}.",
+      "pending": "The Charter's rules have not been published yet."
+    },
+    "voice": {
+      "title": "Your voice",
+      "signIn": "Sign in with your soul to sign the Charter.",
+      "notFounder": "To sign the Charter you need the Founder seal.",
+      "howToFounder": "How to get it",
+      "noWeight": "Your wallet had no $ALDEA in the {{date}} snapshot.",
+      "weight": "Your voice weighs {{amount}} $ALDEA.",
+      "sign": "Sign the Charter",
+      "object": "Object",
+      "signed": "You signed the Charter.",
+      "objected": "You objected to the Charter.",
+      "change": "Change my vote",
+      "changedTo": "You changed your vote to {{choice}}.",
+      "choiceSign": "sign",
+      "choiceObject": "object",
+      "notOpenYet": "You will be able to sign or object from {{date}}.",
+      "closed": "Charter closed.",
+      "counting": "Your vote is published; it will be counted in a moment."
+    },
+    "tally": {
+      "title": "How it's going",
+      "signatures": "Signatures",
+      "objections": "Objections",
+      "turnout": "Turnout",
+      "voices_one": "{{count}} voice",
+      "voices_other": "{{count}} voices",
+      "eligible": "{{amount}} $ALDEA with a voice"
+    },
+    "verify": {
+      "title": "Verify",
+      "opened": "Charter opened",
+      "yourVote": "Your vote on-chain",
+      "queued": "Result published",
+      "executed": "Execution",
+      "vetoed": "Veto",
+      "rules": "Rules",
+      "tally": "Download the full tally (tally.json)",
+      "tallyHash": "Tally hash:",
+      "recompute": "With the tally and its hash, anyone can redo the count."
+    },
+    "status": {
+      "scheduled": "The Charter opens on {{date}}.",
+      "open": "The Charter is open until {{date}}.",
+      "approved": "The Charter was approved.",
+      "rejected": "The Charter was rejected by a qualified objection.",
+      "noResult": "The Charter closed with no rules published: there is no result.",
+      "waitingQueue": "The result is about to be published on-chain.",
+      "queued": "The result is on-chain. It can be executed from {{date}}; until then the guardian can veto it.",
+      "executed": "ALDEA was founded with version {{semver}}.",
+      "vetoed": "The guardian vetoed the Charter.",
+      "vetoReason": "Reason: {{reason}}"
+    },
+    "vote": {
+      "choose": "Choose the wallet you linked to your soul.",
+      "aboutToSign": "You are about to sign the Charter. Your wallet will show you this message:",
+      "aboutToObject": "You are about to object to the Charter. Your wallet will show you this message:",
+      "noTransaction": "It is only a signature: no transaction is built, nothing moves and there is no fee.",
+      "sending": "Publishing your vote…",
+      "published": "Your vote is published.",
+      "errors": {
+        "otherWallet": "That is not the wallet linked to your soul. Choose the one you linked.",
+        "badSignature": "The signature did not match. Sign with the wallet linked to your soul.",
+        "tooMany": "You changed your vote many times today. Try again tomorrow.",
+        "notPublished": "We couldn't publish your vote. Try again."
+      }
+    }
   },
   "list": {
     "buildings": "Village buildings",
@@ -379,5 +464,56 @@
       "development": "This is a development server: it does not come from a release.",
       "unknown": "We couldn't reach the Atlas to check this version."
     }
+  },
+  "founder": {
+    "badge": "Founder",
+    "claim": "Claim seal",
+    "claiming": "Claiming your seal…",
+    "walletLinked": "Cardano wallet linked:",
+    "errors": {
+      "belowMinimum": "Your wallet does not hold the minimum $ALDEA for the seal.",
+      "missing": "You need {{amount}} more $ALDEA for the seal.",
+      "readingCardano": "We're reading Cardano, come back in a few minutes.",
+      "notLinked": "Link your Cardano wallet first.",
+      "alreadyFounder": "Your soul already has the Founder seal.",
+      "credentialUsed": "That Cardano wallet has already claimed a seal.",
+      "tryAgain": "We couldn't claim the seal. Try again."
+    },
+    "link": {
+      "title": "Link Cardano",
+      "steps": "Steps",
+      "step": {
+        "choose": "Choose your wallet",
+        "sign": "Sign this message",
+        "done": "Done"
+      },
+      "noWallets": "We couldn't find any Cardano wallets. Install Eternl or Lace and come back.",
+      "signIntro": "Your wallet will show you this message. Sign it to prove the wallet is yours.",
+      "noTransaction": "It is only a signature: no transaction is built, nothing moves and there is no fee.",
+      "waiting": "Waiting for your signature…",
+      "sign": "Sign",
+      "cancel": "Cancel",
+      "linked": "Your wallet is now linked to your soul.",
+      "noStakePart": "This wallet has no stake part. It works, but a wallet with one is preferable.",
+      "holdings": "It holds {{amount}} $ALDEA.",
+      "errors": {
+        "generic": "We couldn't link your wallet. Try again.",
+        "walletRefused": "The wallet did not give access. Open it and try again.",
+        "signatureRejected": "You didn't sign the message. You can sign it whenever you like.",
+        "linkedElsewhere": "This wallet already belongs to another soul.",
+        "alreadyLinked": "Your soul already has a Cardano wallet linked.",
+        "badSignature": "The signature did not match. Sign with your wallet's stake address.",
+        "expired": "The request expired. Let's start again.",
+        "wrongNetwork": "That wallet is on another Cardano network.",
+        "unsupported": "That kind of address cannot be linked."
+      }
+    }
+  },
+  "genesis": {
+    "title": "Founders first",
+    "explain": "During Genesis Week, those who hold $ALDEA are born. If that is you, link your Cardano wallet and be born: your Founder seal is claimed in the same step.",
+    "opens": "The village opens to every soul on {{date}}.",
+    "link": "Link Cardano",
+    "linked": "Your wallet is linked. Choose your class to be born."
   }
 }

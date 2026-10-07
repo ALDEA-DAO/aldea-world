@@ -23,6 +23,7 @@ const sources: Record<string, string> = {
   AlmaAnchorRegistry: "@adasouls/protocol/abis/AlmaAnchorRegistry.json",
   AtlasRegistry: "@adasouls/protocol/abis/AtlasRegistry.json",
   AldeaCouncilExecutor: "council/out/AldeaCouncilExecutor.sol/AldeaCouncilExecutor.json",
+  CouncilInputs: "council/out/CouncilInputs.sol/CouncilInputs.json",
 };
 
 const require = createRequire(import.meta.url);

@@ -24,8 +24,8 @@ const LOCAL_CLIENTS: OidcClientInput[] = [
   {
     clientId: "aldea-world",
     name: "ALDEA World",
-    redirectUris: ["http://localhost:3000/"],
-    postLogoutRedirectUris: ["http://localhost:3000/"],
+    redirectUris: ["http://localhost:3100/"],
+    postLogoutRedirectUris: ["http://localhost:3100/"],
   },
   // The fork kit CLI signs in from a terminal with a wallet key: its redirect URI is never opened
   { clientId: "fork-kit", name: "Fork kit", redirectUris: ["http://127.0.0.1/fork-kit/callback"] },

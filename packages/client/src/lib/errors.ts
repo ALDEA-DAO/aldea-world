@@ -32,6 +32,16 @@ const COPY: Record<string, string> = {
   MovementSystem_NotBorn: "errors.notBornYet",
   MovementSystem_UnknownBuilding: "errors.unknownBuilding",
   MovementSystem_BuildingClosed: "errors.buildingClosed",
+  FounderSystem_WorldPaused: "errors.worldPaused",
+  FounderSystem_AlreadyFounder: "founder.errors.alreadyFounder",
+  FounderSystem_StakeCredentialAlreadyClaimed: "founder.errors.credentialUsed",
+  FounderSystem_BelowMinimumBalance: "founder.errors.belowMinimum",
+  FounderSystem_NotSoulController: "errors.notSoulController",
+  FounderSystem_AttestationOwnerMismatch: "errors.notSoulController",
+  // Expired or reused attestations are replaced automatically; these only show if that fails too
+  FounderSystem_AttestationExpired: "founder.errors.tryAgain",
+  FounderSystem_AttestationUsed: "founder.errors.tryAgain",
+  FounderSystem_InvalidAttestationSigner: "founder.errors.tryAgain",
   AlreadyHasHuman: "errors.alreadyAnchored",
   AlreadyAnchored: "errors.alreadyAnchored",
 };

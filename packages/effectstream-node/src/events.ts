@@ -30,6 +30,14 @@ export const AldeaEvents = registerEvents({
       { name: "kind", type: Type.String() },
     ],
   }),
+  // A Council proposal changed: opened, a vote arrived, closed, queued, executed or vetoed. Subscribers read the rest
+  CouncilUpdated: genEvent({
+    name: "CouncilUpdated",
+    fields: [
+      { name: "proposalId", type: Type.String(), indexed: true },
+      { name: "status", type: Type.String() },
+    ],
+  }),
   AtlasWorldChanged: genEvent({
     name: "AtlasWorldChanged",
     fields: [

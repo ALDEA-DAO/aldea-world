@@ -1,11 +1,13 @@
 import { almaAnchorRegistryAbi } from "@aldea/shared/abis";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Address, Hex } from "viem";
-import { createAlmaApi } from "../../lib/almaApi";
+import { AlmaApiError, createAlmaApi } from "../../lib/almaApi";
 import { decodeGameError, isGameError, type GameError } from "../../lib/errors";
 import { useBlockNumber, useMud, useWorld, type WorldState, type WorldTables } from "../../mud/store";
 import { authConfig } from "../auth/config";
 import { useAlmaSession } from "../auth/useAlmaSession";
+import { resolverProblem } from "../founders/useFounder";
+import type { FounderClaim } from "../../mud/systemCalls";
 
 /**
  * Being born: prepare the soul, then one operation with `anchorHuman` (when the soul is not anchored yet) and
@@ -76,13 +78,21 @@ export function useBirth() {
           functionName: "isController",
           args: [soul.almaIdHash, account.address as Address],
         });
+        // During Genesis only Founders are born: a soul without the seal claims it in the same operation, with the
+        // Resolver's attestation of its linked Cardano wallet (which fails here if it is not eligible)
+        const world = network.useStore.getState();
+        const genesisEndsAt = world.getValue(network.tables.Config, {})?.genesisEndsAt ?? 0n;
+        const isFounder = (world.getValue(network.tables.Founder, { almaIdHash: soul.almaIdHash })?.claimedAt ?? 0n) > 0n;
+        const founder = genesisEndsAt * 1000n > BigInt(Date.now()) && !isFounder ? await almaApi<FounderClaim>("/v1/founders/attestation", { body: {} }) : undefined;
         await systemCalls.requestBirth({
           characterClass,
           almaIdHash: soul.almaIdHash,
           anchor: anchored ? undefined : { almaId: soul.almaId, docHash: soul.docHash },
+          founder,
         });
       } catch (err) {
-        setError(decodeGameError(err));
+        // The Resolver refusing the attestation is the Genesis rule seen from here
+        setError(err instanceof AlmaApiError && err.status !== 0 && err.code !== "unknown" ? { name: err.code, copyKey: resolverProblem(err, "es").copyKey } : decodeGameError(err));
       } finally {
         inFlight.current = false;
         setSending(false);

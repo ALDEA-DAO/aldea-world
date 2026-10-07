@@ -18,25 +18,26 @@ export async function effectstreamApi<T>(path: string): Promise<T> {
 }
 
 /**
- * Effectstream publishes an event as `app/<event>/blockHeight/<n>/<indexed field>/<value>`. The Atlas' is the only
- * one indexed by `worldId`, so this filter is "any world of the Atlas changed".
+ * Effectstream publishes an event as `app/<event>/blockHeight/<n>/<indexed field>/<value>`. Each kind of event here
+ * is the only one indexed by its field, so the field alone tells them apart.
  */
 const ATLAS_WORLDS_TOPIC = "app/+/blockHeight/+/worldId/+";
+const COUNCIL_TOPIC = "app/+/blockHeight/+/proposalId/+";
 
 /**
- * Calls `onChange` with the id of every world the Atlas registers or updates, as it happens. MQTT loads on first use
- * and reconnects by itself; the returned function stops listening.
+ * Calls `onChange` with the last segment of every message on `topic` (the indexed value), as it happens. MQTT loads on
+ * first use and reconnects by itself; the returned function stops listening.
  */
-export function subscribeAtlasWorlds(onChange: (worldId: string) => void): () => void {
+function subscribe(topic: string, onChange: (value: string) => void): () => void {
   let stopped = false;
   let end: (() => void) | undefined;
   void import("mqtt").then(({ default: mqtt }) => {
     if (stopped) return;
     const client = mqtt.connect(effectstreamMqttUrl, { reconnectPeriod: 5_000 });
-    client.on("connect", () => client.subscribe(ATLAS_WORLDS_TOPIC));
-    client.on("message", (topic) => {
-      const worldId = topic.split("/").at(-1);
-      if (worldId) onChange(worldId.toLowerCase());
+    client.on("connect", () => client.subscribe(topic));
+    client.on("message", (messageTopic) => {
+      const value = messageTopic.split("/").at(-1);
+      if (value) onChange(value.toLowerCase());
     });
     // The read API still answers without the broker: connection errors only mean no live updates for now
     client.on("error", () => undefined);
@@ -47,3 +48,9 @@ export function subscribeAtlasWorlds(onChange: (worldId: string) => void): () =>
     end?.();
   };
 }
+
+/** Calls `onChange` with the id of every world the Atlas registers or updates. */
+export const subscribeAtlasWorlds = (onChange: (worldId: string) => void) => subscribe(ATLAS_WORLDS_TOPIC, onChange);
+
+/** Calls `onChange` with the id of every Council proposal that changes: opened, voted on, closed, queued, executed or vetoed. */
+export const subscribeCouncil = (onChange: (proposalId: string) => void) => subscribe(COUNCIL_TOPIC, onChange);

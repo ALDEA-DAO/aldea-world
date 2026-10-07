@@ -6,7 +6,7 @@ import { ProblemError } from "../src/lib/problem";
 const deps = (overrides: Partial<Parameters<typeof createApp>[0]> = {}) => ({
   pingDb: async () => {},
   baseHead: async () => 1234n,
-  corsOrigins: ["http://localhost:3000"],
+  corsOrigins: ["http://localhost:3100"],
   ...overrides,
 });
 

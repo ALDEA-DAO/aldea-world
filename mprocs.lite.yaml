@@ -4,33 +4,39 @@ procs:
   anvil:
     shell: anvil --block-time 2 --base-fee 0 --silent
   pglite:
-    shell: bun scripts/pglite.ts --port 5433 & bun scripts/pglite.ts --port 5434 & bun scripts/pglite.ts --port 5435 & wait
+    shell: bun scripts/pglite.ts --port 5443 & bun scripts/pglite.ts --port 5444 & bun scripts/pglite.ts --port 5445 & wait
     cwd: packages/effectstream-node
   deploy:
     shell: scripts/dev-deploy.sh
     autorestart: false
   mud-indexer:
-    shell: scripts/wait-for-deploy.sh && scripts/wait-for.sh 5435 && eval "$(scripts/dev-env.sh)" && pnpm exec postgres-indexer
+    shell: scripts/wait-for-deploy.sh && scripts/wait-for.sh 5445 && eval "$(scripts/dev-env.sh)" && pnpm exec postgres-indexer
     env:
-      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5435/postgres
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5445/postgres
       RPC_HTTP_URL: http://127.0.0.1:8545
   mud-indexer-api:
     shell: scripts/wait-for-deploy.sh && sleep 3 && pnpm exec postgres-frontend
     env:
-      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5435/postgres
-      PORT: "3001"
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5445/postgres
+      PORT: "3101"
   alma-resolver:
-    shell: scripts/wait-for.sh 5434 && pnpm --filter @aldea/alma-resolver db:migrate && pnpm --filter @aldea/alma-resolver db:clients && pnpm --filter @aldea/alma-resolver dev
+    shell: scripts/wait-for.sh 5444 && pnpm --filter @aldea/alma-resolver db:migrate && pnpm --filter @aldea/alma-resolver db:clients && pnpm --filter @aldea/alma-resolver dev
     env:
-      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5434/postgres
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5444/postgres
       BASE_RPC_URL: http://127.0.0.1:8545
       PORT: "8787"
   effectstream:
-    shell: scripts/wait-for-deploy.sh && scripts/wait-for.sh 5433 && pnpm --filter @aldea/effectstream-node dev
+    shell: scripts/wait-for-deploy.sh && scripts/wait-for.sh 5443 && pnpm --filter @aldea/effectstream-node dev
     env:
-      DB_PORT: "5433"
+      DB_PORT: "5443"
       PGLITE: "true"
       CHAIN_ID: "31337"
+  batcher:
+    shell: scripts/wait-for-deploy.sh && pnpm --filter @aldea/effectstream-node batcher
+    env:
+      CHAIN_ID: "31337"
+      # anvil's default account 3: a public development key. It pays the gas of the votes it publishes
+      BATCHER_PRIVATE_KEY: "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6"
   # Health only in lite mode: the embedded PGlite server takes one client (Effectstream), so the client completes
   # births itself after 20 s. Use `pnpm dev` to run the Midwife.
   relay-worker:

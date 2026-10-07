@@ -12,7 +12,7 @@ function setup(pending: PendingCompletion[]) {
   const sent: number[] = [];
   const alerts: string[] = [];
 
-  const outbox: Outbox = {
+  const outbox: Pick<Outbox, "pendingCompletions" | "recordAttempt"> = {
     pendingCompletions: async () => pending,
     recordAttempt: async (outboxId, attempt) => void attempts.push({ outboxId, ...attempt }),
   };

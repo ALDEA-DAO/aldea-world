@@ -15,6 +15,8 @@ export interface WorldCharacter {
   id: number;
   characterClass: number;
   tribe: number;
+  /** The soul has the Founder seal. */
+  founder?: boolean;
   /** The building the character was last seen in, if any. */
   at?: string;
 }
@@ -35,7 +37,7 @@ type Listener = () => void;
 
 export class GameBridge {
   buildings: WorldBuilding[] = [];
-  player?: { characterClass: number; tribe: number };
+  player?: { characterClass: number; tribe: number; founder?: boolean };
   others: WorldCharacter[] = [];
   state: GameState = { ready: false, fps: 0 };
   /** Set by React: the player asked (with the keyboard) to go into the building at this door. */

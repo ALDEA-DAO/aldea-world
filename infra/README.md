@@ -13,6 +13,10 @@
 | `../scripts/deploy-testnet.sh` | Deploys the contracts to Base Sepolia and writes `packages/shared/src/deployments/84532.json` |
 | `../.github/workflows/deploy-testnet.yml` | Manual workflow: services to Fly.io, client to Cloudflare Pages |
 
+The vote batcher (`pnpm --filter @aldea/effectstream-node batcher`, port 3334) has no Fly app yet: it runs from the
+Effectstream node's image with that command, needs `BATCHER_PRIVATE_KEY` (an account with a little ETH and no role) and a
+volume for `BATCHER_DATA_DIR`, and the client needs `VITE_BATCHER_URL`. The Safe's transactions are in `safe/`.
+
 Build context is always the repository root: `podman build -f infra/docker/<file> .` (or `docker build`).
 
 ## Deploying testnet, in order

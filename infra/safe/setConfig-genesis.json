@@ -1,0 +1,34 @@
+{
+  "version": "1.0",
+  "chainId": "84532",
+  "createdAt": 0,
+  "meta": {
+    "name": "ALDEA World: Genesis Week",
+    "description": "Sets genesisEndsAt: until then only souls with the Founder seal are born. Load in the Safe's Transaction Builder and replace every <PLACEHOLDER>. The other four values must repeat the World's current Config (setConfig writes all five); read them with `cast call <WORLD_ADDRESS> 'getRecord(bytes32,bytes32[])'` or from the deployment file."
+  },
+  "transactions": [
+    {
+      "to": "<WORLD_ADDRESS>",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "aldea__setConfig",
+        "payable": false,
+        "inputs": [
+          { "name": "almaRegistry", "type": "address", "internalType": "address" },
+          { "name": "founderAttestor", "type": "address", "internalType": "address" },
+          { "name": "minFounderBalance", "type": "uint128", "internalType": "uint128" },
+          { "name": "genesisEndsAt", "type": "uint64", "internalType": "uint64" },
+          { "name": "birthDelayBlocks", "type": "uint16", "internalType": "uint16" }
+        ]
+      },
+      "contractInputsValues": {
+        "almaRegistry": "<ALMA_ANCHOR_REGISTRY_ADDRESS>",
+        "founderAttestor": "<FOUNDER_ATTESTOR_ADDRESS>",
+        "minFounderBalance": "1000000000",
+        "genesisEndsAt": "<UNIX_SECONDS: Genesis start + 7 days>",
+        "birthDelayBlocks": "3"
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { worldAbi } from "@aldea/shared/abis";
+import { aldeaCouncilExecutorAbi, worldAbi } from "@aldea/shared/abis";
 import { BaseError, ContractFunctionRevertedError, createPublicClient, createWalletClient, http, type Address, type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -49,5 +49,49 @@ export function createBirthChain({ rpcUrl, worldAddress, relayerKey }: { rpcUrl:
       if (receipt.status !== "success") throw new Error(`completeBirth(${characterId}) reverted in ${hash}`);
       return hash;
     },
+  };
+}
+
+/** What the executor would answer: `done` when the proposal is no longer in the state the call needs. */
+export type CouncilSimulation = "ok" | "done" | "too_early";
+
+/** The relay's view of AldeaCouncilExecutor: `queue` (only the relayer may) and `execute`, each simulated first. */
+export interface CouncilChain {
+  simulateQueue(proposalId: Hex, versionId: Hex, tallyHash: Hex, tallyURI: string): Promise<CouncilSimulation>;
+  queue(proposalId: Hex, versionId: Hex, tallyHash: Hex, tallyURI: string): Promise<Hex>;
+  simulateExecute(proposalId: Hex): Promise<CouncilSimulation>;
+  execute(proposalId: Hex): Promise<Hex>;
+}
+
+export function createCouncilChain({ rpcUrl, executor, relayerKey }: { rpcUrl: string; executor: Address; relayerKey: Hex }): CouncilChain {
+  const account = privateKeyToAccount(relayerKey);
+  const publicClient = createPublicClient({ transport: http(rpcUrl), pollingInterval: 1_000 });
+  const wallet = createWalletClient({ account, transport: http(rpcUrl) });
+  const contract = { address: executor, abi: aldeaCouncilExecutorAbi, account } as const;
+
+  const simulate = async (run: () => Promise<unknown>): Promise<CouncilSimulation> => {
+    try {
+      await run();
+      return "ok";
+    } catch (err) {
+      const name = revertName(err);
+      // InvalidState: already queued, executed or vetoed. TooEarly: the proposal's end or the delay has not passed on Base
+      if (name === "InvalidState") return "done";
+      if (name === "TooEarly") return "too_early";
+      throw err;
+    }
+  };
+  const sent = async (hash: Hex, what: string) => {
+    const receipt = await publicClient.waitForTransactionReceipt({ hash });
+    if (receipt.status !== "success") throw new Error(`${what} reverted in ${hash}`);
+    return hash;
+  };
+
+  return {
+    simulateQueue: (proposalId, versionId, tallyHash, tallyURI) => simulate(() => publicClient.simulateContract({ ...contract, functionName: "queue", args: [proposalId, versionId, tallyHash, tallyURI] })),
+    queue: async (proposalId, versionId, tallyHash, tallyURI) =>
+      sent(await wallet.writeContract({ ...contract, functionName: "queue", args: [proposalId, versionId, tallyHash, tallyURI], chain: null }), `queue(${proposalId})`),
+    simulateExecute: (proposalId) => simulate(() => publicClient.simulateContract({ ...contract, functionName: "execute", args: [proposalId] })),
+    execute: async (proposalId) => sent(await wallet.writeContract({ ...contract, functionName: "execute", args: [proposalId], chain: null }), `execute(${proposalId})`),
   };
 }

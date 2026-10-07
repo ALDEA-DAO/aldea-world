@@ -300,7 +300,92 @@
     "charter": "El Acta de Génesis",
     "opensOn": "El Consejo abrirá con el Acta de Génesis el {{date}}.",
     "opensSoon": "El Consejo abrirá con el Acta de Génesis. La fecha se anuncia pronto.",
-    "whatItIs": "Ahí se ratifica la versión oficial de la aldea: queda aprobada salvo que haya una objeción calificada de quienes tienen $ALDEA."
+    "whatItIs": "Ahí se ratifica la versión oficial de la aldea: queda aprobada salvo que haya una objeción calificada de quienes tienen $ALDEA.",
+    "unavailable": "No pudimos leer el Consejo. Lo intentamos de nuevo en un momento.",
+    "what": {
+      "title": "Qué se ratifica",
+      "version": "Versión",
+      "cid": "Contenido (CID)",
+      "commit": "Commit",
+      "unknownVersion": "La versión propuesta todavía no aparece en el Atlas."
+    },
+    "rule": {
+      "title": "La regla",
+      "text": "El Acta queda aprobada salvo objeción calificada: solo se rechaza si las objeciones pesan más que las firmas y además llegan al {{threshold}} % del $ALDEA con voz.",
+      "diagram": "Cuándo se rechaza",
+      "moreObjections": "Más objeciones que firmas",
+      "reachThreshold": "Objeciones ≥ {{threshold}} % del total",
+      "rejected": "Rechazada",
+      "otherwise": "En cualquier otro caso queda aprobada: quien no dice nada, no se opone.",
+      "weight": "Cada voz pesa el $ALDEA que su wallet tenía el {{date}}.",
+      "pending": "Las reglas del Acta todavía no fueron publicadas."
+    },
+    "voice": {
+      "title": "Tu voz",
+      "signIn": "Entra con tu alma para firmar el Acta.",
+      "notFounder": "Para firmar el Acta necesitas el sello de Fundador.",
+      "howToFounder": "Cómo obtenerlo",
+      "noWeight": "Tu wallet no tenía $ALDEA en el snapshot del {{date}}.",
+      "weight": "Tu voz pesa {{amount}} $ALDEA.",
+      "sign": "Firmar el Acta",
+      "object": "Objetar",
+      "signed": "Firmaste el Acta.",
+      "objected": "Objetaste el Acta.",
+      "change": "Cambiar mi voto",
+      "changedTo": "Cambiaste tu voto a {{choice}}.",
+      "choiceSign": "firmar",
+      "choiceObject": "objetar",
+      "notOpenYet": "Podrás firmar u objetar desde el {{date}}.",
+      "closed": "Acta cerrada.",
+      "counting": "Tu voto ya está publicado; se cuenta en unos instantes."
+    },
+    "tally": {
+      "title": "Cómo va",
+      "signatures": "Firmas",
+      "objections": "Objeciones",
+      "turnout": "Participación",
+      "voices_one": "{{count}} voz",
+      "voices_other": "{{count}} voces",
+      "eligible": "{{amount}} $ALDEA con voz"
+    },
+    "verify": {
+      "title": "Verificar",
+      "opened": "Apertura del Acta",
+      "yourVote": "Tu voto en la cadena",
+      "queued": "Resultado publicado",
+      "executed": "Ejecución",
+      "vetoed": "Veto",
+      "rules": "Reglas",
+      "tally": "Descargar el escrutinio completo (tally.json)",
+      "tallyHash": "Huella del escrutinio:",
+      "recompute": "Con el escrutinio y su huella, cualquiera puede rehacer la cuenta."
+    },
+    "status": {
+      "scheduled": "El Acta abre el {{date}}.",
+      "open": "El Acta está abierta hasta el {{date}}.",
+      "approved": "El Acta fue aprobada.",
+      "rejected": "El Acta fue rechazada por objeción calificada.",
+      "noResult": "El Acta cerró sin reglas publicadas: no hay resultado.",
+      "waitingQueue": "El resultado está por publicarse en la cadena.",
+      "queued": "El resultado ya está en la cadena. Se ejecuta a partir del {{date}}; hasta entonces el guardián puede vetarlo.",
+      "executed": "ALDEA fue fundada con la versión {{semver}}.",
+      "vetoed": "El guardián vetó el Acta.",
+      "vetoReason": "Motivo: {{reason}}"
+    },
+    "vote": {
+      "choose": "Elige la wallet que vinculaste a tu alma.",
+      "aboutToSign": "Vas a firmar el Acta. Tu wallet te mostrará este mensaje:",
+      "aboutToObject": "Vas a objetar el Acta. Tu wallet te mostrará este mensaje:",
+      "noTransaction": "Es solo una firma: no se arma ninguna transacción, nada se mueve y no pagas comisión.",
+      "sending": "Publicando tu voto…",
+      "published": "Tu voto está publicado.",
+      "errors": {
+        "otherWallet": "Esa no es la wallet vinculada a tu alma. Elige la que vinculaste.",
+        "badSignature": "La firma no coincidió. Firma con la wallet vinculada a tu alma.",
+        "tooMany": "Cambiaste tu voto muchas veces hoy. Vuelve a intentarlo mañana.",
+        "notPublished": "No pudimos publicar tu voto. Inténtalo de nuevo."
+      }
+    }
   },
   "list": {
     "buildings": "Edificios de la aldea",
@@ -379,5 +464,56 @@
       "development": "Es un servidor de desarrollo: no viene de una publicación.",
       "unknown": "No pudimos consultar el Atlas para comprobar esta versión."
     }
+  },
+  "founder": {
+    "badge": "Fundador",
+    "claim": "Reclamar sello",
+    "claiming": "Reclamando tu sello…",
+    "walletLinked": "Wallet de Cardano vinculada:",
+    "errors": {
+      "belowMinimum": "Tu wallet no llega al mínimo de $ALDEA para el sello.",
+      "missing": "Te faltan {{amount}} $ALDEA para el sello.",
+      "readingCardano": "Estamos leyendo Cardano, vuelve en unos minutos.",
+      "notLinked": "Primero vincula tu wallet de Cardano.",
+      "alreadyFounder": "Tu alma ya tiene el sello de Fundador.",
+      "credentialUsed": "Esa wallet de Cardano ya reclamó un sello.",
+      "tryAgain": "No pudimos reclamar el sello. Prueba de nuevo."
+    },
+    "link": {
+      "title": "Vincular Cardano",
+      "steps": "Pasos",
+      "step": {
+        "choose": "Elige tu wallet",
+        "sign": "Firma este mensaje",
+        "done": "Listo"
+      },
+      "noWallets": "No encontramos wallets de Cardano. Instala Eternl o Lace y vuelve.",
+      "signIntro": "Tu wallet te va a mostrar este mensaje. Fírmalo para probar que es tuya.",
+      "noTransaction": "Es solo una firma: no se arma ninguna transacción, no se mueve nada y no tiene costo.",
+      "waiting": "Esperando tu firma…",
+      "sign": "Firmar",
+      "cancel": "Cancelar",
+      "linked": "Tu wallet quedó vinculada a tu alma.",
+      "noStakePart": "Esta wallet no tiene parte de stake. Funciona, pero es preferible una wallet con stake.",
+      "holdings": "Tiene {{amount}} $ALDEA.",
+      "errors": {
+        "generic": "No pudimos vincular tu wallet. Prueba de nuevo.",
+        "walletRefused": "La wallet no dio acceso. Ábrela y prueba de nuevo.",
+        "signatureRejected": "No firmaste el mensaje. Puedes firmarlo cuando quieras.",
+        "linkedElsewhere": "Esta wallet ya pertenece a otra alma.",
+        "alreadyLinked": "Tu alma ya tiene una wallet de Cardano vinculada.",
+        "badSignature": "La firma no coincide. Firma con la dirección de stake de tu wallet.",
+        "expired": "El pedido venció. Empecemos de nuevo.",
+        "wrongNetwork": "Esa wallet está en otra red de Cardano.",
+        "unsupported": "Ese tipo de dirección no se puede vincular."
+      }
+    }
+  },
+  "genesis": {
+    "title": "Fundadores primero",
+    "explain": "Durante la Semana Génesis nacen quienes tienen $ALDEA. Si es tu caso, vincula tu wallet de Cardano y nace: tu sello de Fundador se reclama en el mismo paso.",
+    "opens": "La aldea se abre para todas las almas el {{date}}.",
+    "link": "Vincular Cardano",
+    "linked": "Tu wallet está vinculada. Elige tu clase para nacer."
   }
 }
