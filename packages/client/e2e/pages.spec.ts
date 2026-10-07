@@ -132,7 +132,7 @@ test("about, terms and privacy: reachable from the menu, readable, and honest ab
 });
 
 test("a born soul shares its card, and the funnel's events carry nothing personal", async ({ context, page }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(300_000);
   const events = await recordEvents(page);
   await passkeyDevice(context, page);
   await page.goto("/#/b/centro-urbano");
@@ -145,9 +145,10 @@ test("a born soul shares its card, and the funnel's events carry nothing persona
   await page.getByRole("link", { name: /Ver tu alma/ }).click();
 
   const almaId = (await page.getByTitle(/^alma:main:human:/).first().getAttribute("title"))!;
-  // The card is offered once the Resolver has recorded the tribe
+  // The card is offered once the Resolver has recorded the tribe, which it learns from the read model: with Cardano
+  // attached that can take a minute or two
   const open = page.getByRole("button", { name: "Compartir mi alma" });
-  await expect(open).toBeVisible({ timeout: 30_000 });
+  await expect(open).toBeVisible({ timeout: 150_000 });
   await open.click();
   const dialog = page.getByRole("dialog", { name: "Tu alma, para compartir" });
   const card = dialog.getByTestId("soul-card");
