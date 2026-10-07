@@ -76,7 +76,12 @@ export function ShareSoulCard(props: SoulCardProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const card = useRef<HTMLDivElement>(null);
-  const { share, busy, outcome } = useShareSoulCard(props.almaId);
+  const { prepare, share, busy, outcome } = useShareSoulCard(props.almaId);
+  // A ref callback: it runs when the card is on screen, which is when the dialog opens
+  const mounted = (node: HTMLDivElement | null) => {
+    card.current = node;
+    if (node) prepare(node);
+  };
   return (
     <>
       <Button variant="secondary" size="sm" onClick={() => setOpen(true)}>
@@ -85,7 +90,7 @@ export function ShareSoulCard(props: SoulCardProps) {
       <Dialog open={open} onClose={() => setOpen(false)} title={t("soulCard.title")}>
         {open && (
           <div className="flex flex-col items-center gap-4">
-            <SoulCard ref={card} {...props} />
+            <SoulCard ref={mounted} {...props} />
             {outcome && (
               <p role={outcome === "failed" ? "alert" : "status"} className="text-sm">
                 {t(`soulCard.${outcome}`)}
