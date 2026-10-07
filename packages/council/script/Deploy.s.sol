@@ -5,9 +5,11 @@ import { Script, console2 } from "forge-std/Script.sol";
 import { AlmaAnchorRegistry } from "@adasouls/protocol/AlmaAnchorRegistry.sol";
 import { AtlasRegistry, IAlmaAnchors } from "@adasouls/protocol/AtlasRegistry.sol";
 import { AldeaCouncilExecutor, IAtlasGovernable } from "../src/AldeaCouncilExecutor.sol";
+import { CouncilInputs } from "../src/CouncilInputs.sol";
 
 /// @notice Deploys ALDEA World's contracts outside the MUD World: the shared rails of the adasouls protocol package
-///         (AlmaAnchorRegistry and AtlasRegistry), the world's ALMA organizations and the Council executor, and hands
+///         (AlmaAnchorRegistry and AtlasRegistry), the world's ALMA organizations, the Council executor and the contract
+///         its inputs are published in, and hands
 ///         every role to the Safe.
 /// @dev Environment:
 ///      - PRIVATE_KEY (required): deployer only, never the Safe's key.
@@ -28,6 +30,7 @@ contract Deploy is Script {
     AlmaAnchorRegistry alma;
     AtlasRegistry atlas;
     AldeaCouncilExecutor council;
+    CouncilInputs councilInputs;
     uint256 deployBlock;
   }
 
@@ -65,7 +68,9 @@ contract Deploy is Script {
     d.atlas = new AtlasRegistry(IAlmaAnchors(address(d.alma)), d.deployer, d.safe);
     // 5. Council executor (guardian = Safe)
     d.council = new AldeaCouncilExecutor(IAtlasGovernable(address(d.atlas)), d.relayer, d.safe, d.councilDelay);
-    // 6. Hand the roles to the Safe
+    // 6. Where votes and proposal rules are published (no roles: anyone can post, the read model checks who signed)
+    d.councilInputs = new CouncilInputs();
+    // 7. Hand the roles to the Safe
     d.alma.setIssuer(d.deployer, false);
     d.alma.setIssuer(d.safe, true);
     d.alma.transferAdmin(d.safe);
@@ -112,6 +117,7 @@ contract Deploy is Script {
     vm.serializeAddress(protocol, "almaAnchorRegistry", address(d.alma));
     vm.serializeAddress(protocol, "atlasRegistry", address(d.atlas));
     vm.serializeAddress(protocol, "aldeaCouncilExecutor", address(d.council));
+    vm.serializeAddress(protocol, "councilInputs", address(d.councilInputs));
     // Head before the first broadcast: a safe lower bound for indexers that sync from the deploy block.
     string memory protocolJson = vm.serializeUint(protocol, "deployBlock", d.deployBlock);
 

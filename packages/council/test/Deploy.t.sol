@@ -43,6 +43,7 @@ contract DeployTest is Test {
     // The deployment file is written and parseable
     string memory json = vm.readFile(string.concat(vm.projectRoot(), "/cache/", vm.toString(block.chainid), ".json"));
     assertEq(vm.parseJsonAddress(json, ".protocol.almaAnchorRegistry"), address(d.alma));
+    assertEq(vm.parseJsonAddress(json, ".protocol.councilInputs"), address(d.councilInputs));
     assertEq(vm.parseJsonAddress(json, ".safe"), SAFE);
   }
 

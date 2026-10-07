@@ -17,6 +17,8 @@ RPC_URL="${RPC_URL:-http://127.0.0.1:8545}"
 # anvil's default account 0: a well-known development key, never used outside local chains
 export PRIVATE_KEY="${PRIVATE_KEY:-0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80}"
 export COUNCIL_DELAY="${COUNCIL_DELAY:-600}"
+# anvil's default account 2, the one the local relay worker signs with: only the relayer may queue Council results
+export RELAYER_ADDRESS="${RELAYER_ADDRESS:-0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC}"
 DEPLOYMENT="$ROOT/packages/shared/src/deployments/31337.json"
 
 "$ROOT/scripts/wait-for.sh" "$RPC_URL"

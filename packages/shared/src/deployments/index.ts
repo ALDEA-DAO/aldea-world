@@ -18,6 +18,8 @@ export const deploymentSchema = z.object({
     almaAnchorRegistry: address,
     atlasRegistry: address,
     aldeaCouncilExecutor: address,
+    /** Where Council votes and proposal rules are published. Absent in deployments older than the Council. */
+    councilInputs: address.optional(),
     deployBlock: z.number().int(),
   }),
   world: z
