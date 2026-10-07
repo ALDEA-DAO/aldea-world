@@ -10,15 +10,18 @@
     "typecheck": "bun scripts/typecheck.ts",
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
+    "batcher": "bun src/batcher.ts",
     "test": "bun test",
     "db:local": "bun scripts/pglite.ts --port 5443"
   },
   "dependencies": {
     "@aldea/shared": "workspace:^",
+    "@effectstream/batcher-sdk": "0.200.6",
     "@effectstream/event-client": "0.200.6",
     "@effectstream/node-sdk": "0.200.6",
     "@pgtyped/runtime": "^2.4.2",
     "@sinclair/typebox": "^0.34.41",
+    "bech32": "^2.0.0",
     "effection": "^3.6.1",
     "viem": "^2.56.9"
   },

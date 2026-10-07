@@ -142,6 +142,53 @@ export const aldeaUtxoGrammar = [
   ["assetName", Type.String()],
 ] as const;
 
+/** ProposalOpened(bytes32 indexed proposalId, ProposalKind kind, bytes32 indexed worldId, bytes32 indexed versionId, uint64 snapshotAt, uint64 startsAt, uint64 endsAt, string paramsURI) */
+export const councilOpenedGrammar = [
+  ["proposalId", Type.String()],
+  ["kind", Type.Number()],
+  ["worldId", Type.String()],
+  ["versionId", Type.String()],
+  ["snapshotAt", Type.String()],
+  ["startsAt", Type.String()],
+  ["endsAt", Type.String()],
+  ["paramsURI", Type.String()],
+  ...logCoordinates,
+] as const;
+
+/** ProposalQueued(bytes32 indexed proposalId, bytes32 indexed versionId, bytes32 tallyHash, string tallyURI, uint64 eta) */
+export const councilQueuedGrammar = [
+  ["proposalId", Type.String()],
+  ["versionId", Type.String()],
+  ["tallyHash", Type.String()],
+  ["tallyURI", Type.String()],
+  ["eta", Type.String()],
+  ...logCoordinates,
+] as const;
+
+/** ProposalVetoed(bytes32 indexed proposalId, address indexed by, string reason) */
+export const councilVetoedGrammar = [["proposalId", Type.String()], ["by", Type.String()], ["reason", Type.String()], ...logCoordinates] as const;
+
+/** ProposalExecuted(bytes32 indexed proposalId, bytes32 indexed worldId, bytes32 indexed versionId) */
+export const councilExecutedGrammar = [["proposalId", Type.String()], ["worldId", Type.String()], ["versionId", Type.String()], ...logCoordinates] as const;
+
+/**
+ * Inputs published in CouncilInputs, as JSON arrays (`["cv","0x…","s"]`).
+ *
+ * - `cv`: a Founder's vote on a proposal, `s` to sign and `o` to object, signed with their Cardano wallet (CIP-8).
+ * - `cp`: a proposal's rules (the JSON at its paramsURI, which the state machine cannot fetch), posted by the guardian.
+ */
+export const voteGrammar = [
+  ["proposalId", Type.String()],
+  ["choice", Type.Union([Type.Literal("s"), Type.Literal("o")])],
+] as const;
+export const councilParamsGrammar = [
+  ["proposalId", Type.String()],
+  ["params", Type.String()],
+] as const;
+
+/** The Council's clock: inputs the state machine schedules for itself at a proposal's snapshot, opening and close. */
+export const councilTimerGrammar = [["proposalId", Type.String()]] as const;
+
 export const grammar = {
   birthRequested: birthRequestedGrammar,
   birthRescheduled: birthRescheduledGrammar,
@@ -161,4 +208,13 @@ export const grammar = {
   atlasVerifiedChanged: atlasVerifiedChangedGrammar,
   aldeaUtxo: aldeaUtxoGrammar,
   founderClaimed: founderClaimedGrammar,
+  councilOpened: councilOpenedGrammar,
+  councilQueued: councilQueuedGrammar,
+  councilVetoed: councilVetoedGrammar,
+  councilExecuted: councilExecutedGrammar,
+  cv: voteGrammar,
+  cp: councilParamsGrammar,
+  councilSnapshot: councilTimerGrammar,
+  councilOpen: councilTimerGrammar,
+  councilClose: councilTimerGrammar,
 } as const satisfies GrammarDefinition;

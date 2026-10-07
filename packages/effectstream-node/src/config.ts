@@ -1,7 +1,7 @@
 import { ConfigBuilder, ConfigNetworkType, ConfigSyncProtocolType, getEvmEvent } from "@effectstream/node-sdk/config";
 import { getConnection } from "@effectstream/node-sdk/db";
-import { PrimitiveTypeCardanoDelayedAsset } from "@effectstream/node-sdk/sm/builtin";
-import { almaAnchorRegistryAbi, atlasRegistryAbi, characterSystemAbi, founderSystemAbi, movementSystemAbi } from "@aldea/shared/abis";
+import { PrimitiveTypeCardanoDelayedAsset, PrimitiveTypeEVMEffectstreamL2 } from "@effectstream/node-sdk/sm/builtin";
+import { aldeaCouncilExecutorAbi, almaAnchorRegistryAbi, atlasRegistryAbi, characterSystemAbi, founderSystemAbi, movementSystemAbi } from "@aldea/shared/abis";
 import { defineChain } from "viem";
 import { env } from "./env.ts";
 import { birthCompletedGrammar, birthRequestedGrammar, birthRescheduledGrammar, buildingEnteredGrammar, buildingLeftGrammar, founderClaimedGrammar, grammar, soulAnchoredGrammar } from "./grammar.ts";
@@ -23,6 +23,14 @@ const atlasEvents = [
   ["VisibilityChanged(bytes32,uint8)", "atlasVisibilityChanged"],
   ["MetadataChanged(bytes32,string)", "atlasMetadataChanged"],
   ["VerifiedChanged(bytes32,bool)", "atlasVerifiedChanged"],
+] as const;
+
+/** AldeaCouncilExecutor's events and the state transition each one feeds. */
+const councilEvents = [
+  ["ProposalOpened(bytes32,uint8,bytes32,bytes32,uint64,uint64,uint64,string)", "councilOpened"],
+  ["ProposalQueued(bytes32,bytes32,bytes32,string,uint64)", "councilQueued"],
+  ["ProposalVetoed(bytes32,address,string)", "councilVetoed"],
+  ["ProposalExecuted(bytes32,bytes32,bytes32)", "councilExecuted"],
 ] as const;
 
 /** An on-chain event folded into the state machine under `prefix` (see AldeaEvmEventPrimitive). */
@@ -60,8 +68,8 @@ const base = defineChain({
 
 /**
  * Networks and primitives: births (CharacterSystem), building visits (MovementSystem), soul anchors
- * (AlmaAnchorRegistry), the Atlas (AtlasRegistry) and, when a Cardano endpoint is configured, the $ALDEA asset's
- * UTxOs. The remaining World and Council primitives are added with their STFs.
+ * (AlmaAnchorRegistry), the Atlas (AtlasRegistry), the Council (AldeaCouncilExecutor's events and the inputs published
+ * in CouncilInputs: votes and proposal rules) and, when a Cardano endpoint is configured, the $ALDEA asset's UTxOs.
  */
 export const config = new ConfigBuilder()
   .setNamespace((b) => b.setSecurityNamespace("aldea-world"))
@@ -139,6 +147,21 @@ export const config = new ConfigBuilder()
       primitives = primitives.addPrimitive(
         (s: any) => s.baseRpc,
         () => eventPrimitive(name, atlasRegistry, atlasRegistryAbi, signature, grammar[prefix], prefix, env.startBlock),
+      );
+    }
+    const council = env.council;
+    if (council) {
+      for (const [signature, prefix] of councilEvents) {
+        const name = `Council${signature.slice(0, signature.indexOf("("))}`;
+        primitives = primitives.addPrimitive(
+          (s: any) => s.baseRpc,
+          () => eventPrimitive(name, council.executor, aldeaCouncilExecutorAbi, signature, grammar[prefix], prefix, env.startBlock),
+        );
+      }
+      // Whatever is published in CouncilInputs reaches the state machine under the prefix it names, with its signer
+      primitives = primitives.addPrimitive(
+        (s: any) => s.baseRpc,
+        () => ({ name: "CouncilInputs", type: PrimitiveTypeEVMEffectstreamL2, startBlockHeight: env.startBlock, contractAddress: council.inputs, effectstreamL2Grammar: grammar }),
       );
     }
     // Every UTxO of the $ALDEA asset, created or spent (tALDEA on preprod)

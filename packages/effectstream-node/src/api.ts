@@ -1,6 +1,8 @@
 import type { StartConfigApiRouter } from "@effectstream/node-sdk/runtime";
+import { canonicalHash, canonicalJson } from "@aldea/shared/council";
 import { parseCredential } from "./cardano/credentials.ts";
 import { env } from "./env.ts";
+import { tallyOf, type ProposalRow } from "./stf/council.ts";
 
 /**
  * Custom read API, next to the node's default endpoints (/health, /block-heights).
@@ -312,6 +314,89 @@ export async function aldeaHolding(db: Db, credential: string) {
   return { credential, balance: rows[0]?.balance ?? "0", updatedHeight: rows[0] ? Number(rows[0].updated_height) : null };
 }
 
+const proposalView = (row: Record<string, any>) => ({
+  proposalId: row.proposal_id as string,
+  kind: row.kind === 0 ? "GenesisRatification" : "SeasonElection",
+  worldId: row.world_id as string,
+  versionIds: row.version_ids as string[],
+  snapshotAt: Number(row.snapshot_at),
+  startsAt: Number(row.starts_at),
+  endsAt: Number(row.ends_at),
+  status: row.status as string,
+  paramsURI: row.params_uri as string,
+  /** Null until the guardian has published the rules for the read model. */
+  paramsHash: row.params_hash as string | null,
+  params: row.params_hash ? row.params : null,
+  openedTx: row.opened_tx as string,
+  tallyURI: row.tally_uri as string | null,
+  /** Unix seconds from which a queued result can be executed. */
+  eta: row.eta === null ? null : Number(row.eta),
+  queuedTx: row.queued_tx as string | null,
+  executedTx: row.executed_tx as string | null,
+  vetoedTx: row.vetoed_tx as string | null,
+  vetoReason: row.veto_reason as string | null,
+});
+
+/** Every proposal the Council has opened, the newest first. */
+export async function councilProposals(db: Db) {
+  const { rows } = await db.query(`SELECT * FROM council_proposals ORDER BY opened_block DESC, proposal_id`);
+  return rows.map(proposalView);
+}
+
+/**
+ * A proposal with how it is going: the eligible supply, what has signed and objected so far and, once closed, the
+ * result with the hash that goes on-chain. With a `voter` credential, also that voter's weight and current vote.
+ */
+export async function councilProposal(db: Db, proposalId: string, voter?: string) {
+  const { rows } = await db.query(`SELECT * FROM council_proposals WHERE proposal_id = $1`, [proposalId]);
+  if (!rows[0]) return undefined;
+  const counts = await db.query(
+    `SELECT
+       (SELECT coalesce(sum(weight), 0)::text FROM council_snapshots WHERE proposal_id = $1) AS eligible,
+       (SELECT coalesce(sum(weight), 0)::text FROM council_votes WHERE proposal_id = $1 AND choice = 'sign') AS signatures,
+       (SELECT coalesce(sum(weight), 0)::text FROM council_votes WHERE proposal_id = $1 AND choice = 'object') AS objections,
+       (SELECT count(*)::int FROM council_votes WHERE proposal_id = $1) AS participants`,
+    [proposalId],
+  );
+  const result = await db.query(`SELECT outcome, tally_hash FROM council_results WHERE proposal_id = $1`, [proposalId]);
+  const out: Record<string, unknown> = {
+    proposal: proposalView(rows[0]),
+    tally: counts.rows[0],
+    result: result.rows[0] ? { outcome: result.rows[0].outcome, tallyHash: result.rows[0].tally_hash } : null,
+  };
+  if (voter) {
+    const mine = await db.query(
+      `SELECT s.weight::text AS weight, v.choice, v.input_tx,
+         EXISTS (SELECT 1 FROM founders f WHERE f.stake_credential = $3) AS founder
+       FROM (SELECT $1::text AS proposal_id, $2::text AS credential) me
+       LEFT JOIN council_snapshots s ON s.proposal_id = me.proposal_id AND s.credential = me.credential
+       LEFT JOIN council_votes v ON v.proposal_id = me.proposal_id AND v.credential = me.credential`,
+      [proposalId, voter, voter.slice(voter.indexOf(":") + 1)],
+    );
+    const row = mine.rows[0];
+    out.voter = { credential: voter, founder: Boolean(row?.founder), weight: row?.weight ?? "0", vote: row?.choice ? { choice: row.choice, inputTx: row.input_tx } : null };
+  }
+  return out;
+}
+
+/** The full tally of a closed proposal, or undefined while there is none (open, or closed without rules). */
+export async function councilTally(db: Db, proposalId: string) {
+  const { rows } = await db.query(`SELECT p.* FROM council_proposals p JOIN council_results r ON r.proposal_id = p.proposal_id WHERE p.proposal_id = $1`, [proposalId]);
+  if (!rows[0]) return undefined;
+  const snapshot = await db.query(`SELECT credential, weight::text AS weight FROM council_snapshots WHERE proposal_id = $1 ORDER BY credential`, [proposalId]);
+  const votes = await db.query(`SELECT credential, alma_id_hash, choice, weight::text AS weight, input_tx FROM council_votes WHERE proposal_id = $1 ORDER BY credential`, [proposalId]);
+  return tallyOf(rows[0] as ProposalRow, snapshot.rows as never, votes.rows as never);
+}
+
+/** The proposals a soul took part in, signing or objecting alike, each with the transaction that carried its vote. */
+export async function councilParticipations(db: Db, almaIdHash: string) {
+  const { rows } = await db.query(
+    `SELECT v.proposal_id, v.input_tx, p.kind FROM council_votes v JOIN council_proposals p ON p.proposal_id = v.proposal_id WHERE v.alma_id_hash = $1 ORDER BY v.height, v.proposal_id`,
+    [almaIdHash],
+  );
+  return rows.map((row) => ({ proposalId: row.proposal_id as string, kind: row.kind === 0 ? "GenesisRatification" : "SeasonElection", inputTx: row.input_tx as string }));
+}
+
 const nowSeconds = () => Math.floor(Date.now() / 1000);
 const measuredWorld = (): MeasuredWorld => ({ worldId: env.activityWorldId, chainId: env.chainId, worldAddress: env.worldAddress });
 
@@ -373,6 +458,39 @@ export const apiRouter: StartConfigApiRouter = async (server, dbConn) => {
     const founder = await founderSeal(dbConn, almaIdHash);
     if (!founder) return reply.code(404).send({ error: "not_a_founder" });
     return founder;
+  });
+
+  /** The Council's proposals. */
+  server.get("/api/v1/council/proposals", async () => ({ items: await councilProposals(dbConn), inputs: env.council?.inputs ?? null }));
+
+  /** A proposal and its running tally; `voter=stake:<hex28>` adds that credential's weight and vote. */
+  server.get<{ Params: { proposalId: string }; Querystring: { voter?: string } }>("/api/v1/council/proposals/:proposalId", async (request, reply) => {
+    const proposalId = request.params.proposalId.toLowerCase();
+    if (!HEX_32.test(proposalId)) return reply.code(400).send({ error: "invalid_proposal_id" });
+    const voter = request.query.voter === undefined ? undefined : parseCredential(request.query.voter);
+    if (request.query.voter !== undefined && !voter) return reply.code(400).send({ error: "invalid_credential", hint: "voter=stake:<56 hex> or pay:<56 hex>" });
+    const proposal = await councilProposal(dbConn, proposalId, voter);
+    if (!proposal) return reply.code(404).send({ error: "proposal_not_found" });
+    return proposal;
+  });
+
+  /**
+   * The canonical tally of a closed proposal (JCS): the snapshot, every vote with the transaction that carried it, and
+   * the result. keccak256 of these exact bytes is the `tallyHash` queued on-chain, so anyone can recompute it.
+   */
+  server.get<{ Params: { proposalId: string } }>("/api/v1/council/proposals/:proposalId/tally.json", async (request, reply) => {
+    const proposalId = request.params.proposalId.toLowerCase();
+    if (!HEX_32.test(proposalId)) return reply.code(400).send({ error: "invalid_proposal_id" });
+    const tally = await councilTally(dbConn, proposalId);
+    if (!tally) return reply.code(404).send({ error: "tally_not_found", hint: "the proposal does not exist or has not been tallied yet" });
+    return reply.header("Content-Type", "application/json; charset=utf-8").header("X-Tally-Hash", canonicalHash(tally)).send(canonicalJson(tally));
+  });
+
+  /** The Council proposals a soul took part in (Charter Signatories); an empty list for a soul that never voted. */
+  server.get<{ Params: { almaIdHash: string } }>("/api/v1/council/participants/:almaIdHash", async (request, reply) => {
+    const almaIdHash = request.params.almaIdHash.toLowerCase();
+    if (!HEX_32.test(almaIdHash)) return reply.code(400).send({ error: "invalid_alma_id_hash" });
+    return { almaIdHash, items: await councilParticipations(dbConn, almaIdHash) };
   });
 
   /** The Atlas: worlds by registration order (public ones unless asked otherwise), `parent` narrows to a world's forks. */

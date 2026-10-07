@@ -18,7 +18,7 @@ const isLocal = chainId === 31337;
 
 /** packages/shared/src/deployments/<chainId>.json, written by Deploy.s.sol and merge-world.ts. */
 function readDeployment():
-  | { world?: { address: string; blockNumber: number; systems: Record<string, string> }; protocol?: { almaAnchorRegistry: string; atlasRegistry?: string; deployBlock: number }; aldeaWorldId?: string }
+  | { world?: { address: string; blockNumber: number; systems: Record<string, string> }; protocol?: { almaAnchorRegistry: string; atlasRegistry?: string; aldeaCouncilExecutor?: string; councilInputs?: string; deployBlock: number }; aldeaWorldId?: string; safe?: string }
   | undefined {
   const path = join(import.meta.dir, `../../shared/src/deployments/${chainId}.json`);
   return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : undefined;
@@ -81,6 +81,18 @@ function cardanoConfig() {
 
 const deployment = readDeployment();
 
+/**
+ * The Council: its executor, the contract its inputs are published in, and who may post a proposal's rules there
+ * (the guardian that opens proposals). Undefined for a deployment without it: the node then runs without the Council.
+ */
+function councilConfig() {
+  const executor = process.env.COUNCIL_ADDRESS || deployment?.protocol?.aldeaCouncilExecutor;
+  const inputs = process.env.COUNCIL_INPUTS_ADDRESS || deployment?.protocol?.councilInputs;
+  const operator = process.env.COUNCIL_OPERATOR_ADDRESS || deployment?.safe;
+  if (!executor || !inputs || !operator) return undefined;
+  return { executor: getAddress(executor), inputs: getAddress(inputs), operator: operator.toLowerCase() };
+}
+
 export const env = {
   chainId,
   baseRpcUrl: process.env.BASE_RPC_URL ?? "http://127.0.0.1:8545",
@@ -101,6 +113,7 @@ export const env = {
   /** The World this node measures, as the Atlas versions name it. */
   worldAddress: (process.env.WORLD_ADDRESS || deployment?.world?.address || "").toLowerCase(),
   cardano: cardanoConfig(),
+  council: councilConfig(),
   /** Key of this world in world_activity_hourly: its Atlas worldId, or the World address until it is registered. */
   activityWorldId: (process.env.ALDEA_WORLD_ID || deployment?.aldeaWorldId || process.env.WORLD_ADDRESS || deployment?.world?.address || "aldea").toLowerCase(),
 };

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Checks every local service: anvil, ALMA Resolver, Effectstream, relay worker, MUD indexer and client.
+# Checks every local service: anvil, ALMA Resolver, Effectstream, relay worker, vote batcher, MUD indexer and client.
 set -uo pipefail
 fail=0
 check() {
@@ -13,6 +13,7 @@ else printf '✗ %-16s %s\n' anvil http://127.0.0.1:8545; fail=1; fi
 check alma-resolver http://127.0.0.1:8787/health
 check effectstream http://127.0.0.1:9999/health
 check relay-worker http://127.0.0.1:8788/health
+check batcher http://127.0.0.1:3334/health
 check mud-indexer http://127.0.0.1:3101/healthz
 check client http://127.0.0.1:3100/health
 exit $fail

@@ -35,6 +35,12 @@ procs:
       # The postgres:16 image has no pg_ivm; production Postgres must provide it (see SPIKE.md)
       ALLOW_NO_PG_IVM: "true"
       CHAIN_ID: "31337"
+  batcher:
+    shell: scripts/wait-for-deploy.sh && pnpm --filter @aldea/effectstream-node batcher
+    env:
+      CHAIN_ID: "31337"
+      # anvil's default account 3: a public development key. It pays the gas of the votes it publishes
+      BATCHER_PRIVATE_KEY: "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6"
   relay-worker:
     shell: scripts/wait-for-deploy.sh && pnpm --filter @aldea/relay-worker dev
     env:

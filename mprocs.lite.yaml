@@ -31,6 +31,12 @@ procs:
       DB_PORT: "5443"
       PGLITE: "true"
       CHAIN_ID: "31337"
+  batcher:
+    shell: scripts/wait-for-deploy.sh && pnpm --filter @aldea/effectstream-node batcher
+    env:
+      CHAIN_ID: "31337"
+      # anvil's default account 3: a public development key. It pays the gas of the votes it publishes
+      BATCHER_PRIVATE_KEY: "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6"
   # Health only in lite mode: the embedded PGlite server takes one client (Effectstream), so the client completes
   # births itself after 20 s. Use `pnpm dev` to run the Midwife.
   relay-worker:
