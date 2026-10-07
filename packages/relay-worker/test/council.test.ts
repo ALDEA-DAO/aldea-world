@@ -202,11 +202,14 @@ describe("the Charter on-chain", () => {
     await t.tick();
     expect(t.alerts.map((a) => a.message)).toEqual(["councilQueue failed 3 times in a row"]);
     expect(t.queue.failing()).toBe(1);
+    // What /alerts reports: the row is an alert from its third failure until it goes through
+    expect(t.queue.alerting()).toBe(1);
     t.failRpc(undefined);
     t.advance(8);
     await t.tick();
     expect(t.proposal.state).toBe("queued");
     expect(t.queue.failing()).toBe(0);
+    expect(t.queue.alerting()).toBe(0);
   });
 });
 

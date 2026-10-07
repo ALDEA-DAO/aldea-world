@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "chainId": "84532",
+  "createdAt": 0,
+  "meta": {
+    "name": "ALDEA World: pause (or resume) the village",
+    "description": "Emergency pause: while paused nobody is born, enters a building or claims a seal. Reads keep working, births under way are still completed, and the client shows the maintenance banner within seconds. Set paused to false to resume. Replace <WORLD_ADDRESS>."
+  },
+  "transactions": [
+    {
+      "to": "<WORLD_ADDRESS>",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "aldea__setPaused",
+        "payable": false,
+        "inputs": [
+          {
+            "name": "paused",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
+      },
+      "contractInputsValues": {
+        "paused": "true"
+      }
+    }
+  ]
+}

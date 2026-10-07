@@ -19,11 +19,13 @@ import { ToastProvider } from "./components/ui/Toast";
 import { AlmaAuthProvider } from "./features/auth/AlmaAuthProvider";
 import { MudProvider } from "./mud/store";
 import { applyMotion, getMotionPreference } from "./lib/motion";
+import { startErrorReports } from "./lib/sentry";
 import { applyTheme, getThemePreference } from "./lib/theme";
 import { applyWorld } from "./theme/worldConfig";
 
 applyTheme(getThemePreference());
 applyMotion(getMotionPreference());
+startErrorReports();
 applyWorld();
 
 const root = document.getElementById("root");

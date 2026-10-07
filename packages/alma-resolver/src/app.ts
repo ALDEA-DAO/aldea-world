@@ -64,7 +64,16 @@ export function createApp(deps: AppDeps) {
     );
   });
 
-  if (deps.aa) app.route("/v1/aa", createAaRoutes(deps.aa));
+  const aa = deps.aa ? createAaRoutes(deps.aa) : undefined;
+  if (aa) app.route("/v1/aa", aa);
+
+  /** 200 while nothing is wrong, 503 with what is: an uptime monitor on this address is the alert. */
+  app.get("/alerts", (c) => {
+    const firing: { alert: string; detail: string }[] = [];
+    const rejections = aa?.rejections();
+    if (rejections?.alert) firing.push({ alert: "paymaster_rejections", detail: `${rejections.refused} of ${rejections.total} sponsorship requests refused in this hour and the last` });
+    return c.json({ ok: firing.length === 0, alerts: firing }, firing.length ? 503 : 200);
+  });
   if (deps.custody) app.route("/v1/custody", createCustodyRoutes(deps.custody));
   if (deps.souls) {
     app.route("/v1/souls", createSoulRoutes(deps.souls));

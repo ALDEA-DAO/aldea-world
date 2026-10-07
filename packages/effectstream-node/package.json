@@ -20,6 +20,7 @@
     "@effectstream/event-client": "0.200.6",
     "@effectstream/node-sdk": "0.200.6",
     "@pgtyped/runtime": "^2.4.2",
+    "@sentry/bun": "^11.5.0",
     "@sinclair/typebox": "^0.34.41",
     "bech32": "^2.0.0",
     "effection": "^3.6.1",

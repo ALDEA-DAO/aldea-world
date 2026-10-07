@@ -52,7 +52,7 @@ describe("sponsorship policy", () => {
 });
 
 describe("POST /v1/aa/rpc", () => {
-  const setup = (signedIn = true, approveOwnerAddition?: (almaId: string, sender: string, owner: string) => Promise<boolean>) => {
+  const setup = (signedIn = true, approveOwnerAddition?: (almaId: string, sender: string, owner: string) => Promise<boolean>, limits: { dailyOperations?: number; now?: () => number } = {}) => {
     const almaId = signedIn ? "alma:main:human:0123456789abcdef0123456789abcdef" : undefined;
     const upstream = vi.fn(async (_url: string | URL | Request, init?: RequestInit) =>
       Response.json({ jsonrpc: "2.0", id: JSON.parse(String(init?.body)).id, result: "0xok" }),
@@ -61,11 +61,11 @@ describe("POST /v1/aa/rpc", () => {
       pingDb: async () => {},
       baseHead: async () => 1n,
       corsOrigins: [],
-      aa: { bundlerUrl: "https://cdp.example/secret-key", chainId: CHAIN_ID, checkSponsorship: check, authenticate: async () => almaId, approveOwnerAddition, fetch: upstream as typeof fetch },
+      aa: { bundlerUrl: "https://cdp.example/secret-key", chainId: CHAIN_ID, checkSponsorship: check, authenticate: async () => almaId, approveOwnerAddition, fetch: upstream as typeof fetch, ...limits },
     });
     const rpc = (method: string, params: unknown[]) =>
       app.request("/v1/aa/rpc", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) });
-    return { upstream, rpc };
+    return { upstream, rpc, app };
   };
 
   it("requires a signed-in soul", async () => {
@@ -93,6 +93,40 @@ describe("POST /v1/aa/rpc", () => {
     expect((await rpc("eth_sendUserOperation", [op(execute(WORLD, requestBirth)), entryPoint07Address])).status).toBe(400);
     expect((await rpc("eth_sendRawTransaction", ["0x00"])).status).toBe(400);
     expect(upstream).not.toHaveBeenCalled();
+  });
+
+  it("sponsors each soul a number of operations a day, and estimating or reading does not spend them", async () => {
+    let clock = Date.UTC(2026, 9, 7, 23, 59);
+    const { rpc, upstream } = setup(true, undefined, { dailyOperations: 2, now: () => clock });
+    const send = () => rpc("eth_sendUserOperation", [op(execute(WORLD, requestBirth)), entryPoint06Address]);
+    for (let i = 0; i < 5; i++) expect((await rpc("eth_estimateUserOperationGas", [op(execute(WORLD, requestBirth)), entryPoint06Address])).status).toBe(200);
+    expect((await send()).status).toBe(200);
+    expect((await send()).status).toBe(200);
+    const refused = await send();
+    expect(refused.status).toBe(403);
+    expect(await refused.json()).toMatchObject({ error: { code: -32003, message: expect.stringContaining("today's limit") } });
+    expect(upstream).toHaveBeenCalledTimes(7);
+    // A new day, a new allowance
+    clock += 60_000;
+    expect((await send()).status).toBe(200);
+  });
+
+  it("raises an alert when more than 5% of sponsorship requests are refused, with enough of them to mean something", async () => {
+    const { rpc, app } = setup(true, undefined, { dailyOperations: 1000 });
+    const alerts = async () => {
+      const res = await app.request("/alerts");
+      return { status: res.status, ...((await res.json()) as { ok: boolean; alerts: { alert: string; detail: string }[] }) };
+    };
+    const good = () => rpc("eth_sendUserOperation", [op(execute(WORLD, requestBirth)), entryPoint06Address]);
+    const bad = () => rpc("eth_sendUserOperation", [op(execute(WORLD, setPaused)), entryPoint06Address]);
+    // A few refusals among few requests are not a rate
+    for (let i = 0; i < 3; i++) await bad();
+    expect(await alerts()).toMatchObject({ status: 200, ok: true });
+    for (let i = 0; i < 37; i++) await good();
+    // 3 of 40 is 7.5%
+    expect(await alerts()).toEqual({ status: 503, ok: false, alerts: [{ alert: "paymaster_rejections", detail: "3 of 40 sponsorship requests refused in this hour and the last" }] });
+    for (let i = 0; i < 20; i++) await good();
+    expect(await alerts()).toMatchObject({ status: 200, ok: true });
   });
 
   it("sponsors adding an owner only when the soul approved that owner for that wallet", async () => {

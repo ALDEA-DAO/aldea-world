@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "chainId": "84532",
+  "createdAt": 0,
+  "meta": {
+    "name": "ALDEA World: change the Council's relayer",
+    "description": "Names the only account that may queue Council results, when the relayer key is rotated (every 90 days) or may be exposed. Births do not depend on it. Replace every <PLACEHOLDER>."
+  },
+  "transactions": [
+    {
+      "to": "<ALDEA_COUNCIL_EXECUTOR_ADDRESS>",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "setRelayer",
+        "payable": false,
+        "inputs": [
+          {
+            "name": "newRelayer",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      },
+      "contractInputsValues": {
+        "newRelayer": "<NEW_RELAYER_ADDRESS>"
+      }
+    }
+  ]
+}

@@ -25,6 +25,8 @@ procs:
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5444/postgres
       BASE_RPC_URL: http://127.0.0.1:8545
       PORT: "8787"
+      # The end-to-end tests sign in dozens of times a minute from this one address
+      RATE_LIMIT_AUTH_PER_MINUTE: "600"
   effectstream:
     shell: scripts/wait-for-deploy.sh && scripts/wait-for.sh 5443 && pnpm --filter @aldea/effectstream-node dev
     env:

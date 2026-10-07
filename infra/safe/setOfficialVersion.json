@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "chainId": "84532",
+  "createdAt": 0,
+  "meta": {
+    "name": "ALDEA World: set the official version",
+    "description": "Names a registered version the official one. Only the world's governor can: the Safe until the governor is handed to the Council's executor, and never after that. Replace every <PLACEHOLDER>."
+  },
+  "transactions": [
+    {
+      "to": "<ATLAS_REGISTRY_ADDRESS>",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "setOfficialVersion",
+        "payable": false,
+        "inputs": [
+          {
+            "name": "worldId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "versionId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      },
+      "contractInputsValues": {
+        "worldId": "<ALDEA_WORLD_ID>",
+        "versionId": "<VERSION_ID>"
+      }
+    }
+  ]
+}

@@ -397,6 +397,26 @@ export async function councilParticipations(db: Db, almaIdHash: string) {
   return rows.map((row) => ({ proposalId: row.proposal_id as string, kind: row.kind === 0 ? "GenesisRatification" : "SeasonElection", inputTx: row.input_tx as string }));
 }
 
+/** Seconds a birth may wait for its completion before it is an alert. */
+export const GESTATION_ALERT_SECONDS = 60;
+/** Base blocks the read model may be behind before it is an alert. */
+export const BASE_LAG_ALERT_BLOCKS = 30;
+
+/**
+ * What is wrong right now, for a monitor to page someone: births waiting too long for their completion, and the read
+ * model too far behind Base. `height` is the main clock's (one block a second), `synced` the last Base block read and
+ * `head` Base's own; a value that cannot be read is null and raises nothing by itself.
+ */
+export async function alerts(db: Db, { height, synced, head }: { height: number | null; synced: number | null; head: number | null }) {
+  const firing: { alert: string; detail: string }[] = [];
+  if (height !== null) {
+    const { rows } = await db.query(`SELECT count(*)::int AS births, min(created_height) AS oldest FROM relay_outbox WHERE kind = 'complete_birth' AND status = 'pending' AND created_height < $1`, [height - GESTATION_ALERT_SECONDS]);
+    if (rows[0]?.births > 0) firing.push({ alert: "gestation_stuck", detail: `${rows[0].births} birth(s) waiting for their completion, the oldest for ${height - Number(rows[0].oldest)} s` });
+  }
+  if (synced !== null && head !== null && head - synced > BASE_LAG_ALERT_BLOCKS) firing.push({ alert: "base_lag", detail: `${head - synced} Base blocks behind (read ${synced}, head ${head})` });
+  return firing;
+}
+
 const nowSeconds = () => Math.floor(Date.now() / 1000);
 const measuredWorld = (): MeasuredWorld => ({ worldId: env.activityWorldId, chainId: env.chainId, worldAddress: env.worldAddress });
 
@@ -458,6 +478,23 @@ export const apiRouter: StartConfigApiRouter = async (server, dbConn) => {
     const founder = await founderSeal(dbConn, almaIdHash);
     if (!founder) return reply.code(404).send({ error: "not_a_founder" });
     return founder;
+  });
+
+  /**
+   * 200 while nothing is wrong, 503 with what is: an uptime monitor on this address is the alert. The node's own
+   * `/health` says whether it is running; this says whether it is doing its job in time.
+   */
+  server.get("/api/v1/alerts", async (_request, reply) => {
+    const { rows } = await dbConn.query(
+      `SELECT (SELECT max(block_height) FROM effectstream.effectstream_blocks) AS height,
+              (SELECT (page->>'ownBlockNumber')::bigint FROM effectstream.sync_protocol_pagination WHERE protocol_name = 'baseRpc') AS synced`,
+    );
+    const head = await fetch(env.baseRpcUrl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_blockNumber", params: [] }) })
+      .then(async (res) => Number(BigInt(((await res.json()) as { result: string }).result)))
+      .catch(() => null);
+    const number = (value: unknown) => (value === null || value === undefined ? null : Number(value));
+    const firing = await alerts(dbConn, { height: number(rows[0]?.height), synced: number(rows[0]?.synced), head });
+    return reply.code(firing.length ? 503 : 200).send({ ok: firing.length === 0, alerts: firing });
   });
 
   /** The Council's proposals. */
