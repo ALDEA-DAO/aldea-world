@@ -18,10 +18,12 @@ import { router } from "./app/routes";
 import { ToastProvider } from "./components/ui/Toast";
 import { AlmaAuthProvider } from "./features/auth/AlmaAuthProvider";
 import { MudProvider } from "./mud/store";
+import { applyMotion, getMotionPreference } from "./lib/motion";
 import { applyTheme, getThemePreference } from "./lib/theme";
 import { applyWorld } from "./theme/worldConfig";
 
 applyTheme(getThemePreference());
+applyMotion(getMotionPreference());
 applyWorld();
 
 const root = document.getElementById("root");

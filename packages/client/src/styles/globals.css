@@ -37,6 +37,14 @@
   }
 }
 
+/* The same, chosen in Settings whatever the system says */
+:root[data-motion="reduced"] *, :root[data-motion="reduced"] *::before, :root[data-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
 @keyframes panel-in {
   from { opacity: 0; transform: translateX(16px); }
   to { opacity: 1; transform: translateX(0); }
@@ -93,3 +101,5 @@
   /* beats the global 0.01 ms rule above: the reveal still fades in, without scale or blur */
   .tribe-reveal { animation: fade-in 200ms ease-out both !important; }
 }
+:root[data-motion="reduced"] .embers span { animation: none; opacity: 0.8; scale: 1; }
+:root[data-motion="reduced"] .tribe-reveal { animation: fade-in 200ms ease-out both !important; }

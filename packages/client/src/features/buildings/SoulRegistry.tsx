@@ -1,6 +1,6 @@
 import { almaIdHash } from "@aldea/shared/alma";
 import { classByIndex, tribeByIndex } from "@aldea/shared/catalog";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
@@ -114,6 +114,7 @@ function Ties({ soul, tribe, own, born }: { soul: SoulView; tribe: ReturnType<ty
   const lang = i18n.language === "en" ? "en" : "es";
   const [showMembers, setShowMembers] = useState(false);
   const character = soul.character;
+  const founder = useIsFounder(soul.id) || founderClaimed(soul);
   return (
     <section aria-labelledby="your-ties">
       <h2 id="your-ties" className="text-2xl">
@@ -151,6 +152,13 @@ function Ties({ soul, tribe, own, born }: { soul: SoulView; tribe: ReturnType<ty
           </p>
         )}
       </div>
+      {own && tribe && character && (
+        <div className="mt-3">
+          <Suspense fallback={null}>
+            <ShareSoulCard almaId={soul.id} characterClass={character.characterClass} tribe={tribe.index} founder={founder} />
+          </Suspense>
+        </div>
+      )}
       {tribe && showMembers && (
         <div className="mt-3">
           <TribeMembers tribeAlmaId={tribe.almaOrgId} highlight={soul.id} />
@@ -159,6 +167,9 @@ function Ties({ soul, tribe, own, born }: { soul: SoulView; tribe: ReturnType<ty
     </section>
   );
 }
+
+// The card brings the character sheets' manifest with it: loaded for a born soul looking at its own registry
+const ShareSoulCard = lazy(() => import("../soul/SoulCard").then((m) => ({ default: m.ShareSoulCard })));
 
 /**
  * The vote with which a soul took part in the Genesis Charter, if it did: the same seal for whoever signed and

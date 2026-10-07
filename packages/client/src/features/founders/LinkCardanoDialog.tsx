@@ -8,6 +8,7 @@ import { problemCopy } from "../../lib/errors";
 import { authConfig } from "../auth/config";
 import { useAlmaSession } from "../auth/useAlmaSession";
 import { formatAldea } from "./useFounder";
+import { track } from "../../lib/analytics";
 
 /**
  * "Vincular Cardano": links a Cardano wallet to the soul with a signature (CIP-30 `signData`), so its $ALDEA counts.
@@ -118,6 +119,7 @@ function Steps({ onClose, onLinked, onClaim }: { onClose: () => void; onLinked?:
     try {
       const linked = await almaApi<CardanoLinked>("/v1/cardano/link/verify", { body: { challengeId: current.challenge.challengeId, address: current.address, ...signed } });
       setStep({ name: "done", linked });
+      track("cardano_link_completed", { eligible: Boolean(linked.holdings?.eligible) });
       onLinked?.(linked);
     } catch (err) {
       const code = err instanceof AlmaApiError ? err.code : "";

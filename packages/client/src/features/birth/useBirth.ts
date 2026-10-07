@@ -8,6 +8,7 @@ import { authConfig } from "../auth/config";
 import { useAlmaSession } from "../auth/useAlmaSession";
 import { resolverProblem } from "../founders/useFounder";
 import type { FounderClaim } from "../../mud/systemCalls";
+import { track } from "../../lib/analytics";
 
 /**
  * Being born: prepare the soul, then one operation with `anchorHuman` (when the soul is not anchored yet) and
@@ -35,6 +36,8 @@ export interface BirthCharacter {
 
 const BORN = 2;
 const GESTATING = 1;
+/** When this page asked for a birth: the hook is used in several places, the event is tracked once. */
+let requestedAt: number | undefined;
 const FALLBACK_MS = Number(import.meta.env.VITE_BIRTH_FALLBACK_SECONDS ?? 20) * 1000;
 
 export function useBirth() {
@@ -84,13 +87,19 @@ export function useBirth() {
         const genesisEndsAt = world.getValue(network.tables.Config, {})?.genesisEndsAt ?? 0n;
         const isFounder = (world.getValue(network.tables.Founder, { almaIdHash: soul.almaIdHash })?.claimedAt ?? 0n) > 0n;
         const founder = genesisEndsAt * 1000n > BigInt(Date.now()) && !isFounder ? await almaApi<FounderClaim>("/v1/founders/attestation", { body: {} }) : undefined;
+        track("soul_prepared");
         await systemCalls.requestBirth({
           characterClass,
           almaIdHash: soul.almaIdHash,
           anchor: anchored ? undefined : { almaId: soul.almaId, docHash: soul.docHash },
           founder,
         });
+        requestedAt = Date.now();
+        track("birth_requested", { class: characterClass });
+        if (founder) track("founder_claimed", { withBirth: true });
       } catch (err) {
+        const failure = err instanceof AlmaApiError ? err.code : decodeGameError(err).name;
+        track("birth_failed", { code: failure });
         // The Resolver refusing the attestation is the Genesis rule seen from here
         setError(err instanceof AlmaApiError && err.status !== 0 && err.code !== "unknown" ? { name: err.code, copyKey: resolverProblem(err, "es").copyKey } : decodeGameError(err));
       } finally {
@@ -128,6 +137,14 @@ export function useBirth() {
     if (firstTarget.current === undefined) firstTarget.current = targetBlock;
     else if (targetBlock !== firstTarget.current) setRescheduled(true);
   }, [targetBlock]);
+
+  const bornTribe = character?.status === BORN ? character.tribe : undefined;
+  const bornClass = character?.characterClass;
+  useEffect(() => {
+    if (bornTribe === undefined || requestedAt === undefined) return;
+    track("birth_completed", { latencyMs: Date.now() - requestedAt, tribe: bornTribe, class: bornClass ?? -1 });
+    requestedAt = undefined;
+  }, [bornTribe, bornClass]);
 
   const stage: BirthStage =
     character?.status === BORN

@@ -39,7 +39,17 @@
     "themeDark": "Dark",
     "themeSystem": "Follow the system",
     "language": "Language",
-    "yourKeys": "Your keys"
+    "yourKeys": "Your keys",
+    "motion": "Motion",
+    "motionSystem": "Follow the system",
+    "motionReduced": "Always reduced",
+    "motionHint": "With reduced motion, animations are replaced with brief fades.",
+    "keysHint": "Passkeys, email and accounts linked to your soul, in the Soul Registry.",
+    "session": "Session",
+    "signOut": "Sign out",
+    "signOutFailed": "We couldn't sign you out. Try again.",
+    "retry": "Retry",
+    "legal": "About the village"
   },
   "kit": {
     "title": "Design kit",
@@ -570,5 +580,184 @@
     "holdings_stale": "We're reading Cardano, come back in a few minutes.",
     "below_minimum": "You don't reach the minimum $ALDEA for the seal yet.",
     "already_founder": "Your soul already has the Founder seal."
+  },
+  "home": {
+    "headline": "Born in ALDEA. Your soul travels with you.",
+    "lead": "A world that already exists and belongs to its people. To be born, all you need is a passkey.",
+    "beBorn": "Be born in ALDEA",
+    "look": "Just look around",
+    "genesis": "Genesis Week: until {{date}}, those who hold $ALDEA are born first. From that day, the village opens to every soul.",
+    "dismiss": "Close the welcome"
+  },
+  "legal": {
+    "updated": "Last updated: {{date}}",
+    "draft": "Draft: this text is under legal review before launch. It may change.",
+    "contact": "Write to us at {{email}}.",
+    "also": "Also: "
+  },
+  "about": {
+    "lead": "ALDEA World is a shared village where each person is born only once, with a soul that is theirs and can travel to other worlds. It belongs to the ALDEA DAO community. AdaSouls builds it on open pieces any other world can use.",
+    "powers": {
+      "title": "Who controls what",
+      "intro": "Today, plainly:",
+      "power": "Power",
+      "holder": "Who holds it",
+      "rows": [
+        {
+          "power": "The village's rules and the emergency pause",
+          "holder": "The ALDEA Safe on Base: 3 signatures of 5, from community operators."
+        },
+        {
+          "power": "The village's official version",
+          "holder": "The Council, with the Genesis Charter and a 24-hour wait in which the Safe can veto. Until the Council is active, the Safe."
+        },
+        {
+          "power": "This deployment's registries of souls and worlds",
+          "holder": "The ALDEA Safe."
+        },
+        {
+          "power": "The organizations of the five tribes",
+          "holder": "The ALDEA Safe."
+        },
+        {
+          "power": "The code proposed as a candidate",
+          "holder": "The repository's maintainers, with public review. Merging code does not change what aldea.world serves: only the version the registry names official is published."
+        }
+      ]
+    },
+    "trust": {
+      "title": "Declared temporary trust",
+      "intro": "AdaSouls operates these roles for now. Each one is limited and can be verified from outside:",
+      "items": [
+        "The signer of Founder attestations: vouches for how much $ALDEA a Cardano address holds. Each attestation expires in 15 minutes, works once and only for one soul. The Safe can replace the signer.",
+        "The relay: completes births (anyone can) and publishes the Charter's result. It cannot make one up: the tally is public, its fingerprint stays on Base and the Safe can veto.",
+        "The vote publisher: publishes signed votes on Base and pays their cost. It cannot change a vote; it could delay one, and anyone can publish theirs another way.",
+        "Administration of the repositories on GitHub: it must be in the hands of several Safe signers, never one person. The list is published here before launch."
+      ]
+    },
+    "signers": {
+      "title": "Safe signers",
+      "text": "The five signers of the ALDEA Safe are published here, with their address, before the main network launch."
+    },
+    "code": {
+      "title": "Open source",
+      "text": "The code is free (MIT license): you can read it, audit it and found your own world with it. ALDEA's name and art have their own license (CC BY-NC-SA 4.0).",
+      "repos": "Repositories"
+    },
+    "credits": {
+      "title": "Credits",
+      "items": [
+        "Placeholder art: Kenney's 3D kits (Castle Kit, Fantasy Town Kit, Nature Kit and Mini Characters), in the public domain (CC0 1.0).",
+        "Icons: Lucide (ISC license).",
+        "Typefaces: Alegreya, Alegreya Sans and Alegreya SC, by Huerta Tipográfica, and JetBrains Mono (SIL Open Font License 1.1).",
+        "Built with MUD, Phaser, viem, Effectstream and other open source projects."
+      ]
+    }
+  },
+  "terms": {
+    "sections": [
+      {
+        "title": "What this is",
+        "body": [
+          "ALDEA World is an online world at an early stage. By coming in, being born or using any of its buildings you accept these terms.",
+          "The village may change, pause for maintenance or restart on test networks. What is written on Base's main network does not depend on us to keep existing."
+        ]
+      },
+      {
+        "title": "Your soul and your keys",
+        "body": [
+          "Your soul is yours. You sign in with a passkey, an email or an account you already have; you can add and remove ways to sign in from the Soul Registry.",
+          "Take care of your ways in: if you lose all of them, we cannot give you access back. We recommend keeping at least two.",
+          "One person, one character. Do not use the village to impersonate someone else or to harm others."
+        ]
+      },
+      {
+        "title": "$ALDEA",
+        "body": [
+          "$ALDEA is the ALDEA DAO community's token on Cardano. In the village it does two things: it earns the Founder seal and gives a voice in the Council.",
+          "Nothing you see here is an offer or investment advice. The village promises no returns and does not speak of what $ALDEA is worth."
+        ]
+      },
+      {
+        "title": "What is public",
+        "body": [
+          "Being born, entering a building, claiming a seal and voting are recorded publicly and permanently. Nobody, including us, can erase them."
+        ]
+      },
+      {
+        "title": "Code and art",
+        "body": [
+          "The code is open under the MIT license. The ALDEA name and its art are under the CC BY-NC-SA 4.0 license: you can found your own world with the code, under another name and with other art."
+        ]
+      },
+      {
+        "title": "No warranties",
+        "body": [
+          "The village is offered as it is. We do our best to make it work well and say honestly what fails, but we do not guarantee that it is always available or free of errors."
+        ]
+      },
+      {
+        "title": "Changes",
+        "body": [
+          "If these terms change, we announce it in the village before they take effect."
+        ]
+      }
+    ]
+  },
+  "privacy": {
+    "sections": [
+      {
+        "title": "What we keep",
+        "body": [
+          "Your soul's document: its identifier, its creation date and the keys you linked to it (the public part of your passkeys and the addresses of the accounts you added).",
+          "Of your email we keep only a fingerprint that cannot be turned back into it: we use it to recognize the address when you type it and send you a code.",
+          "If you sign up for a building under construction, we keep that sign-up. While you have the village open, we count your session as present, without keeping a history."
+        ]
+      },
+      {
+        "title": "What we do not keep",
+        "body": [
+          "Your private keys. If you sign in without a wallet of your own, Turnkey, a specialized provider, holds them: neither AdaSouls nor ALDEA DAO can see them or use them on their own.",
+          "Your name, your documents or your location. We do not ask for them."
+        ]
+      },
+      {
+        "title": "What is public by nature",
+        "body": [
+          "What you do in the village is written on Base, for anyone to see and forever: your soul's anchor, your character and its tribe, and every entry into a building.",
+          "If you claim the Founder seal or vote in the Council, your Cardano wallet's credential and how much $ALDEA it held are written too. Your soul shows only that Cardano is linked, not the address."
+        ]
+      },
+      {
+        "title": "Measurement",
+        "body": [
+          "We measure how the village is used with events that carry no personal data: which screens are opened and how long a birth takes. We use no third-party cookies and no advertising.",
+          "Your browser stores your language, your theme and your session."
+        ]
+      },
+      {
+        "title": "Who processes data for us",
+        "body": [
+          "Turnkey (key custody), Coinbase (sponsored operations on Base), Resend (sending email codes), PostHog in the European Union (measurement) and Sentry (errors). Each one receives only what its task needs."
+        ]
+      },
+      {
+        "title": "Your choices",
+        "body": [
+          "You can remove linked keys from the Soul Registry and ask us to delete what we keep about your soul. What is already written on the chain cannot be erased."
+        ]
+      }
+    ]
+  },
+  "soulCard": {
+    "open": "Share my soul",
+    "title": "Your soul, to share",
+    "share": "Share",
+    "drawing": "Drawing your card…",
+    "shareTitle": "My soul in ALDEA",
+    "where": "aldea.world",
+    "shared": "Done, your card is out.",
+    "downloaded": "We downloaded the image and copied the link to your soul.",
+    "failed": "We couldn't draw the card. Try again."
   }
 }

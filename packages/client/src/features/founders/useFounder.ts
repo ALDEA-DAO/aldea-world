@@ -8,6 +8,7 @@ import type { FounderClaim } from "../../mud/systemCalls";
 import { useMud, useWorld, type WorldState, type WorldTables } from "../../mud/store";
 import { authConfig } from "../auth/config";
 import { useAlmaSession } from "../auth/useAlmaSession";
+import { track } from "../../lib/analytics";
 
 /**
  * The Founder seal of the signed-in soul: whether it has it (read from the synced World), whether Genesis is on, and
@@ -98,6 +99,7 @@ export function useFounder(locale = "es") {
         if (!isGameError(err, "FounderSystem_AttestationExpired") && !isGameError(err, "FounderSystem_AttestationUsed")) throw err;
         await systemCalls.claimFounder({ ...(await attest()), anchor });
       }
+      track("founder_claimed", { withBirth: false });
       return true;
     } catch (err) {
       setProblem(resolverProblem(err, locale));

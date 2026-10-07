@@ -49,6 +49,9 @@
     ],
     "patchedDependencies": {
       "@effectstream/sync@0.200.6": "patches/@effectstream__sync@0.200.6.patch"
+    },
+    "overrides": {
+      "graphql": "^16.11.0"
     }
   },
   "repository": {

@@ -3,6 +3,7 @@ import { AlmaApiError, createAlmaApi } from "../../lib/almaApi";
 import { isSignedIn } from "../auth/AlmaAuthProvider";
 import { authConfig } from "../auth/config";
 import { useAlmaSession } from "../auth/useAlmaSession";
+import { track } from "../../lib/analytics";
 
 export type WaitlistBuilding = "npc_forge" | "velum_archive" | "soul_registry_agents";
 
@@ -37,6 +38,7 @@ export function useWaitlist(building: WaitlistBuilding) {
         if (!(err instanceof AlmaApiError && err.code === "already_listed")) throw err;
       });
       setListed((all) => new Set([...(all ?? []), building]));
+      track("waitlist_joined", { building });
     } finally {
       setJoining(false);
     }

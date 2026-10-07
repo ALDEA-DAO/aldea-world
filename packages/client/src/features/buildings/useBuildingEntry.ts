@@ -6,6 +6,7 @@ import { decodeGameError } from "../../lib/errors";
 import { useMud } from "../../mud/store";
 import { useBirth } from "../birth/useBirth";
 import { useWorldActions } from "../world/useWorldActions";
+import { track } from "../../lib/analytics";
 
 const BORN = 2;
 // Entries and exits are sent one after another, in the order the player made them
@@ -25,6 +26,7 @@ export function useBuildingEntry(building: BuildingInfo | undefined) {
   const { blocked } = useWorldActions();
   // While paused or offline the panel still opens (looking is always allowed) but nothing is sent
   const id = blocked ? undefined : building?.id;
+  const slug = building?.slug;
 
   const notify = useRef<(err: unknown) => void>(() => {});
   useEffect(() => {
@@ -43,6 +45,7 @@ export function useBuildingEntry(building: BuildingInfo | undefined) {
       queue = queue.then(async () => {
         try {
           await systemCalls.enterBuilding(id);
+          track("building_entered", { buildingId: slug ?? "" });
         } catch (first) {
           // A revert would revert again: only what may be a passing network failure is retried
           const { name } = decodeGameError(first);
@@ -55,5 +58,5 @@ export function useBuildingEntry(building: BuildingInfo | undefined) {
       clearTimeout(timer);
       if (sent) queue = queue.then(() => systemCalls.leaveBuilding().catch(() => undefined));
     };
-  }, [systemCalls, born, id]);
+  }, [systemCalls, born, id, slug]);
 }

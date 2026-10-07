@@ -1,6 +1,6 @@
 import { COUNCIL_OPENS_AT } from "@aldea/shared/catalog";
 import type { CouncilChoice } from "@aldea/shared/council";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
@@ -15,6 +15,7 @@ import { useCharter } from "../council/useCharter";
 import { VoteDialog } from "../council/VoteDialog";
 import { useIsFounder } from "../founders/FounderSeal";
 import { formatAldea } from "../founders/useFounder";
+import { track } from "../../lib/analytics";
 
 /**
  * The Council: the Genesis Charter, with which those who hold $ALDEA found the world on a version of its code. What
@@ -27,6 +28,10 @@ export function Council() {
   const { links } = useLinks();
   const credential = links?.find((link) => link.kind === "cardano")?.display.replace(/^cardano:/, "");
   const { status, charter, version, refresh } = useCharter(credential);
+  const charterStatus = charter?.proposal.status;
+  useEffect(() => {
+    if (charterStatus) track("charter_viewed", { status: charterStatus });
+  }, [charterStatus]);
   const opensAt = COUNCIL_OPENS_AT ? new Date(COUNCIL_OPENS_AT) : undefined;
 
   return (

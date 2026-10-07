@@ -4,6 +4,8 @@ import { authConfig } from "./config";
 import { createAlmaApi } from "../../lib/almaApi";
 import { createAlmaSession } from "./session";
 import type { PlayerAccount } from "./smartAccount";
+import { identify, track } from "../../lib/analytics";
+import { almaIdHash } from "@aldea/shared/alma";
 
 // Custody and the smart wallet (viem account abstraction, Turnkey) load after the first render
 const custody = () => import("./custody");
@@ -72,7 +74,11 @@ export function AlmaAuthProvider({ children }: { children: ReactNode }) {
       .restore()
       .then(({ user: restored, returnTo }) => {
         apply(restored);
-        if (returnTo) location.hash = returnTo;
+        // `returnTo` only comes back with a sign-in that has just finished
+        if (returnTo) {
+          location.hash = returnTo;
+          if (restored) track("login_completed");
+        }
       })
       .catch((err: unknown) => {
         // Cancelling on ALMA Auth comes back as access_denied: back to the world as a guest, without an error
@@ -84,6 +90,8 @@ export function AlmaAuthProvider({ children }: { children: ReactNode }) {
   }, [session]);
 
   const almaId = user?.profile.sub;
+  // Product events are about the soul's hash, never its identifier
+  useEffect(() => identify(almaId ? almaIdHash(almaId) : undefined), [almaId]);
 
   const refreshSoul = useCallback(async () => {
     const soul = await almaApi<{ id: string; status: string }>("/v1/souls/me");
@@ -127,6 +135,7 @@ export function AlmaAuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (options?: { reauthenticate?: boolean }) => {
     setSignInFailed(false);
+    if (!options?.reauthenticate) track("login_started");
     const nonce = await (await custody()).newCustodyNonce(config);
     await session.signIn({ nonce, returnTo: location.hash || "#/", reauthenticate: options?.reauthenticate });
   }, [config, session]);

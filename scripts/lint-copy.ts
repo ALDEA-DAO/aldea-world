@@ -53,8 +53,8 @@ const everywhere = [
 ];
 /** Not the player's flow: the design kit (developers) and the one label that opens the technical evidence. */
 const exempt = (key: string) => key.startsWith("kit.") || key === "identity.viewOnChain";
-/** Where a player links or signs with a Cardano wallet, and the keys panel. */
-const walletAllowed = ["founder.", "genesis.", "council.", "keys.", "registry.founderNotYet", "errors.genesisFoundersOnly"];
+/** Where a player links or signs with a Cardano wallet, the keys panel, and the privacy text, which has to name it. */
+const walletAllowed = ["founder.", "genesis.", "council.", "keys.", "privacy.", "registry.founderNotYet", "errors.genesisFoundersOnly"];
 const has = (text: string, word: string) => new RegExp(`(^|[^\\p{L}\\p{N}])${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^\\p{L}\\p{N}]|$)`, "iu").test(text);
 for (const [lang, strings] of Object.entries(locales)) {
   for (const [key, raw] of strings) {
