@@ -1,7 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { sql } from "drizzle-orm";
 import type { Context } from "hono";
-import { createPublicClient, getAddress, http } from "viem";
+import { createPublicClient, getAddress, http, type Address, type Hex } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import { createApp } from "./app";
 import { bearerToken, createAccessTokenVerifier } from "./auth/accessToken";
 import { createChallengeStore } from "./auth/interaction";
@@ -15,6 +16,8 @@ import { initSentry } from "./lib/sentry";
 import { createSponsorshipPolicy } from "./lib/sponsorship";
 import { createSyncJob, effectstreamFeeds } from "./jobs/syncFromEffectstream";
 import { soulActivityFromDb } from "./routes/orgs";
+import { createAttestor } from "./lib/attestor";
+import type { Holdings } from "./routes/founders";
 import { createPresenceStore } from "./routes/presence";
 import { loadDeployment } from "./seed/orgs";
 import { createTurnkeyClient, turnkeyConfigFromEnv, turnkeyCustodyProvisioner } from "./lib/turnkey";
@@ -109,6 +112,18 @@ const aa =
 
 const effectstreamUrl = env.EFFECTSTREAM_API_URL ?? "http://localhost:9999";
 
+/** $ALDEA holdings of a Cardano credential, from Effectstream. */
+const holdings = async (credential: string): Promise<Holdings | undefined> => {
+  const res = await fetch(`${effectstreamUrl}/api/v1/cardano/holdings/${credential}`, { signal: AbortSignal.timeout(5_000) });
+  return res.ok ? ((await res.json()) as Holdings) : undefined;
+};
+
+// The key that signs Founder attestations. Locally it is anvil's account 0, which the local deploy sets as the
+// World's attestor; any real network has to provide its own.
+const attestorKey = env.FOUNDER_ATTESTOR_PRIVATE_KEY || (production ? undefined : "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
+if (!attestorKey) throw new Error("FOUNDER_ATTESTOR_PRIVATE_KEY is required in production");
+const attestor = createAttestor(privateKeyToAccount(attestorKey as Hex));
+
 const app = createApp({
   pingDb: async () => {
     await db.execute(sql`select 1`);
@@ -136,10 +151,16 @@ const app = createApp({
     // Mainnet only next to Base mainnet; every other chain goes with a Cardano test network
     network: (env.CARDANO_NETWORK ?? (chainId === 8453 ? "mainnet" : "preprod")) === "mainnet" ? 1 : 0,
     worldOrigins: corsOrigins,
-    holdings: async (credential) => {
-      const res = await fetch(`${effectstreamUrl}/api/v1/cardano/holdings/${credential}`, { signal: AbortSignal.timeout(5_000) });
-      return res.ok ? ((await res.json()) as { balance: string }).balance : undefined;
-    },
+    holdings,
+  },
+  founders: {
+    db,
+    verifyAccessToken,
+    attestor,
+    chainId,
+    world: () => (env.WORLD_ADDRESS as Address | undefined) || loadDeployment(chainId)?.world?.address,
+    holdings,
+    isFounder: async (almaIdHash) => (await fetch(`${effectstreamUrl}/api/v1/founders/${almaIdHash}`, { signal: AbortSignal.timeout(5_000) })).ok,
   },
   presence: { verifyAccessToken, store: createPresenceStore(), aldeaWorldId: () => env.ALDEA_WORLD_ID || loadDeployment(chainId)?.aldeaWorldId },
 });

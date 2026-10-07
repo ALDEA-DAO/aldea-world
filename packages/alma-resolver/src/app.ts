@@ -7,6 +7,7 @@ import { problemResponse, toProblem } from "./lib/problem";
 import { createAaRoutes, type AaRoutesDeps } from "./routes/aa";
 import { createCardanoRoutes, type CardanoRoutesDeps } from "./routes/cardano";
 import { createCustodyRoutes, type CustodyRoutesDeps } from "./routes/custody";
+import { createFounderRoutes, type FounderRoutesDeps } from "./routes/founders";
 import { createLinkPasskeyRoutes, type LinkPasskeyDeps } from "./routes/linkPasskey";
 import { createMeRoutes, type MeRoutesDeps } from "./routes/me";
 import { createOrgRoutes } from "./routes/orgs";
@@ -33,6 +34,8 @@ export interface AppDeps {
   souls?: SoulRoutesDeps;
   /** Linking Cardano wallets (the $ALDEA holders). */
   cardano?: CardanoRoutesDeps;
+  /** Founder attestations for souls whose Cardano wallet holds enough $ALDEA. */
+  founders?: FounderRoutesDeps;
   /** Self-reported presence in ALDEA World. */
   presence?: PresenceRoutesDeps;
 }
@@ -69,6 +72,7 @@ export function createApp(deps: AppDeps) {
     app.route("/v1/waitlist", createWaitlistRoutes(deps.souls));
   }
   if (deps.cardano) app.route("/v1/cardano", createCardanoRoutes(deps.cardano));
+  if (deps.founders) app.route("/v1/founders", createFounderRoutes(deps.founders));
   if (deps.presence) app.route("/v1/presence", createPresenceRoutes(deps.presence));
   if (deps.links) {
     app.route("/v1/me", createMeRoutes(deps.links.me));

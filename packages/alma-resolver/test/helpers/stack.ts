@@ -8,6 +8,7 @@ import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { decodeJwt } from "jose";
 import { createPublicClient, http, type Address, type LocalAccount } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import { createApp } from "../../src/app";
 import { createAccessTokenVerifier } from "../../src/auth/accessToken";
 import type { AnyDb } from "../../src/auth/adapter";
@@ -20,6 +21,7 @@ import { upsertOidcClients } from "../../src/db/clients";
 import * as schema from "../../src/db/schema";
 import { soulActivityFromDb } from "../../src/routes/orgs";
 import { createPresenceStore } from "../../src/routes/presence";
+import { createAttestor } from "../../src/lib/attestor";
 import { createRequestHandler } from "../../src/server";
 import type { VirtualAuthenticator } from "./virtualAuthenticator";
 
@@ -32,6 +34,9 @@ export const WORLD = "http://localhost:3100";
 export const REDIRECT = `${WORLD}/`;
 export const CHAIN_ID = 31337;
 export const ALDEA_WORLD_ID = `0x${"a1".repeat(32)}`;
+export const WORLD_ADDRESS = "0x00000000000000000000000000000000000a1dea" as const;
+// anvil's account 1: a public development key, the attestor in these tests
+export const ATTESTOR_KEY = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d" as const;
 
 export interface Stack {
   issuer: string;
@@ -42,6 +47,10 @@ export interface Stack {
   custodies: ProvisionedCustody[];
   /** $ALDEA the read model reports per Cardano credential, in base units (a credential not here cannot be read). */
   holdings: Map<string, string>;
+  /** Souls (by almaIdHash) the read model already knows as Founders. */
+  founders: Set<string>;
+  /** Set `asOfMs` to make the read model's view of Cardano that old. */
+  cardanoRead: { asOfMs: number | null };
   close: () => Promise<void>;
 }
 
@@ -63,6 +72,15 @@ export async function startStack({ custody = true }: { custody?: boolean } = {})
 
   const sentCodes: Stack["sentCodes"] = [];
   const holdings: Stack["holdings"] = new Map();
+  const founders: Stack["founders"] = new Set();
+  const cardanoRead: Stack["cardanoRead"] = { asOfMs: null };
+  // What the read model would answer: the balance set by the test, as of now unless the test says otherwise
+  const readHoldings = async (credential: string) => {
+    const balance = holdings.get(credential);
+    const asOfMs = cardanoRead.asOfMs ?? Date.now();
+    return balance === undefined ? undefined : { balance, asOfMs, asOfSlot: Math.floor(asOfMs / 1000) - 1_655_683_200 };
+  };
+  const attestor = createAttestor(privateKeyToAccount(ATTESTOR_KEY));
   const custodies: ProvisionedCustody[] = [];
   const sender: EmailCodeSender = { send: async (to, code) => void sentCodes.push({ to, code }) };
   const provisionCustody = async () => {
@@ -90,7 +108,8 @@ export async function startStack({ custody = true }: { custody?: boolean } = {})
     interaction: { auth, soul, passkey, wallet, email },
     souls: { soul, verifyAccessToken, activity: soulActivityFromDb(db), allowDevelopmentController: !custody },
     presence: { verifyAccessToken, store: createPresenceStore(), aldeaWorldId: () => ALDEA_WORLD_ID },
-    cardano: { db, challenges, verifyAccessToken, network: 0, worldOrigins: [WORLD], holdings: async (credential) => holdings.get(credential) },
+    cardano: { db, challenges, verifyAccessToken, network: 0, worldOrigins: [WORLD], holdings: readHoldings },
+    founders: { db, verifyAccessToken, attestor, chainId: CHAIN_ID, world: () => WORLD_ADDRESS, holdings: readHoldings, isFounder: async (hash) => founders.has(hash) },
     links: {
       me: { db, challenges, verifyAccessToken, wallet, email, worldOrigins: [WORLD], issuer },
       passkey: { db, challenges, passkey },
@@ -106,6 +125,8 @@ export async function startStack({ custody = true }: { custody?: boolean } = {})
     sentCodes,
     custodies,
     holdings,
+    founders,
+    cardanoRead,
     close: async () => {
       await new Promise((resolve) => server.close(resolve));
       await pg.close();

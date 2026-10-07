@@ -8,6 +8,7 @@ import { aldeaUtxo, type AldeaUtxo } from "./stf/aldea.ts";
 import * as atlas from "./stf/atlas.ts";
 import { birthCompleted, birthRequested, birthRescheduled, type BirthCompleted, type BirthRequested, type BirthRescheduled, type Effect, type StfContext } from "./stf/births.ts";
 import { buildingEntered, buildingLeft, type BuildingEntered, type BuildingLeft } from "./stf/buildings.ts";
+import { founderClaimed, type FounderClaimed } from "./stf/founders.ts";
 import { soulAnchored, type SoulAnchored } from "./stf/souls.ts";
 
 /**
@@ -52,6 +53,10 @@ stm.addStateTransition("buildingLeft", function* (data) {
   const input = data.parsedInput as BuildingLeft;
   yield* apply(buildingLeft(input, context(data)));
   data.emit(AldeaEvents.BuildingActivity, { buildingId: input.buildingId.toLowerCase(), characterId: input.characterId, kind: "left" });
+});
+
+stm.addStateTransition("founderClaimed", function* (data) {
+  yield* apply(founderClaimed(data.parsedInput as FounderClaimed));
 });
 
 stm.addStateTransition("aldeaUtxo", function* (data) {

@@ -266,12 +266,15 @@ export function atlasFilter(query: AtlasQuery): AtlasFilter | undefined {
   return { visibility: visibility === "any" ? undefined : VISIBILITY.indexOf(visibility as never), verifiedOnly: verified === "true", parentWorldId, cursor, limit };
 }
 
+/** Unix time of slot 0 if every slot had been one second long, per network: slot = unix seconds − this. */
+const SLOT_ZERO_UNIX = { mainnet: 1_591_566_291, preprod: 1_655_683_200 } as const;
+
 /**
  * How far the node has read Cardano. A main-clock block is only applied once Cardano has been read up to that block's
  * time, so holdings are complete as of `asOfMs`. `cardanoTipSlot` is the slot of the latest Cardano block in which the
  * asset moved (the sync only records blocks that carry one of its transactions), null before the first.
  */
-async function cardanoReadState(db: Db): Promise<{ cardanoTipSlot: number | null; asOfMs: number | null }> {
+async function cardanoReadState(db: Db): Promise<{ cardanoTipSlot: number | null; asOfMs: number | null; asOfSlot: number | null }> {
   const { rows } = await db.query(
     `SELECT
        (SELECT (page->'own'->>'slot')::bigint FROM effectstream.sync_protocol_pagination WHERE protocol_name = 'cardanoUtxoRpc') AS slot,
@@ -279,10 +282,27 @@ async function cardanoReadState(db: Db): Promise<{ cardanoTipSlot: number | null
        (SELECT (immutable_config->>'startTime')::bigint FROM effectstream.sync_protocol_config_snapshot WHERE protocol_name = 'mainNtp') AS start_time`,
   );
   const { slot, height, start_time: startTime } = rows[0] ?? {};
+  // The main clock ticks every second from its start time
+  const asOfMs = height === null || height === undefined || startTime === null || startTime === undefined ? null : Number(startTime) + Number(height) * 1000;
   return {
     cardanoTipSlot: slot === null || slot === undefined ? null : Number(slot),
-    // The main clock ticks every second from its start time
-    asOfMs: height === null || height === undefined || startTime === null || startTime === undefined ? null : Number(startTime) + Number(height) * 1000,
+    asOfMs,
+    // The Cardano slot at that time (Shelley-era slots are one second long): what a Founder attestation records
+    asOfSlot: asOfMs === null || !env.cardano ? null : Math.floor(asOfMs / 1000) - SLOT_ZERO_UNIX[env.cardano.network],
+  };
+}
+
+export async function founderSeal(db: Db, almaIdHash: string) {
+  const { rows } = await db.query(`SELECT * FROM founders WHERE alma_id_hash = $1`, [almaIdHash]);
+  const row = rows[0];
+  if (!row) return undefined;
+  return {
+    almaIdHash: row.alma_id_hash,
+    stakeCredential: row.stake_credential,
+    aldeaBalance: String(row.aldea_balance),
+    snapshotSlot: Number(row.snapshot_slot),
+    claimedBlock: Number(row.claimed_block),
+    txHash: row.tx_hash,
   };
 }
 
@@ -344,6 +364,15 @@ export const apiRouter: StartConfigApiRouter = async (server, dbConn) => {
     if (!credential) return reply.code(400).send({ error: "invalid_credential", hint: "stake:<56 hex> or pay:<56 hex>" });
     if (!env.cardano) return reply.code(503).send({ error: "cardano_not_configured" });
     return { ...(await aldeaHolding(dbConn, credential)), ...(await cardanoReadState(dbConn)) };
+  });
+
+  /** A soul's Founder seal, by the hash of its ALMA id; 404 while it has none. */
+  server.get<{ Params: { almaIdHash: string } }>("/api/v1/founders/:almaIdHash", async (request, reply) => {
+    const almaIdHash = request.params.almaIdHash.toLowerCase();
+    if (!HEX_32.test(almaIdHash)) return reply.code(400).send({ error: "invalid_alma_id_hash" });
+    const founder = await founderSeal(dbConn, almaIdHash);
+    if (!founder) return reply.code(404).send({ error: "not_a_founder" });
+    return founder;
   });
 
   /** The Atlas: worlds by registration order (public ones unless asked otherwise), `parent` narrows to a world's forks. */

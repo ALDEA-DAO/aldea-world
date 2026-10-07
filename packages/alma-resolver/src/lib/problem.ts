@@ -21,6 +21,8 @@ export class ProblemError extends Error {
     readonly code: string,
     readonly title: string,
     readonly detail?: string,
+    /** Extra members of the problem, for facts a client shows (never anything sensitive). */
+    readonly extra?: Record<string, string | number>,
   ) {
     super(detail ?? title);
   }
@@ -35,7 +37,7 @@ export function problemResponse(c: Context, p: Omit<Problem, "type">) {
 
 /** Maps any thrown error to a problem response; unexpected errors become an opaque 500. */
 export function toProblem(err: unknown): Omit<Problem, "type"> {
-  if (err instanceof ProblemError) return { status: err.status, code: err.code, title: err.title, detail: err.detail };
+  if (err instanceof ProblemError) return { status: err.status, code: err.code, title: err.title, detail: err.detail, ...err.extra };
   if (err instanceof ZodError) {
     return { status: 400, code: "invalid_request", title: "Invalid request", detail: err.issues.map((i) => `${i.path.join(".") || "body"}: ${i.message}`).join("; ") };
   }

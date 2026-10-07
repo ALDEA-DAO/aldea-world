@@ -1,10 +1,10 @@
 import { ConfigBuilder, ConfigNetworkType, ConfigSyncProtocolType, getEvmEvent } from "@effectstream/node-sdk/config";
 import { getConnection } from "@effectstream/node-sdk/db";
 import { PrimitiveTypeCardanoDelayedAsset } from "@effectstream/node-sdk/sm/builtin";
-import { almaAnchorRegistryAbi, atlasRegistryAbi, characterSystemAbi, movementSystemAbi } from "@aldea/shared/abis";
+import { almaAnchorRegistryAbi, atlasRegistryAbi, characterSystemAbi, founderSystemAbi, movementSystemAbi } from "@aldea/shared/abis";
 import { defineChain } from "viem";
 import { env } from "./env.ts";
-import { birthCompletedGrammar, birthRequestedGrammar, birthRescheduledGrammar, buildingEnteredGrammar, buildingLeftGrammar, grammar, soulAnchoredGrammar } from "./grammar.ts";
+import { birthCompletedGrammar, birthRequestedGrammar, birthRescheduledGrammar, buildingEnteredGrammar, buildingLeftGrammar, founderClaimedGrammar, grammar, soulAnchoredGrammar } from "./grammar.ts";
 import { PrimitiveTypeAldeaEvmEvent } from "./primitives/evmEvent.ts";
 
 const systems = env.systems();
@@ -124,6 +124,10 @@ export const config = new ConfigBuilder()
       .addPrimitive(
         (s) => s.baseRpc,
         () => eventPrimitive("BuildingLeft", systems.MovementSystem, movementSystemAbi, "BuildingLeft(uint32,bytes32)", buildingLeftGrammar, "buildingLeft", env.worldStartBlock),
+      )
+      .addPrimitive(
+        (s) => s.baseRpc,
+        () => eventPrimitive("FounderClaimed", systems.FounderSystem, founderSystemAbi, "FounderClaimed(bytes32,bytes28,uint128,uint64)", founderClaimedGrammar, "founderClaimed", env.worldStartBlock),
       )
       .addPrimitive(
         (s) => s.baseRpc,

@@ -9,6 +9,7 @@ import type { ChallengeStore } from "../auth/interaction";
 import { links } from "../db/schema";
 import { cardanoSigner, linkPayload, verifyCip8, type CardanoNetworkId } from "../lib/cip8";
 import { ProblemError } from "../lib/problem";
+import type { Holdings } from "./founders";
 
 /**
  * `/v1/cardano`: linking a Cardano wallet to the signed-in soul, so its $ALDEA counts for it. The wallet only signs a
@@ -23,8 +24,8 @@ export interface CardanoRoutesDeps {
   network: CardanoNetworkId;
   /** Origins of the worlds allowed to call: the signed message names the caller's domain. */
   worldOrigins: string[];
-  /** $ALDEA the credential holds, in base units, as the read model knows it; undefined when it cannot be read. */
-  holdings: (credential: string) => Promise<string | undefined>;
+  /** $ALDEA the credential holds, as the read model knows it; undefined when it cannot be read. */
+  holdings: (credential: string) => Promise<Holdings | undefined>;
 }
 
 const CHALLENGE = "link-cardano";
@@ -81,7 +82,7 @@ export function createCardanoRoutes(deps: CardanoRoutesDeps) {
       });
     }
 
-    const balance = await deps.holdings(signer.credential).catch(() => undefined);
+    const balance = (await deps.holdings(signer.credential).catch(() => undefined))?.balance;
     return c.json(
       {
         link: { kind: "cardano", value, roles: ["holdings"], hasStakePart: signer.hasStakePart },
