@@ -579,7 +579,8 @@
     "cardano_not_linked": "Primero vincula Cardano.",
     "holdings_stale": "Estamos leyendo Cardano, vuelve en unos minutos.",
     "below_minimum": "Todavía no llegas al mínimo de $ALDEA para el sello.",
-    "already_founder": "Tu alma ya tiene el sello de Fundador."
+    "already_founder": "Tu alma ya tiene el sello de Fundador.",
+    "rate_limited": "Demasiados pedidos seguidos. Espera un minuto y prueba de nuevo."
   },
   "home": {
     "headline": "Nace en ALDEA. Tu alma viaja contigo.",

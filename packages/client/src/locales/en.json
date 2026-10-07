@@ -579,7 +579,8 @@
     "cardano_not_linked": "Link Cardano first.",
     "holdings_stale": "We're reading Cardano, come back in a few minutes.",
     "below_minimum": "You don't reach the minimum $ALDEA for the seal yet.",
-    "already_founder": "Your soul already has the Founder seal."
+    "already_founder": "Your soul already has the Founder seal.",
+    "rate_limited": "Too many requests in a row. Wait a minute and try again."
   },
   "home": {
     "headline": "Born in ALDEA. Your soul travels with you.",

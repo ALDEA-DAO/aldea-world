@@ -1,6 +1,5 @@
 import { almaAnchorRegistryAbi, worldAbi } from "@aldea/shared/abis";
 import { BaseError, decodeErrorResult, isHex, type Abi, type Hex } from "viem";
-import i18n from "./i18n";
 
 /**
  * Turns a failed World or registry call into something the player can read: the contract's custom error (decoded with
@@ -91,12 +90,3 @@ export function decodeGameError(err: unknown): GameError {
 
 /** True when the error is this custom error (e.g. a completion that lost the race to the Midwife). */
 export const isGameError = (err: unknown, name: string) => decodeGameError(err).name === name;
-
-/**
- * The copy for a problem the ALMA Resolver answered with (its stable `code`): what this screen says about it when it
- * has something more precise (`specific`), else what the village says about that code anywhere (`problems.<code>`).
- * The Resolver's own English titles are never shown.
- */
-export function problemCopy(code: string, specific: Record<string, string> = {}): string {
-  return specific[code] ?? (i18n.exists(`problems.${code}`) ? `problems.${code}` : "problems.unknown");
-}

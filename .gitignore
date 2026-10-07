@@ -31,6 +31,7 @@ worlds.json
 .DS_Store
 .idea
 playwright-report
+.lighthouseci
 test-results
 
 # internal product docs (vision, PRD, roadmap, go-to-market, decisions) are kept locally, not published

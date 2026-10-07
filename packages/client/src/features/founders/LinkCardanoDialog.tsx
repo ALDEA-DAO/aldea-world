@@ -4,7 +4,7 @@ import { Button } from "../../components/ui/Button";
 import { Dialog } from "../../components/ui/Dialog";
 import { MonoId } from "../../components/ui/MonoId";
 import { AlmaApiError, createAlmaApi } from "../../lib/almaApi";
-import { problemCopy } from "../../lib/errors";
+import { problemCopy } from "../../lib/problems";
 import { authConfig } from "../auth/config";
 import { useAlmaSession } from "../auth/useAlmaSession";
 import { formatAldea } from "./useFounder";

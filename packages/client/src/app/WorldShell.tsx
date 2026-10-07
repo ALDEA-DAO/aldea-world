@@ -40,7 +40,8 @@ export function WorldShell() {
                 </p>
               )
             )}
-            {game.ready && !open && <GuestIntro />}
+            {/* Before the village has loaded: on a slow connection the welcome is what a guest reads meanwhile */}
+            {!game.failed && !open && <GuestIntro />}
             <HudBottomBar game={game} open={open} enterBlockedReason={enterBlockedReason} />
           </>
         )}

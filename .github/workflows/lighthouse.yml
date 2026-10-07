@@ -1,0 +1,30 @@
+# Performance and accessibility budgets on the production build, on a mid-range phone on 4G (9 Mbps, 60 ms, a CPU four
+# times slower than the runner's). Every page must score 95 or more in accessibility; the reading pages, List mode and
+# the Portal must paint their main content within 2.5 s and answer within 3.5 s. The village's own budget is looser
+# (3 s and 6 s): starting the game takes the main thread, and that is the gap still to close. The build is measured as
+# a guest finds it, before any service answers.
+name: lighthouse
+
+on:
+  pull_request:
+    paths: ["packages/client/**", "packages/shared/**", "lighthouserc.json", "pnpm-lock.yaml"]
+  push:
+    branches: [develop]
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  budgets:
+    name: budgets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with: { node-version-file: .nvmrc, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter client build
+      - name: Lighthouse
+        run: pnpm dlx @lhci/cli@0.15.1 autorun

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../components/ui/Button";
-import { problemCopy } from "../../lib/errors";
+import { problemCopy } from "../../lib/problems";
 import { useAlmaSession } from "../auth/useAlmaSession";
 import { useLinks, type AlmaLink } from "../auth/useLinks";
 

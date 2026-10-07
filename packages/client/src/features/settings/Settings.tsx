@@ -88,16 +88,12 @@ export function SettingsScreen() {
       <AboutVersion />
       {isSignedIn(status) && (
         <>
-          <section aria-labelledby="settings-keys" className="mt-8">
-            <h2 id="settings-keys" className="text-sm font-medium">
+          <p className="mt-8">
+            <Link className="underline" to="/b/registro-de-almas">
               {t("settings.yourKeys")}
-            </h2>
-            <p className="mt-2 text-sm">
-              <Link className="underline" to="/b/registro-de-almas">
-                {t("settings.keysHint")}
-              </Link>
-            </p>
-          </section>
+            </Link>
+            <span className="mt-1 block text-sm text-text-muted">{t("settings.keysHint")}</span>
+          </p>
           <section aria-labelledby="settings-session" className="mt-8 flex flex-col items-start gap-2">
             <h2 id="settings-session" className="text-sm font-medium">
               {t("settings.session")}

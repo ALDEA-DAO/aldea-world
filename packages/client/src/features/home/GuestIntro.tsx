@@ -14,17 +14,31 @@ const seen = () => {
   }
 };
 
+/** Whether this browser holds a session that is about to be restored (the sign-in library keeps it under this prefix). */
+const sessionStored = () => {
+  try {
+    return Object.keys(localStorage).some((key) => key.startsWith("oidc.user:"));
+  } catch {
+    return false;
+  }
+};
+
 /**
  * The welcome a guest finds over the village: what this is, in one line, and the two things they can do (be born, or
  * just look). During Genesis it also says until when Founders are born first: a date, stated once, with no countdown.
  * It never covers the village for long: it closes for the rest of the visit.
+ *
+ * It is the first thing a first visit reads, so it does not wait for the session to say "guest": a browser with no
+ * stored session and not coming back from signing in is a guest already.
  */
 export function GuestIntro() {
   const { t, i18n } = useTranslation();
-  const { status } = useAlmaSession();
+  const { status, returning } = useAlmaSession();
+  const [stored] = useState(sessionStored);
   const { genesisActive, genesisEndsAt } = useFounder();
   const [closed, setClosed] = useState(seen);
-  if (status !== "guest" || closed) return null;
+  const guest = status === "guest" || (status === "loading" && !stored && !returning);
+  if (!guest || closed) return null;
 
   const close = () => {
     setClosed(true);
