@@ -145,7 +145,7 @@
     "failed": "We couldn't complete your birth. Your request is safe; try again.",
     "retry": "Try again",
     "howDrawn": "How is my tribe drawn?",
-    "howDrawnText": "Your tribe comes from the hash of a Base block that does not exist yet when you ask to be born. Nobody, not even the team, can know it in advance.",
+    "howDrawnText": "Your tribe comes from the fingerprint of a Base block that does not exist yet when you ask to be born. Nobody, not even the team, can know it in advance.",
     "bornInto": "You were born into the tribe",
     "named": "Your soul now has a name.",
     "viewSoul": "View your soul",
@@ -164,8 +164,12 @@
     "notBornYet": "Your soul is still arriving; wait to be born before entering.",
     "unknownBuilding": "That building does not exist in this village.",
     "buildingClosed": "This building is closed for now.",
-    "entryNotRecorded": "Your entry was not recorded on-chain. You can keep looking around.",
-    "busy": "The village is receiving many souls; try again in a few minutes."
+    "entryNotRecorded": "Your entry was not recorded on the chain. You can keep looking around.",
+    "busy": "The village is receiving many souls; try again in a few minutes.",
+    "soulRevoked": "This soul was revoked and can no longer act in the village.",
+    "notAllowed": "This account can't do that in the village.",
+    "invalidSoul": "That soul identifier isn't valid.",
+    "needsSoul": "You need your soul first. Sign in and be born at the Town Center."
   },
   "village": {
     "beBorn": "Be born in ALDEA",
@@ -222,7 +226,7 @@
     "founderNotYet": "not yet. If you hold $ALDEA, you can claim it by linking your Cardano wallet.",
     "charterNotYet": "not yet. It is signed when the Council opens with the Genesis Charter.",
     "agentsSoon": "Coming soon: register souls for your agents",
-    "agentsSoonText": "Your agents will have their own soul, tied to yours, with the same on-chain evidence."
+    "agentsSoonText": "Your agents will have their own soul, tied to yours, with the same evidence on the chain."
   },
   "hud": {
     "menu": "Menu",
@@ -266,7 +270,7 @@
     "anotherWorld": "another world",
     "officialVersion": "Official version {{semver}} · {{cid}}",
     "noOfficialVersion": "No official version yet",
-    "notMeasurable": "On-chain activity not measurable",
+    "notMeasurable": "Activity on the chain not measurable",
     "noClient": "No client registered",
     "updating": "Updating… Data from {{time}}.",
     "filters": {
@@ -351,14 +355,14 @@
     "verify": {
       "title": "Verify",
       "opened": "Charter opened",
-      "yourVote": "Your vote on-chain",
+      "yourVote": "Your vote on the chain",
       "queued": "Result published",
       "executed": "Execution",
       "vetoed": "Veto",
       "rules": "Rules",
       "tally": "Download the full tally (tally.json)",
-      "tallyHash": "Tally hash:",
-      "recompute": "With the tally and its hash, anyone can redo the count."
+      "tallyHash": "Tally fingerprint:",
+      "recompute": "With the tally and its fingerprint, anyone can redo the count."
     },
     "status": {
       "scheduled": "The Charter opens on {{date}}.",
@@ -366,8 +370,8 @@
       "approved": "The Charter was approved.",
       "rejected": "The Charter was rejected by a qualified objection.",
       "noResult": "The Charter closed with no rules published: there is no result.",
-      "waitingQueue": "The result is about to be published on-chain.",
-      "queued": "The result is on-chain. It can be executed from {{date}}; until then the guardian can veto it.",
+      "waitingQueue": "The result is about to be published on the chain.",
+      "queued": "The result is on the chain. It can be executed from {{date}}; until then the guardian can veto it.",
       "executed": "ALDEA was founded with version {{semver}}.",
       "vetoed": "The guardian vetoed the Charter.",
       "vetoReason": "Reason: {{reason}}"
@@ -425,7 +429,7 @@
       "chain": "Chain",
       "contract": "World",
       "date": "Date",
-      "evidence": "On-chain"
+      "evidence": "On the chain"
     },
     "status": {
       "official": "Official",
@@ -515,5 +519,56 @@
     "opens": "The village opens to every soul on {{date}}.",
     "link": "Link Cardano",
     "linked": "Your wallet is linked. Choose your class to be born."
+  },
+  "problems": {
+    "unknown": "Something didn't go through. Try again.",
+    "http_error": "Something didn't go through. Try again.",
+    "internal_error": "Something broke on our side. We're looking into it; try again in a few minutes.",
+    "invalid_request": "That request didn't arrive whole. Try again.",
+    "not_found": "We couldn't find that in the village.",
+    "unauthorized": "Your session ended. Sign in with your soul again.",
+    "insufficient_scope": "This session can't manage your keys. Sign in again and retry.",
+    "step_up_required": "For safety, confirm it's you before going on.",
+    "invalid_id_token": "Your session doesn't match this browser. Sign in again.",
+    "invalid_session": "Your session isn't valid. Sign in again.",
+    "interaction_expired": "That took a while and the request expired. Let's start again.",
+    "interaction_not_login": "There is no sign-in under way. Go back to the village and sign in from there.",
+    "invalid_return": "We don't recognize the place you wanted to return to. Sign in from the village.",
+    "unknown_origin": "Keys can only be linked from a registered world.",
+    "invalid_email": "That email doesn't look valid. Check it.",
+    "invalid_code": "That code didn't work. Check it or ask for another.",
+    "invalid_passkey": "We couldn't recognize your passkey. Try again.",
+    "invalid_signature": "The signature doesn't match. Sign the message exactly as shown.",
+    "challenge_expired": "The request expired. Let's start again.",
+    "invalid_roles": "That use for a key doesn't exist.",
+    "last_login_method": "It is your only way in. Add another before removing it.",
+    "controller_link": "This key owns your account on Base; it can't be removed yet.",
+    "link_belongs_to_other_soul": "This key belongs to another soul. If both are yours, you can merge them.",
+    "merge_proof_missing": "To merge the two souls, first prove you hold a key of the other one.",
+    "same_soul": "Both keys already belong to this soul.",
+    "soul_anchored": "The other soul was already born in the village: it can't be merged.",
+    "soul_already_anchored": "Your soul was already anchored; carry on.",
+    "soul_not_found": "We couldn't find that soul.",
+    "soul_not_prepared": "Your soul has no account on Base yet. Stop by the Town Center first.",
+    "invalid_alma_id": "That soul identifier isn't valid.",
+    "controller_mismatch": "This soul already has another account controlling it.",
+    "controller_required": "It is missing which account controls this soul.",
+    "self_custody": "This soul is controlled by its own key: there is no session to open here.",
+    "custody_unavailable": "Your keys aren't ready yet. Try again in a moment.",
+    "world_unavailable": "The village hasn't opened on this network yet.",
+    "unknown_world": "That world isn't this village's.",
+    "invalid_building": "That building doesn't exist in this village.",
+    "invalid_limit": "You asked for more than we can show at once.",
+    "already_listed": "You were already on the list. We'll let you know when it opens.",
+    "invalid_address": "That isn't a Cardano address.",
+    "unsupported_address": "That kind of address can't be linked.",
+    "wrong_network": "That address is from another Cardano network.",
+    "invalid_cip8_signature": "The signature didn't match. Sign with the stake address.",
+    "credential_linked_elsewhere": "This Cardano address already belongs to another soul.",
+    "cardano_already_linked": "Your soul already has Cardano linked.",
+    "cardano_not_linked": "Link Cardano first.",
+    "holdings_stale": "We're reading Cardano, come back in a few minutes.",
+    "below_minimum": "You don't reach the minimum $ALDEA for the seal yet.",
+    "already_founder": "Your soul already has the Founder seal."
   }
 }

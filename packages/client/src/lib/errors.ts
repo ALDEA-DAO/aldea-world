@@ -1,5 +1,6 @@
 import { almaAnchorRegistryAbi, worldAbi } from "@aldea/shared/abis";
 import { BaseError, decodeErrorResult, isHex, type Abi, type Hex } from "viem";
+import i18n from "./i18n";
 
 /**
  * Turns a failed World or registry call into something the player can read: the contract's custom error (decoded with
@@ -16,7 +17,8 @@ export interface GameError {
 
 const abis: Abi[] = [worldAbi as Abi, almaAnchorRegistryAbi as Abi];
 
-const COPY: Record<string, string> = {
+/** Every custom error of the World's systems and of AlmaAnchorRegistry, and the copy that says it to a player. */
+export const CONTRACT_ERROR_COPY: Record<string, string> = {
   CharacterSystem_WorldPaused: "errors.worldPaused",
   CharacterSystem_AlreadyHasCharacter: "errors.alreadyHasCharacter",
   CharacterSystem_SoulAlreadyHasCharacter: "errors.alreadyHasCharacter",
@@ -42,8 +44,17 @@ const COPY: Record<string, string> = {
   FounderSystem_AttestationExpired: "founder.errors.tryAgain",
   FounderSystem_AttestationUsed: "founder.errors.tryAgain",
   FounderSystem_InvalidAttestationSigner: "founder.errors.tryAgain",
+  // Only the Safe calls AdminSystem; shown if someone else tries
+  AdminSystem_InvalidConfig: "errors.notAllowed",
   AlreadyHasHuman: "errors.alreadyAnchored",
   AlreadyAnchored: "errors.alreadyAnchored",
+  NoHumanSoul: "errors.needsSoul",
+  NotController: "errors.notSoulController",
+  SubjectRevokedError: "errors.soulRevoked",
+  InvalidAlmaId: "errors.invalidSoul",
+  InvalidAddress: "errors.invalidSoul",
+  NotAdmin: "errors.notAllowed",
+  NotIssuer: "errors.notAllowed",
 };
 
 /** Revert data anywhere in the error chain (viem nests it differently for transactions, simulations and UserOps). */
@@ -65,7 +76,7 @@ export function decodeGameError(err: unknown): GameError {
     for (const abi of abis) {
       try {
         const { errorName, args } = decodeErrorResult({ abi, data });
-        return { name: errorName, args, copyKey: COPY[errorName] ?? "errors.unknown" };
+        return { name: errorName, args, copyKey: CONTRACT_ERROR_COPY[errorName] ?? "errors.unknown" };
       } catch {
         // not an error of this ABI: try the next one
       }
@@ -80,3 +91,12 @@ export function decodeGameError(err: unknown): GameError {
 
 /** True when the error is this custom error (e.g. a completion that lost the race to the Midwife). */
 export const isGameError = (err: unknown, name: string) => decodeGameError(err).name === name;
+
+/**
+ * The copy for a problem the ALMA Resolver answered with (its stable `code`): what this screen says about it when it
+ * has something more precise (`specific`), else what the village says about that code anywhere (`problems.<code>`).
+ * The Resolver's own English titles are never shown.
+ */
+export function problemCopy(code: string, specific: Record<string, string> = {}): string {
+  return specific[code] ?? (i18n.exists(`problems.${code}`) ? `problems.${code}` : "problems.unknown");
+}

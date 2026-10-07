@@ -4,6 +4,7 @@ import { Button } from "../../components/ui/Button";
 import { Dialog } from "../../components/ui/Dialog";
 import { MonoId } from "../../components/ui/MonoId";
 import { AlmaApiError, createAlmaApi } from "../../lib/almaApi";
+import { problemCopy } from "../../lib/errors";
 import { authConfig } from "../auth/config";
 import { useAlmaSession } from "../auth/useAlmaSession";
 import { formatAldea } from "./useFounder";
@@ -96,7 +97,7 @@ function Steps({ onClose, onLinked, onClaim }: { onClose: () => void; onLinked?:
       const challenge = await almaApi<Challenge>("/v1/cardano/link/challenge", { body: {} });
       setStep({ name: "sign", api, address, challenge, waiting: false });
     } catch (err) {
-      setError(err instanceof AlmaApiError ? (ERROR_COPY[err.code] ?? "founder.link.errors.generic") : "founder.link.errors.walletRefused");
+      setError(err instanceof AlmaApiError ? problemCopy(err.code, ERROR_COPY) : "founder.link.errors.walletRefused");
     } finally {
       setBusy(false);
     }
@@ -120,7 +121,7 @@ function Steps({ onClose, onLinked, onClaim }: { onClose: () => void; onLinked?:
       onLinked?.(linked);
     } catch (err) {
       const code = err instanceof AlmaApiError ? err.code : "";
-      setError(ERROR_COPY[code] ?? "founder.link.errors.generic");
+      setError(err instanceof AlmaApiError ? problemCopy(code, ERROR_COPY) : "founder.link.errors.generic");
       // A used or expired challenge cannot be signed again: start over with a new one
       if (code === "challenge_expired" || code === "invalid_cip8_signature") setStep({ name: "choose" });
       else setStep({ ...current, waiting: false });

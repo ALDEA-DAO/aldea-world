@@ -3,7 +3,7 @@ import { almaIdHash } from "@aldea/shared/alma";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Address, Hex } from "viem";
 import { AlmaApiError, createAlmaApi } from "../../lib/almaApi";
-import { decodeGameError, isGameError } from "../../lib/errors";
+import { decodeGameError, isGameError, problemCopy } from "../../lib/errors";
 import type { FounderClaim } from "../../mud/systemCalls";
 import { useMud, useWorld, type WorldState, type WorldTables } from "../../mud/store";
 import { authConfig } from "../auth/config";
@@ -44,7 +44,7 @@ export function resolverProblem(err: unknown, locale: string): FounderProblem {
     if (err.code === "below_minimum" && balance && minimum) {
       return { copyKey: "founder.errors.missing", values: { amount: formatAldea(BigInt(minimum) - BigInt(balance), locale) } };
     }
-    return { copyKey: RESOLVER_COPY[err.code] ?? "founder.errors.tryAgain" };
+    return { copyKey: problemCopy(err.code, RESOLVER_COPY) };
   }
   return { copyKey: decodeGameError(err).copyKey };
 }

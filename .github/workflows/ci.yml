@@ -28,6 +28,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
+      - run: pnpm lint:copy
       - run: pnpm -r typecheck
 
   contracts:
