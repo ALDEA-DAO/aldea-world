@@ -7,6 +7,7 @@ import atlasEvidenceSql from "../db/migrations/0003_atlas_evidence.sql" with { t
 import aldeaUtxosSql from "../db/migrations/0004_aldea_utxos.sql" with { type: "text" };
 import councilSql from "../db/migrations/0005_council.sql" with { type: "text" };
 import { apiRouter } from "./api.ts";
+import { captureError, initSentry } from "./sentry.ts";
 import { CARDANO_SYNC_PROTOCOL, config } from "./config.ts";
 import { grammar } from "./grammar.ts";
 import { AldeaEvmEventPrimitive, PrimitiveTypeAldeaEvmEvent } from "./primitives/evmEvent.ts";
@@ -54,8 +55,15 @@ async function watchdog() {
 setTimeout(watchdog, STARTUP_TIMEOUT_MS).unref();
 
 // The runtime can stop on a failed query without logging why (SPIKE.md, finding 2): surface it.
-process.on("uncaughtException", (e) => console.error("[effectstream-node] uncaughtException", e));
-process.on("unhandledRejection", (e) => console.error("[effectstream-node] unhandledRejection", e));
+initSentry();
+process.on("uncaughtException", (e) => {
+  console.error("[effectstream-node] uncaughtException", e);
+  captureError(e);
+});
+process.on("unhandledRejection", (e) => {
+  console.error("[effectstream-node] unhandledRejection", e);
+  captureError(e);
+});
 
 main(function* () {
   yield* init();

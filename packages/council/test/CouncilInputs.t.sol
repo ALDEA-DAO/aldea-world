@@ -18,8 +18,8 @@ contract CouncilInputsTest is Test {
 
   function test_takesNoValue() public {
     vm.deal(address(this), 1 ether);
-    vm.expectRevert(CouncilInputs.NoValue.selector);
-    inputs.effectstreamSubmitGameInput{ value: 1 }(bytes("x"));
+    (bool ok, ) = address(inputs).call{ value: 1 }(abi.encodeCall(CouncilInputs.effectstreamSubmitGameInput, (bytes("x"))));
+    assertFalse(ok);
     assertEq(address(inputs).balance, 0);
   }
 

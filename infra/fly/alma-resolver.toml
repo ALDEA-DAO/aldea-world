@@ -23,6 +23,8 @@ primary_region = "gru"
   WEBAUTHN_RP_ID = "auth.adasouls.io"
   RESEND_FROM = "ALMA <login@adasouls.io>"
   CORS_ORIGINS = "https://testnet.aldea.world"
+  # Set by the proxy in front: rate limits count per client, not per proxy
+  CLIENT_IP_HEADER = "fly-client-ip"
   TURNKEY_OIDC_AUDIENCE = "aldea-world"
   EFFECTSTREAM_API_URL = "http://aldea-testnet-effectstream.internal:9999"
   # WORLD_ADDRESS and ALMA_REGISTRY_ADDRESS (sponsored-gas allowlist): set after the contracts are deployed

@@ -11,6 +11,7 @@
     "dev:contracts": "pnpm --filter contracts dev",
     "foundry:up": "curl -L https://foundry.paradigm.xyz | bash && bash $HOME/.foundry/bin/foundryup",
     "lint": "eslint .",
+    "lint:copy": "node --experimental-strip-types scripts/lint-copy.ts",
     "format": "prettier --write .",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
@@ -48,6 +49,9 @@
     ],
     "patchedDependencies": {
       "@effectstream/sync@0.200.6": "patches/@effectstream__sync@0.200.6.patch"
+    },
+    "overrides": {
+      "graphql": "^16.11.0"
     }
   },
   "repository": {

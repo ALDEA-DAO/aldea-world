@@ -1,6 +1,6 @@
 import { FORK_GUIDE_URL } from "@aldea/shared/catalog";
 import clsx from "clsx";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../components/ui/Button";
 import { Skeleton } from "../../components/ui/Skeleton";
@@ -11,6 +11,7 @@ import { FilterTabs, type PortalFilter } from "./FilterTabs";
 import { travel, TravelDialog } from "./TravelDialog";
 import { useAtlas } from "./useAtlas";
 import { WorldCard } from "./WorldCard";
+import { track } from "../../lib/analytics";
 
 /**
  * The Portal of Worlds: the Atlas' public worlds, live. `layout` "panel" is the building's list; "page" is the
@@ -20,6 +21,7 @@ import { WorldCard } from "./WorldCard";
 export function Portal({ layout }: { layout: "panel" | "page" }) {
   const { t, i18n } = useTranslation();
   const atlas = useAtlas();
+  useEffect(() => track("portal_viewed", { layout }), [layout]);
   const [filter, setFilter] = useState<PortalFilter>("verified");
   const [travelTo, setTravelTo] = useState<{ world: AtlasWorld; url: string }>();
   const { home, ownPresenceUrl } = useMemo(() => {

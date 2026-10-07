@@ -6,6 +6,7 @@ import { Dialog } from "../../components/ui/Dialog";
 import { VerifyOnChain } from "../../components/ui/VerifyOnChain";
 import { cardanoWallets } from "../founders/LinkCardanoDialog";
 import { BatcherError, sendVote, signingAddress, voteToSign, type VoteToSign } from "./councilApi";
+import { track } from "../../lib/analytics";
 
 /**
  * Signing or objecting to the Charter: the Founder signs their vote with the Cardano wallet linked to their soul (a
@@ -87,6 +88,7 @@ function Steps({ onClose, proposalId, choice, credential, onVoted }: Omit<VoteDi
     try {
       const tx = await sendVote(current.vote, signed);
       setStep({ name: "done", tx });
+      track("charter_vote_submitted", { choice });
       onVoted(choice);
     } catch (err) {
       const status = err instanceof BatcherError ? err.status : 0;

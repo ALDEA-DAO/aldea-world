@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "bun:test";
 import { PGlite } from "@electric-sql/pglite";
 import readModelSql from "../db/migrations/0001_read_model.sql" with { type: "text" };
 import visitExitsSql from "../db/migrations/0002_visit_exits.sql" with { type: "text" };
-import { buildingActivity, feedPage } from "../src/api.ts";
+import { alerts, buildingActivity, feedPage } from "../src/api.ts";
 import { birthCompleted, birthRequested, birthRescheduled, completeBirthKey, type Effect, type StfContext } from "../src/stf/births.ts";
 import { soulAnchored } from "../src/stf/souls.ts";
 
@@ -126,5 +126,23 @@ describe("feed pages", () => {
     const second = await feedPage(db as never, "births", "born_block", "character_id", "status = 'born'", first.nextSince, 2);
     expect(second.rows.map((r) => r.character_id)).toEqual([4]);
     expect((await feedPage(db as never, "births", "born_block", "character_id", "status = 'born'", second.nextSince, 2)).rows).toEqual([]);
+  });
+});
+
+describe("alerts", () => {
+  it("fires when a birth has waited more than 60 s for its completion, and not once it is completed", async () => {
+    await apply(db, birthRequested(requested, ctx(100)));
+    const read = { synced: 500, head: 500 };
+    expect(await alerts(db as never, { height: 160, ...read })).toEqual([]);
+    expect(await alerts(db as never, { height: 161, ...read })).toEqual([{ alert: "gestation_stuck", detail: "1 birth(s) waiting for their completion, the oldest for 61 s" }]);
+    await apply(db, birthCompleted(completed, ctx(162)));
+    expect(await alerts(db as never, { height: 400, ...read })).toEqual([]);
+  });
+
+  it("fires when the read model is more than 30 Base blocks behind, and says nothing about what it cannot read", async () => {
+    expect(await alerts(db as never, { height: 10, synced: 470, head: 500 })).toEqual([]);
+    expect(await alerts(db as never, { height: 10, synced: 469, head: 500 })).toEqual([{ alert: "base_lag", detail: "31 Base blocks behind (read 469, head 500)" }]);
+    expect(await alerts(db as never, { height: null, synced: null, head: 500 })).toEqual([]);
+    expect(await alerts(db as never, { height: 10, synced: 1, head: null })).toEqual([]);
   });
 });

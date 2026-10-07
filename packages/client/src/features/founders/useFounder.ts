@@ -4,10 +4,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Address, Hex } from "viem";
 import { AlmaApiError, createAlmaApi } from "../../lib/almaApi";
 import { decodeGameError, isGameError } from "../../lib/errors";
+import { problemCopy } from "../../lib/problems";
 import type { FounderClaim } from "../../mud/systemCalls";
 import { useMud, useWorld, type WorldState, type WorldTables } from "../../mud/store";
 import { authConfig } from "../auth/config";
 import { useAlmaSession } from "../auth/useAlmaSession";
+import { track } from "../../lib/analytics";
 
 /**
  * The Founder seal of the signed-in soul: whether it has it (read from the synced World), whether Genesis is on, and
@@ -44,7 +46,7 @@ export function resolverProblem(err: unknown, locale: string): FounderProblem {
     if (err.code === "below_minimum" && balance && minimum) {
       return { copyKey: "founder.errors.missing", values: { amount: formatAldea(BigInt(minimum) - BigInt(balance), locale) } };
     }
-    return { copyKey: RESOLVER_COPY[err.code] ?? "founder.errors.tryAgain" };
+    return { copyKey: problemCopy(err.code, RESOLVER_COPY) };
   }
   return { copyKey: decodeGameError(err).copyKey };
 }
@@ -98,6 +100,7 @@ export function useFounder(locale = "es") {
         if (!isGameError(err, "FounderSystem_AttestationExpired") && !isGameError(err, "FounderSystem_AttestationUsed")) throw err;
         await systemCalls.claimFounder({ ...(await attest()), anchor });
       }
+      track("founder_claimed", { withBirth: false });
       return true;
     } catch (err) {
       setProblem(resolverProblem(err, locale));

@@ -16,7 +16,8 @@ export interface GameError {
 
 const abis: Abi[] = [worldAbi as Abi, almaAnchorRegistryAbi as Abi];
 
-const COPY: Record<string, string> = {
+/** Every custom error of the World's systems and of AlmaAnchorRegistry, and the copy that says it to a player. */
+export const CONTRACT_ERROR_COPY: Record<string, string> = {
   CharacterSystem_WorldPaused: "errors.worldPaused",
   CharacterSystem_AlreadyHasCharacter: "errors.alreadyHasCharacter",
   CharacterSystem_SoulAlreadyHasCharacter: "errors.alreadyHasCharacter",
@@ -42,8 +43,17 @@ const COPY: Record<string, string> = {
   FounderSystem_AttestationExpired: "founder.errors.tryAgain",
   FounderSystem_AttestationUsed: "founder.errors.tryAgain",
   FounderSystem_InvalidAttestationSigner: "founder.errors.tryAgain",
+  // Only the Safe calls AdminSystem; shown if someone else tries
+  AdminSystem_InvalidConfig: "errors.notAllowed",
   AlreadyHasHuman: "errors.alreadyAnchored",
   AlreadyAnchored: "errors.alreadyAnchored",
+  NoHumanSoul: "errors.needsSoul",
+  NotController: "errors.notSoulController",
+  SubjectRevokedError: "errors.soulRevoked",
+  InvalidAlmaId: "errors.invalidSoul",
+  InvalidAddress: "errors.invalidSoul",
+  NotAdmin: "errors.notAllowed",
+  NotIssuer: "errors.notAllowed",
 };
 
 /** Revert data anywhere in the error chain (viem nests it differently for transactions, simulations and UserOps). */
@@ -65,7 +75,7 @@ export function decodeGameError(err: unknown): GameError {
     for (const abi of abis) {
       try {
         const { errorName, args } = decodeErrorResult({ abi, data });
-        return { name: errorName, args, copyKey: COPY[errorName] ?? "errors.unknown" };
+        return { name: errorName, args, copyKey: CONTRACT_ERROR_COPY[errorName] ?? "errors.unknown" };
       } catch {
         // not an error of this ABI: try the next one
       }

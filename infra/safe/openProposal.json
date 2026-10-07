@@ -42,7 +42,7 @@
       "data": null,
       "contractMethod": {
         "name": "effectstreamSubmitGameInput",
-        "payable": true,
+        "payable": false,
         "inputs": [{ "name": "data", "type": "bytes", "internalType": "bytes" }]
       },
       "contractInputsValues": {

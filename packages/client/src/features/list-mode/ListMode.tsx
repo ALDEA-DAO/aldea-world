@@ -13,6 +13,7 @@ import { useBirth } from "../birth/useBirth";
 import { BuildingContent } from "../buildings/BuildingContent";
 import { useBuildingEntry } from "../buildings/useBuildingEntry";
 import { useWorldActions } from "../world/useWorldActions";
+import { trackOnce } from "../../lib/analytics";
 
 /**
  * List mode (`#/lista`, `#/lista/:buildingSlug`): the village without the canvas. A status header (your soul, your
@@ -24,6 +25,7 @@ export function ListMode() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language === "en" ? "en" : "es";
   const navigate = useNavigate();
+  useEffect(() => trackOnce("list_mode_opened"), []);
   const { buildingSlug } = useParams();
   const selected = buildingSlug ? buildingByRoute(buildingSlug) : undefined;
   const fallback = Boolean((useLocation().state as { fallback?: boolean } | null)?.fallback);

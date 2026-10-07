@@ -263,20 +263,20 @@ describe("after the close, on-chain", () => {
 });
 
 describe("who signed", () => {
-  const STAKE_KEY = "32c728d3861e164cab28cb8f006448139c8f1740ffb8e7aa9e5232dc";
-  const PAYMENT_KEY = "9493315cd92eb5d8c4304e67b7e16ae36d61d34502694657811a2c8e";
+  const STAKE_CREDENTIAL = "32c728d3861e164cab28cb8f006448139c8f1740ffb8e7aa9e5232dc";
+  const PAYMENT_CREDENTIAL = "9493315cd92eb5d8c4304e67b7e16ae36d61d34502694657811a2c8e";
   const address = (prefix: string, header: number, ...credentials: string[]) => bech32.encode(prefix, bech32.toWords(Buffer.from(header.toString(16).padStart(2, "0") + credentials.join(""), "hex")), 200);
 
   it("a reward address speaks for its stake credential and an enterprise address for its payment one", () => {
     // CIP-19's test vector for this stake key on a test network
-    expect(signerCredential("stake_test1uqevw2xnsc0pvn9t9r9c7qryfqfeerchgrlm3ea2nefr9hqp8n5xl")).toBe(`stake:${STAKE_KEY}`);
-    expect(signerCredential(address("stake", 0xe1, STAKE_KEY))).toBe(`stake:${STAKE_KEY}`);
-    expect(signerCredential(address("addr_test", 0x60, PAYMENT_KEY))).toBe(`pay:${PAYMENT_KEY}`);
+    expect(signerCredential("stake_test1uqevw2xnsc0pvn9t9r9c7qryfqfeerchgrlm3ea2nefr9hqp8n5xl")).toBe(`stake:${STAKE_CREDENTIAL}`);
+    expect(signerCredential(address("stake", 0xe1, STAKE_CREDENTIAL))).toBe(`stake:${STAKE_CREDENTIAL}`);
+    expect(signerCredential(address("addr_test", 0x60, PAYMENT_CREDENTIAL))).toBe(`pay:${PAYMENT_CREDENTIAL}`);
   });
 
   it("a base address speaks for none, nor does a script's, nor anything that is not an address", () => {
-    expect(signerCredential(address("addr_test", 0x00, PAYMENT_KEY, STAKE_KEY))).toBeUndefined();
-    expect(signerCredential(address("stake_test", 0xf0, STAKE_KEY))).toBeUndefined();
+    expect(signerCredential(address("addr_test", 0x00, PAYMENT_CREDENTIAL, STAKE_CREDENTIAL))).toBeUndefined();
+    expect(signerCredential(address("stake_test", 0xf0, STAKE_CREDENTIAL))).toBeUndefined();
     expect(signerCredential("0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266")).toBeUndefined();
     expect(signerCredential("")).toBeUndefined();
   });

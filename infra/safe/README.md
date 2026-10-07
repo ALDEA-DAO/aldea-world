@@ -10,6 +10,10 @@ loading it, and set `chainId` to the network (84532 Base Sepolia, 8453 Base).
 | `setGovernor-executor.json` | Before the Charter opens: from then on only the Council sets the official version. |
 | `openProposal.json` | Opens the Genesis Charter and publishes its rules for the read model, in one batch. |
 | `veto.json` | Stops an open or queued proposal, with a public reason. |
+| `setPaused.json` | An incident: nobody is born, enters or claims a seal until it is resumed. |
+| `setRelayer.json` | The relayer key is rotated or may be exposed. |
+| `setOfficialVersion.json` | The initial official version, before the Council governs it. |
+| `setVerified.json` | The curator vouches for a world in the Atlas. |
 
 The rules input in `openProposal.json` is the proposal's rules as canonical JSON (RFC 8785), wrapped as
 `["cp","<proposalId>","<rules JSON>"]` and hex-encoded. `paramsInput` in `packages/shared/src/council.ts` builds

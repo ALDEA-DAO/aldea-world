@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, Outlet, useMatch, useNavigate } from "react-router-dom";
 import { HudBottomBar } from "../components/hud/HudBottomBar";
+import { GuestIntro } from "../features/home/GuestIntro";
 import { useWorldActions } from "../features/world/useWorldActions";
 import { PhaserCanvas } from "../game/PhaserCanvas";
 
@@ -39,6 +40,8 @@ export function WorldShell() {
                 </p>
               )
             )}
+            {/* Before the village has loaded: on a slow connection the welcome is what a guest reads meanwhile */}
+            {!game.failed && !open && <GuestIntro />}
             <HudBottomBar game={game} open={open} enterBlockedReason={enterBlockedReason} />
           </>
         )}

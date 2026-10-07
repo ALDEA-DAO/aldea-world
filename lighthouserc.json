@@ -1,0 +1,43 @@
+{
+  "ci": {
+    "collect": {
+      "staticDistDir": "packages/client/dist",
+      "isSinglePageApplication": true,
+      "url": [
+        "http://localhost/?page=aldea#/",
+        "http://localhost/?page=lista#/lista",
+        "http://localhost/?page=portal#/portal",
+        "http://localhost/?page=acerca#/acerca"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "chromeFlags": "--headless=new --no-sandbox --use-angle=swiftshader --enable-unsafe-swiftshader",
+        "onlyCategories": ["performance", "accessibility"],
+        "throttling": { "rttMs": 60, "throughputKbps": 9000, "cpuSlowdownMultiplier": 4 }
+      }
+    },
+    "assert": {
+      "assertMatrix": [
+        {
+          "matchingUrlPattern": ".*",
+          "assertions": { "categories:accessibility": ["error", { "minScore": 0.95, "aggregationMethod": "pessimistic" }] }
+        },
+        {
+          "matchingUrlPattern": "page=(lista|portal|acerca)",
+          "assertions": {
+            "largest-contentful-paint": ["error", { "maxNumericValue": 2500, "aggregationMethod": "median" }],
+            "interactive": ["error", { "maxNumericValue": 3500, "aggregationMethod": "median" }]
+          }
+        },
+        {
+          "matchingUrlPattern": "page=aldea",
+          "assertions": {
+            "largest-contentful-paint": ["error", { "maxNumericValue": 3000, "aggregationMethod": "median" }],
+            "interactive": ["error", { "maxNumericValue": 6000, "aggregationMethod": "median" }]
+          }
+        }
+      ]
+    },
+    "upload": { "target": "filesystem", "outputDir": ".lighthouseci/reports" }
+  }
+}

@@ -39,7 +39,17 @@
     "themeDark": "Oscuro",
     "themeSystem": "Según el sistema",
     "language": "Idioma",
-    "yourKeys": "Tus llaves"
+    "yourKeys": "Tus llaves",
+    "motion": "Movimiento",
+    "motionSystem": "Según el sistema",
+    "motionReduced": "Siempre reducido",
+    "motionHint": "Con movimiento reducido, las animaciones se reemplazan por fundidos breves.",
+    "keysHint": "Passkeys, correo y cuentas vinculadas a tu alma, en el Registro de Almas.",
+    "session": "Sesión",
+    "signOut": "Cerrar sesión",
+    "signOutFailed": "No pudimos cerrar tu sesión. Inténtalo de nuevo.",
+    "retry": "Reintentar",
+    "legal": "Sobre la aldea"
   },
   "kit": {
     "title": "Kit de diseño",
@@ -145,7 +155,7 @@
     "failed": "No pudimos completar tu nacimiento. Tu pedido está a salvo; reintenta.",
     "retry": "Reintentar",
     "howDrawn": "¿Cómo se sortea?",
-    "howDrawnText": "Tu tribu sale del hash de un bloque de Base que todavía no existe cuando pides nacer. Nadie, ni siquiera el equipo, puede saberla de antemano.",
+    "howDrawnText": "Tu tribu sale de la huella de un bloque de Base que todavía no existe cuando pides nacer. Nadie, ni siquiera el equipo, puede saberla de antemano.",
     "bornInto": "Naciste en la tribu",
     "named": "Tu alma ya tiene nombre.",
     "viewSoul": "Ver tu alma",
@@ -165,7 +175,11 @@
     "unknownBuilding": "Ese edificio no existe en esta aldea.",
     "buildingClosed": "Este edificio está cerrado por ahora.",
     "entryNotRecorded": "Tu entrada no quedó registrada en la cadena. Puedes seguir mirando.",
-    "busy": "La aldea está recibiendo muchas almas; prueba en unos minutos."
+    "busy": "La aldea está recibiendo muchas almas; prueba en unos minutos.",
+    "soulRevoked": "Esta alma fue dada de baja y ya no puede actuar en la aldea.",
+    "notAllowed": "Esta cuenta no puede hacer eso en la aldea.",
+    "invalidSoul": "Ese identificador de alma no es válido.",
+    "needsSoul": "Primero necesitas tu alma. Entra y nace en el Centro Urbano."
   },
   "village": {
     "beBorn": "Nacer en ALDEA",
@@ -266,7 +280,7 @@
     "anotherWorld": "otro mundo",
     "officialVersion": "Versión oficial {{semver}} · {{cid}}",
     "noOfficialVersion": "Sin versión oficial todavía",
-    "notMeasurable": "Actividad on-chain no medible",
+    "notMeasurable": "Actividad en la cadena no medible",
     "noClient": "Sin cliente registrado",
     "updating": "Actualizando… Datos de las {{time}}.",
     "filters": {
@@ -515,5 +529,236 @@
     "opens": "La aldea se abre para todas las almas el {{date}}.",
     "link": "Vincular Cardano",
     "linked": "Tu wallet está vinculada. Elige tu clase para nacer."
+  },
+  "problems": {
+    "unknown": "Algo no salió. Prueba de nuevo.",
+    "http_error": "Algo no salió. Prueba de nuevo.",
+    "internal_error": "Algo se rompió de nuestro lado. Ya lo estamos mirando; prueba en unos minutos.",
+    "invalid_request": "Ese pedido no llegó completo. Prueba de nuevo.",
+    "not_found": "No encontramos eso en la aldea.",
+    "unauthorized": "Tu sesión terminó. Vuelve a entrar con tu alma.",
+    "insufficient_scope": "Esta sesión no puede manejar tus llaves. Vuelve a entrar e inténtalo otra vez.",
+    "step_up_required": "Por seguridad, confirma que eres tú antes de seguir.",
+    "invalid_id_token": "Tu sesión no coincide con este navegador. Vuelve a entrar.",
+    "invalid_session": "Tu sesión no es válida. Vuelve a entrar.",
+    "interaction_expired": "Tardaste un poco y el pedido venció. Empecemos de nuevo.",
+    "interaction_not_login": "No hay ningún ingreso en curso. Vuelve a la aldea y entra desde ahí.",
+    "invalid_return": "No reconocemos el lugar al que querías volver. Entra desde la aldea.",
+    "unknown_origin": "Las llaves solo se vinculan desde un mundo registrado.",
+    "invalid_email": "Ese correo no parece válido. Revísalo.",
+    "invalid_code": "Ese código no funcionó. Revísalo o pide otro.",
+    "invalid_passkey": "No pudimos reconocer tu passkey. Prueba de nuevo.",
+    "invalid_signature": "La firma no coincide. Firma el mensaje tal como aparece.",
+    "challenge_expired": "El pedido venció. Empecemos de nuevo.",
+    "invalid_roles": "Ese uso para la llave no existe.",
+    "last_login_method": "Es tu única forma de entrar. Agrega otra antes de quitarla.",
+    "controller_link": "Esta llave es dueña de tu cuenta en Base; todavía no se puede quitar.",
+    "link_belongs_to_other_soul": "Esta llave pertenece a otra alma. Si las dos son tuyas, puedes unirlas.",
+    "merge_proof_missing": "Para unir las dos almas, primero demuestra que tienes una llave de la otra.",
+    "same_soul": "Las dos llaves ya son de esta alma.",
+    "soul_anchored": "La otra alma ya nació en la aldea: no se puede unir.",
+    "soul_already_anchored": "Tu alma ya estaba anclada; sigue adelante.",
+    "soul_not_found": "No encontramos esa alma.",
+    "soul_not_prepared": "Tu alma todavía no tiene su cuenta en Base. Pasa primero por el Centro Urbano.",
+    "invalid_alma_id": "Ese identificador de alma no es válido.",
+    "controller_mismatch": "Esta alma ya tiene otra cuenta que la controla.",
+    "controller_required": "Falta decir qué cuenta controla esta alma.",
+    "self_custody": "Esta alma se controla con su propia llave: aquí no hay una sesión que abrir.",
+    "custody_unavailable": "Tus llaves todavía no están listas. Prueba en un momento.",
+    "world_unavailable": "La aldea todavía no abrió en esta red.",
+    "unknown_world": "Ese mundo no es el de esta aldea.",
+    "invalid_building": "Ese edificio no existe en esta aldea.",
+    "invalid_limit": "Pediste más de lo que podemos mostrar de una vez.",
+    "already_listed": "Ya estabas en la lista. Te avisamos cuando abra.",
+    "invalid_address": "Esa no es una dirección de Cardano.",
+    "unsupported_address": "Ese tipo de dirección no se puede vincular.",
+    "wrong_network": "Esa dirección es de otra red de Cardano.",
+    "invalid_cip8_signature": "La firma no coincidió. Firma con la dirección de stake.",
+    "credential_linked_elsewhere": "Esta dirección de Cardano ya pertenece a otra alma.",
+    "cardano_already_linked": "Tu alma ya tiene Cardano vinculada.",
+    "cardano_not_linked": "Primero vincula Cardano.",
+    "holdings_stale": "Estamos leyendo Cardano, vuelve en unos minutos.",
+    "below_minimum": "Todavía no llegas al mínimo de $ALDEA para el sello.",
+    "already_founder": "Tu alma ya tiene el sello de Fundador.",
+    "rate_limited": "Demasiados pedidos seguidos. Espera un minuto y prueba de nuevo."
+  },
+  "home": {
+    "headline": "Nace en ALDEA. Tu alma viaja contigo.",
+    "lead": "Un mundo que ya existe y es de su gente. Para nacer solo necesitas una passkey.",
+    "beBorn": "Nacer en ALDEA",
+    "look": "Solo mirar",
+    "genesis": "Semana Génesis: hasta el {{date}} nacen primero quienes tienen $ALDEA. Desde ese día, la aldea se abre a todas las almas.",
+    "dismiss": "Cerrar la bienvenida"
+  },
+  "legal": {
+    "updated": "Última actualización: {{date}}",
+    "draft": "Borrador: este texto está en revisión legal antes del lanzamiento. Puede cambiar.",
+    "contact": "Escríbenos a {{email}}.",
+    "also": "También: "
+  },
+  "about": {
+    "lead": "ALDEA World es una aldea compartida donde cada persona nace una sola vez, con un alma que es suya y puede llevar a otros mundos. Pertenece a la comunidad de ALDEA DAO. La construye AdaSouls sobre piezas abiertas que cualquier otro mundo puede usar.",
+    "powers": {
+      "title": "Quién controla qué",
+      "intro": "Hoy, sin adornos:",
+      "power": "Poder",
+      "holder": "Quién lo tiene",
+      "rows": [
+        {
+          "power": "Las reglas de la aldea y la pausa de emergencia",
+          "holder": "El Safe de ALDEA en Base: 3 firmas de 5, de operadores de la comunidad."
+        },
+        {
+          "power": "La versión oficial de la aldea",
+          "holder": "El Consejo, con el Acta de Génesis y una espera de 24 horas en la que el Safe puede vetar. Hasta que el Consejo esté activo, el Safe."
+        },
+        {
+          "power": "Los registros de almas y de mundos de este despliegue",
+          "holder": "El Safe de ALDEA."
+        },
+        {
+          "power": "Las organizaciones de las cinco tribus",
+          "holder": "El Safe de ALDEA."
+        },
+        {
+          "power": "El código que se propone como candidato",
+          "holder": "Quienes mantienen el repositorio, con revisión pública. Integrar código no cambia lo que sirve aldea.world: solo se publica la versión que el registro nombra oficial."
+        }
+      ]
+    },
+    "trust": {
+      "title": "Confianza temporal declarada",
+      "intro": "Estos roles los opera AdaSouls por ahora. Cada uno es limitado y se puede verificar desde afuera:",
+      "items": [
+        "Quien firma las constancias de Fundador: da fe de cuánto $ALDEA tiene una dirección de Cardano. Cada constancia vence en 15 minutos, sirve una sola vez y solo para un alma. El Safe puede cambiar al firmante.",
+        "El relevo: completa nacimientos (cualquiera puede hacerlo) y publica el resultado del Acta. No puede inventarlo: el escrutinio es público, su huella queda en Base y el Safe puede vetar.",
+        "El publicador de votos: publica en Base los votos firmados y paga su costo. No puede cambiar un voto; podría demorarlo, y cualquiera puede publicar el suyo por otra vía.",
+        "La administración de los repositorios en GitHub: debe estar en manos de varios firmantes del Safe, nunca de una sola persona. La lista se publica aquí antes del lanzamiento."
+      ]
+    },
+    "signers": {
+      "title": "Firmantes del Safe",
+      "text": "Los cinco firmantes del Safe de ALDEA se publican aquí, con su dirección, antes del lanzamiento en la red principal."
+    },
+    "code": {
+      "title": "Código abierto",
+      "text": "El código es libre (licencia MIT): puedes leerlo, auditarlo y fundar tu propio mundo con él. El nombre y el arte de ALDEA tienen su propia licencia (CC BY-NC-SA 4.0).",
+      "repos": "Repositorios"
+    },
+    "credits": {
+      "title": "Créditos",
+      "items": [
+        "Arte provisional: kits 3D de Kenney (Castle Kit, Fantasy Town Kit, Nature Kit y Mini Characters), en dominio público (CC0 1.0).",
+        "Iconos: Lucide (licencia ISC).",
+        "Tipografías: Alegreya, Alegreya Sans y Alegreya SC, de Huerta Tipográfica, y JetBrains Mono (SIL Open Font License 1.1).",
+        "Hecho con MUD, Phaser, viem, Effectstream y otros proyectos de código abierto."
+      ]
+    }
+  },
+  "terms": {
+    "sections": [
+      {
+        "title": "Qué es esto",
+        "body": [
+          "ALDEA World es un mundo en línea en etapa temprana. Al entrar, nacer o usar cualquiera de sus edificios aceptas estos términos.",
+          "La aldea puede cambiar, pausarse por mantenimiento o reiniciarse en redes de prueba. Lo que queda escrito en la red principal de Base no depende de nosotros para seguir existiendo."
+        ]
+      },
+      {
+        "title": "Tu alma y tus llaves",
+        "body": [
+          "Tu alma es tuya. Entras con una passkey, un correo o una cuenta que ya tengas; puedes agregar y quitar formas de entrar desde el Registro de Almas.",
+          "Cuida tus formas de entrar: si pierdes todas, no podemos devolverte el acceso. Te recomendamos tener al menos dos.",
+          "Una persona, un personaje. No uses la aldea para hacerte pasar por otra persona ni para dañar a otras."
+        ]
+      },
+      {
+        "title": "$ALDEA",
+        "body": [
+          "$ALDEA es el token de la comunidad de ALDEA DAO en Cardano. En la aldea sirve para dos cosas: recibir el sello de Fundador y tener voz en el Consejo.",
+          "Nada de lo que ves aquí es una oferta ni un consejo de inversión. La aldea no promete ganancias ni habla del valor de $ALDEA."
+        ]
+      },
+      {
+        "title": "Lo que es público",
+        "body": [
+          "Nacer, entrar a un edificio, reclamar un sello y votar quedan registrados de forma pública y permanente. Nadie, tampoco nosotros, puede borrarlos."
+        ]
+      },
+      {
+        "title": "Código y arte",
+        "body": [
+          "El código es abierto bajo licencia MIT. El nombre ALDEA y su arte se rigen por la licencia CC BY-NC-SA 4.0: puedes fundar tu propio mundo con el código, con otro nombre y otro arte."
+        ]
+      },
+      {
+        "title": "Sin garantías",
+        "body": [
+          "La aldea se ofrece tal como está. Hacemos lo posible para que funcione bien y decimos con honestidad lo que falla, pero no garantizamos que esté siempre disponible ni libre de errores."
+        ]
+      },
+      {
+        "title": "Cambios",
+        "body": [
+          "Si estos términos cambian, lo avisamos en la aldea antes de que entren en vigor."
+        ]
+      }
+    ]
+  },
+  "privacy": {
+    "sections": [
+      {
+        "title": "Lo que guardamos",
+        "body": [
+          "El documento de tu alma: su identificador, su fecha de creación y las llaves que le vinculaste (la parte pública de tus passkeys y las direcciones de las cuentas que agregaste).",
+          "De tu correo guardamos solo una huella que no permite reconstruirlo: la usamos para reconocerlo cuando lo escribes y enviarte un código.",
+          "Si te anotas para un edificio en obra, guardamos esa anotación. Mientras tienes la aldea abierta, contamos tu sesión como presente, sin guardar un historial."
+        ]
+      },
+      {
+        "title": "Lo que no guardamos",
+        "body": [
+          "Tus llaves privadas. Si entras sin una wallet propia, las custodia Turnkey, un proveedor especializado: ni AdaSouls ni ALDEA DAO pueden verlas ni usarlas por su cuenta.",
+          "Tu nombre, tu documento ni tu ubicación. No te los pedimos."
+        ]
+      },
+      {
+        "title": "Lo que es público por naturaleza",
+        "body": [
+          "Lo que haces en la aldea queda escrito en Base, a la vista de cualquiera y para siempre: el ancla de tu alma, tu personaje y su tribu, y cada entrada a un edificio.",
+          "Si reclamas el sello de Fundador o votas en el Consejo, también queda escrita la credencial de tu wallet de Cardano y cuánto $ALDEA tenía. En tu alma se muestra solo que Cardano está vinculada, no la dirección."
+        ]
+      },
+      {
+        "title": "Medición",
+        "body": [
+          "Medimos el uso de la aldea con eventos sin datos personales: qué pantallas se abren y cuánto tarda un nacimiento. No usamos cookies de terceros ni publicidad.",
+          "En tu navegador se guardan tu idioma, tu tema y tu sesión."
+        ]
+      },
+      {
+        "title": "Quién procesa datos por nosotros",
+        "body": [
+          "Turnkey (custodia de llaves), Coinbase (operaciones patrocinadas en Base), Resend (envío de códigos por correo), PostHog en la Unión Europea (medición) y Sentry (errores). Cada uno recibe solo lo necesario para su tarea."
+        ]
+      },
+      {
+        "title": "Tus opciones",
+        "body": [
+          "Puedes quitar llaves vinculadas desde el Registro de Almas y pedirnos que borremos lo que guardamos de tu alma. Lo que ya está escrito en la cadena no se puede borrar."
+        ]
+      }
+    ]
+  },
+  "soulCard": {
+    "open": "Compartir mi alma",
+    "title": "Tu alma, para compartir",
+    "share": "Compartir",
+    "drawing": "Dibujando tu tarjeta…",
+    "shareTitle": "Mi alma en ALDEA",
+    "where": "aldea.world",
+    "shared": "Listo, tu tarjeta salió.",
+    "downloaded": "Descargamos la imagen y copiamos el enlace a tu alma.",
+    "failed": "No pudimos dibujar la tarjeta. Inténtalo de nuevo."
   }
 }

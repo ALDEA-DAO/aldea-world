@@ -21,6 +21,7 @@ import type { Holdings } from "./routes/founders";
 import { createPresenceStore } from "./routes/presence";
 import { loadDeployment } from "./seed/orgs";
 import { createTurnkeyClient, turnkeyConfigFromEnv, turnkeyCustodyProvisioner } from "./lib/turnkey";
+import { createRateLimiter, DEFAULT_LIMITS } from "./middleware/rateLimit";
 import { createResolverServer } from "./server";
 
 initSentry();
@@ -179,4 +180,18 @@ setInterval(() => {
   );
 }, Number(env.SYNC_INTERVAL_MS ?? 2_000)).unref();
 
-createResolverServer(app, auth).listen(port, () => logger.info({ port, issuer }, "alma-resolver listening"));
+// Limits are on unless RATE_LIMIT=off; the per-minute numbers can be raised where many people share an address
+const perMinute = (name: string, fallback: number) => Number(env[name] || fallback);
+const limiter =
+  env.RATE_LIMIT === "off"
+    ? undefined
+    : createRateLimiter({
+        clientIpHeader: env.CLIENT_IP_HEADER || undefined,
+        limits: {
+          auth: perMinute("RATE_LIMIT_AUTH_PER_MINUTE", DEFAULT_LIMITS.auth),
+          session: perMinute("RATE_LIMIT_SESSION_PER_MINUTE", DEFAULT_LIMITS.session),
+          address: perMinute("RATE_LIMIT_ADDRESS_PER_MINUTE", DEFAULT_LIMITS.address),
+          bundler: perMinute("RATE_LIMIT_BUNDLER_PER_MINUTE", DEFAULT_LIMITS.bundler),
+        },
+      });
+createResolverServer(app, auth, { limiter, https: issuerUrl.protocol === "https:" }).listen(port, () => logger.info({ port, issuer }, "alma-resolver listening"));

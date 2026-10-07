@@ -12,6 +12,8 @@ const menu = [
   { to: "/portal", key: "nav.portal" },
   { to: "/ajustes", key: "nav.settings" },
   { to: "/acerca", key: "nav.about" },
+  { to: "/terminos", key: "nav.terms" },
+  { to: "/privacidad", key: "nav.privacy" },
   { to: "/ui", key: "nav.designKit" },
 ] as const;
 

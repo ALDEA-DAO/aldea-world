@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../components/ui/Button";
+import { problemCopy } from "../../lib/problems";
 import { useAlmaSession } from "../auth/useAlmaSession";
 import { useLinks, type AlmaLink } from "../auth/useLinks";
 
@@ -46,7 +47,7 @@ export function YourKeys() {
 
       {error && (
         <div role="alert" className="mt-4 flex flex-col gap-2 rounded-md bg-surface-raised p-3">
-          <p>{t(`keys.error.${error.code}`, { defaultValue: error.title })}</p>
+          <p>{t([`keys.error.${error.code}`, problemCopy(error.code)])}</p>
           {error.code === "step_up_required" && <Button onClick={() => void signIn({ reauthenticate: true })}>{t("keys.confirm")}</Button>}
           {error.code === "link_belongs_to_other_soul" && <Button onClick={() => void merge()}>{t("keys.merge")}</Button>}
         </div>

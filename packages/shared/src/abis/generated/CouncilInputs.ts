@@ -11,7 +11,7 @@ export const councilInputsAbi = [
       }
     ],
     "outputs": [],
-    "stateMutability": "payable"
+    "stateMutability": "nonpayable"
   },
   {
     "type": "event",
@@ -37,10 +37,5 @@ export const councilInputsAbi = [
       }
     ],
     "anonymous": false
-  },
-  {
-    "type": "error",
-    "name": "NoValue",
-    "inputs": []
   }
 ] as const;

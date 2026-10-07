@@ -87,5 +87,7 @@ export function createOutboxJob<Row extends { id: number }>(job: OutboxJob<Row>,
     },
     /** For /health: how many rows are failing right now. */
     failing: () => failures.size,
+    /** For /alerts: how many rows have failed three or more times in a row. */
+    alerting: () => [...failures.values()].filter((failure) => failure.count >= ALERT_AFTER).length,
   };
 }

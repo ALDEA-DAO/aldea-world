@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "chainId": "84532",
+  "createdAt": 0,
+  "meta": {
+    "name": "Atlas: verify (or stop verifying) a world",
+    "description": "The curator vouches for a world: the Portal lets players travel to a verified world without a warning. Verify only a world whose organization and client you have checked. Replace every <PLACEHOLDER>."
+  },
+  "transactions": [
+    {
+      "to": "<ATLAS_REGISTRY_ADDRESS>",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "name": "setVerified",
+        "payable": false,
+        "inputs": [
+          {
+            "name": "worldId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "verified",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
+      },
+      "contractInputsValues": {
+        "worldId": "<WORLD_ID>",
+        "verified": "true"
+      }
+    }
+  ]
+}
