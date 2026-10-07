@@ -3,6 +3,8 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "reac
 import { useTranslation } from "react-i18next";
 import type { Hex } from "viem";
 import { useBirth } from "../features/birth/useBirth";
+import { useAlmaSession } from "../features/auth/useAlmaSession";
+import { useIsFounder } from "../features/founders/FounderSeal";
 import { useMud, useWorld, type WorldState } from "../mud/store";
 import { hasWebGL } from "./webglCheck";
 import { GameBridge, type GameState, type WorldBuilding, type WorldCharacter } from "./bridge";
@@ -20,9 +22,11 @@ function useVillageWorld(ownId: number | undefined) {
     const buildings: WorldBuilding[] = [];
     const others: WorldCharacter[] = [];
     if (!network || !records) return { buildings: fallbackBuildings, others };
-    const { Building, Character, Location } = network.tables;
+    const { Building, Character, Founder, Location } = network.tables;
+    const founders = new Set<Hex>();
     const seenAt = new Map<number, string>();
     for (const record of Object.values(records)) {
+      if (record.table.tableId === Founder.tableId) founders.add((record.key as { almaIdHash: Hex }).almaIdHash);
       if (record.table.tableId !== Location.tableId) continue;
       const { characterId } = record.key as { characterId: number };
       const { buildingId } = record.value as { buildingId: Hex };
@@ -36,8 +40,8 @@ function useVillageWorld(ownId: number | undefined) {
         if (slug) buildings.push({ slug, door: { x: value.x, y: value.y }, underConstruction: value.underConstruction });
       } else if (record.table.tableId === Character.tableId) {
         const { id } = record.key as { id: number };
-        const value = record.value as { characterClass: number; tribe: number; status: number };
-        if (value.status === BORN && id !== ownId) others.push({ id, characterClass: value.characterClass, tribe: value.tribe, at: seenAt.get(id) });
+        const value = record.value as { characterClass: number; tribe: number; status: number; almaIdHash: Hex };
+        if (value.status === BORN && id !== ownId) others.push({ id, characterClass: value.characterClass, tribe: value.tribe, founder: founders.has(value.almaIdHash), at: seenAt.get(id) });
       }
     }
     buildings.sort((a, b) => a.door.y - b.door.y || a.door.x - b.door.x);
@@ -64,6 +68,7 @@ export function PhaserCanvas({ onEnterDoor, children }: { onEnterDoor: (slug: st
   const world = useVillageWorld(born?.id);
   const playerClass = born?.characterClass;
   const playerTribe = born?.tribe;
+  const isFounder = useIsFounder(useAlmaSession().almaId);
   const label = t("village.canvasLabel");
 
   useEffect(() => {
@@ -74,9 +79,9 @@ export function PhaserCanvas({ onEnterDoor, children }: { onEnterDoor: (slug: st
     bridge.setWorld({
       buildings: world.buildings,
       others: world.others,
-      player: playerClass === undefined || playerTribe === undefined ? undefined : { characterClass: playerClass, tribe: playerTribe },
+      player: playerClass === undefined || playerTribe === undefined ? undefined : { characterClass: playerClass, tribe: playerTribe, founder: isFounder },
     });
-  }, [bridge, world, playerClass, playerTribe]);
+  }, [bridge, world, playerClass, playerTribe, isFounder]);
 
   useEffect(() => {
     const parent = holder.current;

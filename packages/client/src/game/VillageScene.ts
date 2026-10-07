@@ -200,11 +200,14 @@ export class VillageScene extends Phaser.Scene {
       this.bridge.setState({ door: undefined, playerTile: undefined });
       return;
     }
-    if (this.player?.characterClass === wanted.characterClass) return;
+    if (this.player?.characterClass === wanted.characterClass) {
+      this.player.setFounder(Boolean(wanted.founder));
+      return;
+    }
     await loadCharacter(this, wanted.characterClass);
     this.player?.destroy();
     const start = this.startTile();
-    this.player = new CharacterSprite(this, this.map, wanted.characterClass, tribeColor(wanted.tribe), start, (tile) => this.arrived(tile));
+    this.player = new CharacterSprite(this, this.map, wanted.characterClass, tribeColor(wanted.tribe), start, (tile) => this.arrived(tile), wanted.founder);
     this.cameras.main.startFollow(this.player.sprite, true, 0.12, 0.12);
     this.arrived(start);
   }
@@ -233,9 +236,13 @@ export class VillageScene extends Phaser.Scene {
       this.others.delete(id);
     }
     for (const character of characters) {
-      if (this.others.has(character.id)) continue;
+      const present = this.others.get(character.id);
+      if (present) {
+        present.setFounder(Boolean(character.founder));
+        continue;
+      }
       await loadCharacter(this, character.characterClass);
-      const sprite = new CharacterSprite(this, this.map, character.characterClass, tribeColor(character.tribe), this.standingSpot(character));
+      const sprite = new CharacterSprite(this, this.map, character.characterClass, tribeColor(character.tribe), this.standingSpot(character), undefined, character.founder);
       if (this.lite) sprite.sprite.anims.pause();
       this.others.set(character.id, sprite);
     }

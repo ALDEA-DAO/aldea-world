@@ -8,6 +8,8 @@ export class AlmaApiError extends Error {
     readonly code: string,
     readonly title: string,
     readonly detail?: string,
+    /** The problem's other members, when the Resolver adds facts to it (e.g. `balance` and `minimum`). */
+    readonly extra: Record<string, string> = {},
   ) {
     super(title);
   }
@@ -26,7 +28,7 @@ export function createAlmaApi({ apiUrl, accessToken }: { apiUrl: string; accessT
     });
     if (res.status === 204) return undefined as T;
     const data = (await res.json().catch(() => ({}))) as Record<string, string>;
-    if (!res.ok) throw new AlmaApiError(res.status, data.code ?? "unknown", data.title ?? res.statusText, data.detail);
+    if (!res.ok) throw new AlmaApiError(res.status, data.code ?? "unknown", data.title ?? res.statusText, data.detail, data);
     return data as T;
   };
 }

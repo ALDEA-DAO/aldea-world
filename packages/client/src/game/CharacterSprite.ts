@@ -5,6 +5,8 @@ import { facing, type IsoMap, type Tile } from "./IsoMap";
 /** Tiles per second: any door is reachable from the Town Center in a few seconds. */
 const SPEED = 5;
 const sheetKey = (characterClass: number) => `character-${characterClass}`;
+/** The Founder seal's gold (the accent token, as the canvas needs it). */
+const GOLD = 0xe0b34f;
 const animKey = (characterClass: number, name: "idle" | "walk", row: number) => `character-${characterClass}-${name}-${row}`;
 
 /** Loads a class's sheet and registers its animations (idle and walk, one per facing). Resolves when ready. */
@@ -42,12 +44,14 @@ export function loadCharacter(scene: Phaser.Scene, characterClass: number): Prom
 }
 
 /**
- * A character on the map: its sprite, a ring in its tribe's color under its feet, and walking along a path of tiles.
+ * A character on the map: its sprite, a ring in its tribe's color under its feet (with a gold one around it for a
+ * Founder), and walking along a path of tiles.
  * Moving is local (no transactions); only entering a building is recorded on-chain.
  */
 export class CharacterSprite {
   readonly sprite: Phaser.GameObjects.Sprite;
   private readonly ring: Phaser.GameObjects.Ellipse;
+  private seal?: Phaser.GameObjects.Ellipse;
   private row = 0;
   private path: Tile[] = [];
   private from: Tile;
@@ -61,6 +65,7 @@ export class CharacterSprite {
     tribeColor: number,
     tile: Tile,
     private readonly onArrive?: (tile: Tile) => void,
+    founder = false,
   ) {
     const sheet = manifest.characters[String(characterClass)]!;
     this.tile = this.from = tile;
@@ -69,6 +74,18 @@ export class CharacterSprite {
     this.sprite = scene.add.sprite(at.x, at.y, sheetKey(characterClass)).setOrigin(sheet.anchor[0] / sheet.frameWidth, sheet.anchor[1] / sheet.frameHeight);
     this.play("idle");
     this.place(tile);
+    this.setFounder(founder);
+  }
+
+  /** Shows or hides the Founder seal's gold ring. */
+  setFounder(founder: boolean) {
+    if (founder === Boolean(this.seal)) return;
+    if (founder) {
+      this.seal = this.scene.add.ellipse(this.ring.x, this.ring.y, 60, 30).setStrokeStyle(3, GOLD, 1).setDepth(this.ring.depth);
+    } else {
+      this.seal?.destroy();
+      this.seal = undefined;
+    }
   }
 
   get walking() {
@@ -113,6 +130,7 @@ export class CharacterSprite {
   destroy() {
     this.sprite.destroy();
     this.ring.destroy();
+    this.seal?.destroy();
   }
 
   private turn() {
@@ -129,5 +147,6 @@ export class CharacterSprite {
     const { x, y } = this.map.project(tile);
     this.sprite.setPosition(x, y).setDepth(y + 1);
     this.ring.setPosition(x, y).setDepth(y);
+    this.seal?.setPosition(x, y).setDepth(y);
   }
 }

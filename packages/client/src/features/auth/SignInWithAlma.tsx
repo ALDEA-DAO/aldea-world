@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { SoulChip } from "../../components/hud/SoulChip";
 import { Button } from "../../components/ui/Button";
 import { useBirth } from "../birth/useBirth";
+import { useIsFounder } from "../founders/FounderSeal";
 import { useAlmaSession } from "./useAlmaSession";
 
 /** Header control: "Entrar" for guests, the soul and "Salir" for players. */
@@ -9,6 +10,7 @@ export function SignInWithAlma() {
   const { t } = useTranslation();
   const { status, almaId, signIn, signOut } = useAlmaSession();
   const { character } = useBirth();
+  const founder = useIsFounder(almaId);
 
   if (status === "loading") return null;
   if (status === "guest") {
@@ -20,7 +22,7 @@ export function SignInWithAlma() {
   }
   return (
     <div className="flex items-center gap-2">
-      {almaId && <SoulChip almaId={almaId} tribe={character?.status === 2 ? character.tribe : undefined} />}
+      {almaId && <SoulChip almaId={almaId} tribe={character?.status === 2 ? character.tribe : undefined} founder={founder} />}
       <Button size="sm" variant="ghost" className="!text-on-wood" onClick={() => void signOut()}>
         {t("auth.signOut")}
       </Button>

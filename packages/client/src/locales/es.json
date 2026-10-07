@@ -379,5 +379,56 @@
       "development": "Es un servidor de desarrollo: no viene de una publicación.",
       "unknown": "No pudimos consultar el Atlas para comprobar esta versión."
     }
+  },
+  "founder": {
+    "badge": "Fundador",
+    "claim": "Reclamar sello",
+    "claiming": "Reclamando tu sello…",
+    "walletLinked": "Wallet de Cardano vinculada:",
+    "errors": {
+      "belowMinimum": "Tu wallet no llega al mínimo de $ALDEA para el sello.",
+      "missing": "Te faltan {{amount}} $ALDEA para el sello.",
+      "readingCardano": "Estamos leyendo Cardano, vuelve en unos minutos.",
+      "notLinked": "Primero vincula tu wallet de Cardano.",
+      "alreadyFounder": "Tu alma ya tiene el sello de Fundador.",
+      "credentialUsed": "Esa wallet de Cardano ya reclamó un sello.",
+      "tryAgain": "No pudimos reclamar el sello. Prueba de nuevo."
+    },
+    "link": {
+      "title": "Vincular Cardano",
+      "steps": "Pasos",
+      "step": {
+        "choose": "Elige tu wallet",
+        "sign": "Firma este mensaje",
+        "done": "Listo"
+      },
+      "noWallets": "No encontramos wallets de Cardano. Instala Eternl o Lace y vuelve.",
+      "signIntro": "Tu wallet te va a mostrar este mensaje. Fírmalo para probar que es tuya.",
+      "noTransaction": "Es solo una firma: no se arma ninguna transacción, no se mueve nada y no tiene costo.",
+      "waiting": "Esperando tu firma…",
+      "sign": "Firmar",
+      "cancel": "Cancelar",
+      "linked": "Tu wallet quedó vinculada a tu alma.",
+      "noStakePart": "Esta wallet no tiene parte de stake. Funciona, pero es preferible una wallet con stake.",
+      "holdings": "Tiene {{amount}} $ALDEA.",
+      "errors": {
+        "generic": "No pudimos vincular tu wallet. Prueba de nuevo.",
+        "walletRefused": "La wallet no dio acceso. Ábrela y prueba de nuevo.",
+        "signatureRejected": "No firmaste el mensaje. Puedes firmarlo cuando quieras.",
+        "linkedElsewhere": "Esta wallet ya pertenece a otra alma.",
+        "alreadyLinked": "Tu alma ya tiene una wallet de Cardano vinculada.",
+        "badSignature": "La firma no coincide. Firma con la dirección de stake de tu wallet.",
+        "expired": "El pedido venció. Empecemos de nuevo.",
+        "wrongNetwork": "Esa wallet está en otra red de Cardano.",
+        "unsupported": "Ese tipo de dirección no se puede vincular."
+      }
+    }
+  },
+  "genesis": {
+    "title": "Fundadores primero",
+    "explain": "Durante la Semana Génesis nacen quienes tienen $ALDEA. Si es tu caso, vincula tu wallet de Cardano y nace: tu sello de Fundador se reclama en el mismo paso.",
+    "opens": "La aldea se abre para todas las almas el {{date}}.",
+    "link": "Vincular Cardano",
+    "linked": "Tu wallet está vinculada. Elige tu clase para nacer."
   }
 }

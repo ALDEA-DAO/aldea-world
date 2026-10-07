@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
+import { FounderBadge } from "../../components/ui/FounderBadge";
 import { MonoId } from "../../components/ui/MonoId";
 import { Panel } from "../../components/ui/Panel";
 import { Skeleton } from "../../components/ui/Skeleton";
@@ -12,6 +13,7 @@ import { isSignedIn } from "../auth/AlmaAuthProvider";
 import { RequireSession } from "../auth/RequireSession";
 import { useAlmaSession } from "../auth/useAlmaSession";
 import { useBirth } from "../birth/useBirth";
+import { FounderSeal, useIsFounder } from "../founders/FounderSeal";
 import { TribeMembers } from "../soul/TribeMembers";
 import { founderClaimed, useSoul, type SoulView } from "../soul/useSoul";
 import { YourKeys } from "../soul/YourKeys";
@@ -156,10 +158,11 @@ function Ties({ soul, tribe, own, born }: { soul: SoulView; tribe: ReturnType<ty
   );
 }
 
-/** Founder and Charter Signatory. Claiming the Founder seal arrives with FR-038; signing, with the Council. */
+/** Founder and Charter Signatory. Signing the Charter arrives with the Council. */
 function Seals({ soul, own }: { soul: SoulView; own: boolean }) {
   const { t } = useTranslation();
-  const founder = founderClaimed(soul);
+  // The World is the source; the Resolver's copy covers a client that has not synced yet
+  const founder = useIsFounder(soul.id) || founderClaimed(soul);
   return (
     <section aria-labelledby="seals">
       <h2 id="seals" className="text-2xl">
@@ -169,7 +172,16 @@ function Seals({ soul, own }: { soul: SoulView; own: boolean }) {
         <li>
           <span className="font-medium">{t("registry.founder")}</span>
           {" · "}
-          {founder ? t("registry.sealHeld") : own ? t("registry.founderNotYet") : t("registry.sealNone")}
+          {own ? (
+            <FounderSeal />
+          ) : founder ? (
+            <span className="inline-flex flex-wrap items-center gap-2">
+              <FounderBadge />
+              {t("registry.sealHeld")}
+            </span>
+          ) : (
+            t("registry.sealNone")
+          )}
         </li>
         <li>
           <span className="font-medium">{t("registry.charterSignatory")}</span>

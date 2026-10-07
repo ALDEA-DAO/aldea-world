@@ -5,10 +5,13 @@ import { Skeleton } from "../../components/ui/Skeleton";
 import { Tabs } from "../../components/ui/Tabs";
 import { useCensus, useMud } from "../../mud/store";
 import { useAlmaSession } from "../auth/useAlmaSession";
+import { useLinks } from "../auth/useLinks";
 import { BirthRitual } from "../birth/BirthRitual";
 import { CensusPanel } from "../census/CensusPanel";
 import { ClassPicker } from "../birth/ClassPicker";
+import { GenesisNotice } from "../birth/GenesisNotice";
 import { useBirth } from "../birth/useBirth";
+import { useFounder } from "../founders/useFounder";
 import { useWorldActions } from "../world/useWorldActions";
 
 /**
@@ -80,6 +83,12 @@ function BirthTab({
   const { network, error: networkError } = useMud();
   const { paused, online } = useWorldActions();
   const census = useCensus();
+  const { genesisActive, genesisEndsAt, isFounder } = useFounder();
+  const { links } = useLinks();
+  const [linkedNow, setLinkedNow] = useState(false);
+  // During Genesis a soul is born with the seal: it needs it already, or a linked Cardano wallet to claim it with
+  const foundersOnly = genesisActive && !isFounder;
+  const canClaim = linkedNow || Boolean(links?.some((link) => link.kind === "cardano"));
 
   if (networkError) return <p role="alert">{t("townCenter.pathCut")}</p>;
   if (!network) return <Skeleton className="h-64" />;
@@ -100,8 +109,9 @@ function BirthTab({
     <div className="flex flex-col gap-4">
       {census?.totalPopulation === 0 && census.gestating === 0 && <p>{t("townCenter.beFirst")}</p>}
       {paused ? <p role="alert">{t("townCenter.maintenance")}</p> : !online && <p role="alert">{t("status.offlineShort")}</p>}
+      {foundersOnly && genesisEndsAt && <GenesisNotice endsAt={genesisEndsAt} onLinked={() => setLinkedNow(true)} />}
       {error && <p role="alert">{t(error)}</p>}
-      <ClassPicker onBirth={onBirth} busy={stage === "sending"} disabled={paused || !online || !ready} />
+      <ClassPicker onBirth={onBirth} busy={stage === "sending"} disabled={paused || !online || !ready || (foundersOnly && !canClaim)} />
     </div>
   );
 }
